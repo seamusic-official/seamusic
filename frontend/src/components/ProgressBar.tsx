@@ -2,7 +2,7 @@ import des from "../assets/everydesigner.png"
 
 export default function ProgressBar() {
   return (     
-    <div className="dark:border-neutral-800 border-t hidden dark:bg-zinc-800/30 dark:from-inherit backdrop-blur-2xl lg:bg-gray-200 lg:p-2 lg:dark:bg-zinc-800/30 fixed left-0 bottom-0 right-0 h-auto flex justify-between flex-row items-center md:flex">
+<div style={{zIndex: '9999'}} className="dark:border-neutral-800 border-t bg-zinc-800/30 dark:from-inherit backdrop-blur-lg fixed left-0 bottom-0 right-0 h-auto flex justify-between flex-row items-center">
     <div className="mx-2 my-2 flex justify-start items-center w-1/3">
       <img
         src={des}

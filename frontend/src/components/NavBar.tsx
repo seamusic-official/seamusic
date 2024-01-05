@@ -74,10 +74,17 @@ export default function NavBar() {
         type="button"
         className="text-white uppercase text-xs font-extrabold text-opacity-90 tracking-widest bg-black bg-opacity-70 border border-gray-300 rounded-full px-8 py-2 mr-6 hover:bg-black"
       >
+        LOGO
+      </button>
+    </Link>
+    <Link to="/dashboard">
+      <button
+        type="button"
+        className="text-white uppercase text-xs font-extrabold text-opacity-90 tracking-widest bg-black bg-opacity-70 border border-gray-300 rounded-full px-8 py-2 mr-6 hover:bg-black"
+      >
         My studio
       </button>
     </Link>
-    
     <Link to="/profile">
       <button
         type="button"

@@ -14,7 +14,7 @@ const MainLayout = ({children}: MyComponentProps) => {
             <ProgressBar/>
 
 
-            <div className="mb-32 text-center lg:mb-0 lg:text-left  ">
+            <div className="text-center lg:text-left  ">
                 <div className="p-6 w-full md:w-4/5 md:absolute md:right-0 ">
                   <NavBar/>
                     {children}

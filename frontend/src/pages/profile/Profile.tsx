@@ -14,7 +14,7 @@ export default function Profile() {
               <img
                 src={dess}
                 alt="alan walker artist image "
-                className="w-40 h-40 rounded-full"
+                className="w-40 h-40 rounded-full "
               />
               <h1 className="text-white capitalize font-semibold text-2xl mt-2">
                 This is Alan Walker
@@ -26,7 +26,7 @@ export default function Profile() {
                 id="playlist-thumbnail"
                 src={dess}
                 alt="alan walker artist"
-                className="w-56 h-56 mr-6 rounded-full border "
+                className="w-56 h-56 mr-6 rounded-full border border-neutral-600"
               />
               <div className="mt-16">
                 <h2
