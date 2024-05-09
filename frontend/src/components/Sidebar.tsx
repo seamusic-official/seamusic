@@ -4,11 +4,12 @@ import des from "../assets/everydesigner.png"
 const Sidebar = () => {
   return (
     <div
-    className="border-r px-6 border-gray-300 bg-gradient-to-b hidden bg-black md:w-1/5 md:block px-6 py-4 h-full fixed left-0 from-zinc-200 backdrop-blur-2xl dark:border-neutral-800 dark:bg-zinc-800/30 dark:from-inherit  lg:bg-gray-200 lg:p-2 lg:dark:bg-zinc-800/30"
+    className="border-r px-6 hidden md:w-1/5 md:block px-6 py-4 h-full fixed backdrop-blur-lg left-0 border-neutral-800 lg:p-2 bg-gray-200 bg-opacity-5"
   >
-    <div className="text-gray-300 my-2 cursor-pointer">
-      <h1 className="font-bold text-xl">It's SeaMusic <br/> Picture $$$</h1>
-
+    <div className="text-gray-100 my-2 cursor-pointer">
+      <h2 className="mt-1 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="">
+        SeaMusic
+      </h2>
     </div>
     <button className="text-gray-200 hover:text-white flex items-center mt-4">
       <svg
@@ -24,12 +25,12 @@ const Sidebar = () => {
         ></path>
       </svg>
       <Link to="/">
-        <a className="text-gray-300 text-sm font-bold hover:text-white capitalize">
+        <h2 className="text-gray-100 text-md font-extrabold hover:text-white capitalize">
           Home
-        </a>
+        </h2>
       </Link>
     </button>
-    <button className="text-gray-200 hover:text-white flex items-center mt-4">
+    <button className="text-gray-100 hover:text-white flex items-center mt-4">
       <svg
         className="mr-4"
         viewBox="0 0 512 512"
@@ -44,32 +45,12 @@ const Sidebar = () => {
         ></path>
       </svg>
       <Link to="/search">
-        <a className="text-gray-300 text-sm font-bold hover:text-white capitalize">
+        <h2 className="text-gray-100 text-md font-extrabold hover:text-white capitalize">
           Search
-        </a>
+        </h2>
       </Link>
     </button>
-    <button className="text-gray-200 hover:text-white flex items-center mt-4">
-      <svg
-        className="mr-4"
-        viewBox="0 0 512 512"
-        width="24"
-        height="24"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        <path
-          d="M291.301 81.778l166.349 373.587-19.301 8.635-166.349-373.587zM64 463.746v-384h21.334v384h-21.334zM192 463.746v-384h21.334v384h-21.334z"
-          fill="currentColor"
-        ></path>
-      </svg>
-      <Link to="/albums/1">
-        <a className="text-gray-300 text-sm font-bold hover:text-white capitalize">
-          Your Library
-        </a>
-      </Link>
-
-    </button>
-    <button className="text-gray-200 hover:text-white flex items-center mt-4">
+    <button className="text-white hover:text-white flex items-center mt-4">
       <svg
         className="mr-4"
         viewBox="0 0 512 512"
@@ -83,9 +64,29 @@ const Sidebar = () => {
         ></path>
       </svg>
       <Link to="/messages">
-        <a className="text-gray-300 text-sm font-bold hover:text-white capitalize">
+        <h2 className="text-gray-100 text-md font-extrabold hover:text-white capitalize">
           Messages
-        </a>
+        </h2>
+      </Link>
+
+    </button>
+    <button className="text-white hover:text-white flex items-center mt-4">
+      <svg
+        className="mr-4"
+        viewBox="0 0 512 512"
+        width="24"
+        height="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M291.301 81.778l166.349 373.587-19.301 8.635-166.349-373.587zM64 463.746v-384h21.334v384h-21.334zM192 463.746v-384h21.334v384h-21.334z"
+          fill="currentColor"
+        ></path>
+      </svg>
+      <Link to="/dashboard">
+        <h2 className="text-gray-100 text-md font-extrabold hover:text-white capitalize">
+          Dashboard
+        </h2>
       </Link>
 
     </button>
@@ -102,9 +103,9 @@ const Sidebar = () => {
           <path d="M14 7H9V2H7v5H2v2h5v5h2V9h5z"></path>
           <path fill="none" d="M0 0h16v16H0z"></path>
         </svg>
-        <a
-          className="text-gray-300 text-sm font-bold hover:text-white capitalize"
-          >Create Playlist</a>
+        <h2
+          className="text-gray-100 text-md font-extrabold hover:text-white capitalize"
+          >Create playlist</h2>
       </button>
       <button
         className="flex items-center text-green-500 my-3 hover:text-white"
@@ -123,17 +124,37 @@ const Sidebar = () => {
             d="M13.797 2.727a4.057 4.057 0 00-5.488-.253.558.558 0 01-.31.112.531.531 0 01-.311-.112 4.054 4.054 0 00-5.487.253c-.77.77-1.194 1.794-1.194 2.883s.424 2.113 1.168 2.855l4.462 5.223a1.791 1.791 0 002.726 0l4.435-5.195a4.052 4.052 0 001.195-2.883 4.057 4.057 0 00-1.196-2.883z"
           ></path>
         </svg>
-        <a
-          className="text-gray-300 text-sm font-bold hover:text-white capitalize"
-          >Liked Songs</a>
+        <Link to="/liked">
+        <h2
+          className="text-gray-100 text-md font-extrabold hover:text-white capitalize"
+          >Liked songs</h2>
+        </ Link>
       </button>
     </div>
-    <div className="flex -space-x-3 rtl:space-x-reverse">
-      <img className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800" src={des} alt=""/>
-      <img className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800" src={des} alt=""/>
-      <img className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800" src={des} alt=""/>
-      <img className="w-10 h-10 border-2 border-white rounded-full dark:border-gray-800" src={des} alt=""/>
-    </div>
+    <h2 className="mt-1 mb-1 text-white text-2xl capitalize font-extrabold tracking-tighter" id="playlist-title">
+        Notifications: 
+        <div className="flex overflow-auto justify-start items-center mb-4">
+
+          <Link to="aga">
+                <div className="p-4 m-2 pr-36 flex transition hover:bg-gray-200 bg-gray-200 bg-opacity-5 hover:bg-opacity-10 rounded-lg">
+                  <img src={des} alt="" className="rounded-lg w-24 h-24 mr-2" />
+                  <div>
+                    <p className="w-48 text-gray-200 font-semiextrabold text-lg leading-tight whitespace-normal">Your beat is sell!</p>
+                    <p
+                    id="playlist-description"
+                    className="text-white mt-1 line-clamp-2 text-sm font-normal whitespace-normal opacity-70"
+                  >
+                  ☆ 100+ drum sound's (fav)
+                  ☆ 9 loop's made by me
+                  ☆ 300+ preset's for effectrix, looperator, mixer, portal, shaperbox 3, analog lab & thermal 
+                  </p>
+
+                    <p className="w-48 text-gray-300 font-medium text-sm break-all truncate">@whyspacy x @axietic x @whiteprince</p>
+                  </div>
+                </div>
+        </Link>
+      </div>
+    </h2>
   </div>
   );
 };

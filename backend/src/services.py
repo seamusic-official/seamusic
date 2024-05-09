@@ -1,6 +1,8 @@
-from abc import ABC
+from src.database import async_session_maker
+from src.config import settings
+from spotipy.oauth2 import SpotifyClientCredentials
 from sqlalchemy import insert, select, update, delete, desc
-from database import async_session_maker
+from abc import ABC
 
 class AbstractRepository(ABC):
     pass
@@ -12,10 +14,15 @@ class SQLAlchemyRepository(AbstractRepository):
     @classmethod
     async def add_one(cls, data: dict) -> int:
         async with async_session_maker() as session:
-            stmt = insert(cls.model).values(**data)
-            await session.execute(stmt)
-            await session.commit()
-            return stmt
+            try:
+                stmt = insert(cls.model).values(**data)
+                result = await session.execute(stmt)
+                await session.commit()
+                return result.rowcount
+            except Exception as e:
+                print(f"Ошибка при добавлении данных: {e}")
+                await session.rollback()
+                return 0
 
     @classmethod
     async def edit_one(cls, id: int, data: dict) -> int:
@@ -37,7 +44,7 @@ class SQLAlchemyRepository(AbstractRepository):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
-            return result.first()
+            return result.scalar_one_or_none()
     
     @classmethod
     async def delete(cls, id: int) -> None:

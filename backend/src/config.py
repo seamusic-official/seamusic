@@ -1,14 +1,19 @@
 import os
+from typing import Union
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
 
 load_dotenv()
 
+class MediaSettings(BaseModel):
+    BEATS_PICTURES: str = os.environ.get("BEATS_PICTURES")
+    MEDIA_BEATS: str = os.environ.get("MEDIA_BEATS")
+
 class SpotifySettings(BaseModel):
     CLIENT_SECRET: str = os.environ.get("SPOTIFY_CLIENT_SECRET")
     CLIENT_ID: str = os.environ.get("SPOTIFY_CLIENT_ID")
-
+    REDIRECT_URI: str = os.environ.get("REDIRECT_URI")
 
 class DbSettings(BaseModel):
     DB_HOST: str = os.environ.get("DB_HOST")
@@ -33,5 +38,6 @@ class Settings(BaseSettings):
     db: DbSettings = DbSettings()
     auth: AuthSettings = AuthSettings()
     spotify: SpotifySettings = SpotifySettings()
+    media: MediaSettings = MediaSettings()
 
 settings = Settings()
