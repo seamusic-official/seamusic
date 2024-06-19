@@ -12,7 +12,14 @@ class UsersDAO(SQLAlchemyRepository):
             query = select(cls.model).filter(cls.model.artist_profile != None)
             result = await session.execute(query)
             return result.scalars().all()
-        
+    
+    @classmethod
+    async def find_all_producers(cls):
+        async with async_session_maker() as session:
+            query = select(cls.model).filter(cls.model.producer_profile != None)
+            result = await session.execute(query)
+            return result.scalars().all()
+
 class ProducerDAO(SQLAlchemyRepository):
     model = ProducerProfile
 

@@ -1,8 +1,12 @@
 from src.database import async_session_maker
 from src.config import settings
-from spotipy.oauth2 import SpotifyClientCredentials
 from sqlalchemy import insert, select, update, delete, desc
 from abc import ABC
+from fastapi import UploadFile, File
+import boto3
+from botocore.exceptions import ClientError
+from io import BytesIO
+
 
 class AbstractRepository(ABC):
     pass
@@ -14,16 +18,10 @@ class SQLAlchemyRepository(AbstractRepository):
     @classmethod
     async def add_one(cls, data: dict) -> int:
         async with async_session_maker() as session:
-            try:
-                stmt = insert(cls.model).values(**data)
-                result = await session.execute(stmt)
-                await session.commit()
-                return result.rowcount
-            except Exception as e:
-                print(f"Ошибка при добавлении данных: {e}")
-                await session.rollback()
-                return 0
-
+            stmt = insert(cls.model).values(**data).returning(cls.model.id)
+            await session.execute(stmt)
+            await session.commit()
+        
     @classmethod
     async def edit_one(cls, id: int, data: dict) -> int:
         async with async_session_maker() as session:
@@ -60,3 +58,36 @@ class SQLAlchemyRepository(AbstractRepository):
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
             return result.scalars().all()       
+
+
+class MediaRepository(AbstractRepository):
+    session = boto3.Session(
+        aws_access_key_id=settings.yandex_cloud.AWS_ACCESS_KEY_ID, 
+        aws_secret_access_key=settings.yandex_cloud.AWS_SECRET_ACCESS_KEY
+    )
+    
+    s3 = session.client(
+        service_name='s3',
+        endpoint_url='https://storage.yandexcloud.net'
+    )
+    
+    bucket_name = 'seamusic'
+
+    @classmethod
+    async def upload_file(cls, folder, filename, file: UploadFile = File(...)):
+        file_data = await file.read()
+        file_stream = BytesIO(file_data)
+        key = f'{folder}/{filename}'
+        cls.s3.upload_fileobj(file_stream, cls.bucket_name, key)
+        file_url = f"https://storage.yandexcloud.net/{cls.bucket_name}/{key}"
+        
+        return file_url
+
+    @classmethod
+    async def delete_file(cls, folder, filename):
+        key = f'{folder}/{filename}'
+        try:
+            cls.s3.delete_object(Bucket=cls.bucket_name, Key=key)
+            return f"File {filename} deleted successfully from folder {folder}."
+        except ClientError as e:
+            return f"An error occurred: {e}"

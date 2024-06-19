@@ -1,7 +1,6 @@
 import MainLayout from '../../components/layouts/MainLayout'
 import dess from '../../assets/everydesigner.png'
 import { Song } from '../../components/Song'
-import som from "../../.../../../../backend/MEDIA_BEATS/0020 200bpm stop diorblessed-207586ca-13ac-48be-a21f-c115df4fc648.mp3"
 
 
 export default function KitDetail() {

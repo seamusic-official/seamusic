@@ -22,7 +22,8 @@
     "redux-persist": "^6.0.0",
     "redux-thunk": "^3.1.0",
     "spotify-web-api-js": "^1.5.2",
-    "spotify-web-api-node": "^5.0.2"
+    "spotify-web-api-node": "^5.0.2",
+    "use-sound": "^4.0.1"
   },
   "devDependencies": {
     "@types/react": "^18.2.37",

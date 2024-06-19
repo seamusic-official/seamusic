@@ -16,6 +16,7 @@ const initialState = {
   isLiked: false,
   isPlaying: false,
   timeElapsed: 0,
+  type: null
 };
 
 const playerSlice = createSlice({

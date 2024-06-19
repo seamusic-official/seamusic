@@ -2,64 +2,74 @@ import Menu from "../Menu"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux"
 import { play, pause, updateTime, updateDuration, setLike } from '../../store/reducers/playerSlice'
 import { useEffect, useState } from "react";
-import SpotifyService from "../../services/SpotifyService";
 import SongDetailModal from "../modals/SongDetailModal";
-import BeatService from "../../services/BeatService";
 import default_picture from "../../assets/default-track-picture.png"
+import useSound from "use-sound";
 
 
 export default function ProgressBar() {
-  const dispatch = useAppDispatch();
-  const { currentSong, timeElapsed, isActive, isLiked } = useAppSelector((state) => state.player);
-  const isPlaying = useAppSelector((state) => state.player.isPlaying);
-  const link = currentSong.src
-  const [src, setSrc] = useState(null)
+  const { currentSong, timeElapsed, isActive, isLiked } = useAppSelector((state) => state.player);     
   const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  useEffect(() => {
-    const fetchData = async () => {
+  const [isPlaying, setIsPlaying] = useState(false);
+  const src = currentSong.src
+  const [play, { pause, duration, sound }] = useSound(src);
+  const dispatch = useAppDispatch();
+  const [currTime, setCurrTime] = useState({
+    min: "00",
+    sec: "00",
+  });
+  const [time, setTime] = useState({
+    min: "00",
+    sec: "00",
+  }); 
 
-      try {
-        if (currentSong.type) {
-          const response = await SpotifyService.track(link)
-          const responseData = response.data;
-          setSrc(responseData);
-        } else {
-          const response = await BeatService.get_audio(link);
-          const responseData = response.data;
-          setSrc(responseData);
-        }
-      } catch (error) {
-        console.error(error);
-      }
+  const [seconds, setSeconds] = useState(); // current position of the audio in seconds
+
+  useEffect(() => {
+    const sec = duration / 1000;
+    const min = Math.floor(sec / 60);
+    const secRemain = Math.floor(sec % 60);
+    const time = {
+      min: min.toString(),
+      sec: secRemain.toString()
     };
 
-    if (src) {
-        audio.src = src;
-        audio.controls = true;
-        audio.autoplay = true;
-      }
-    fetchData();
-  }, [currentSong]);
-  
-  const [audio] = useState(link ? new Audio() : new Audio());
-  
-  const handlePlay = () => {
-    dispatch(play());
-    audio.oncanplay = () => {
-      audio.play().catch(error => console.error('Error playing audio:', error));
-  }  };
+    setTime(time)
+  }, [])
 
-  const handlePause = () => {
-    dispatch(pause())
-    audio.pause();
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (sound) {
+        setSeconds(sound.seek([])); // setting the seconds state with the current state
+        const min = Math.floor(sound.seek([]) / 60);
+        const sec = Math.floor(sound.seek([]) % 60);
+        setCurrTime({
+          sec,
+          min,
+        });
+      }
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [sound]);
+
+  useEffect(() => {
+    pause(); // ставим текущую композицию на паузу
+    setIsPlaying(false); // устанавливаем флаг isPlaying в false
+  }, [src]); // следим за изменениями переменной src
+
+  const changeButton = () => {
+    if (isPlaying) {
+      pause(); // this will pause the audio
+      setIsPlaying(false);
+    } else {
+      play(); // this will play the audio
+      setIsPlaying(true);
+    }
   };
-  
+
+
   return (
-    <div>
-         <div className={isActive ? "" : "hidden"}>
-          <div className=" border-neutral-800 border-t bg-gray-200 bg-opacity-5 backdrop-blur-lg fixed left-0 bottom-0 right-0 h-auto  ">
-            <SongDetailModal isOpen={isModalOpen} onClose={isModalOpen} />
+        <div className={isActive ? "bg-opacity-5 h-auto" : "border-neutral-800 border-t bg-opacity-5 h-auto"}>
             <div className="justify-between md:mb-0 lg:flex flex-row items-center">
               <div className="mx-2 pt-2 lg:pt-0 flex justify-start items-center w-full lg:w-1/3">
                 {currentSong.picture ? (
@@ -77,7 +87,7 @@ export default function ProgressBar() {
                 )}
 
                 <div onClick={() => setIsModalOpen(!isModalOpen)} className="flex cursor-pointer flex-col justify-center m-1 lg:m-4">
-                  <h6 id="song-name" className="text-white font-semibold text-xl text-left">
+                  <h6 id="song-name" className="w-56 text-white font-semibold text-xl text-left truncate ">
                     {currentSong.name}
                   </h6>
                   <p id="artist-name" className="text-gray-400 font-semi-bold text-lg">
@@ -163,7 +173,7 @@ export default function ProgressBar() {
                   </svg>
                   {isPlaying ? (
                   <button
-                    onClick={handlePause}  
+                    onClick={changeButton}  
                     id="play-btn"
                     className="bg-white rounded-full w-8 h-8 flex justify-center items-center"
                   >
@@ -180,7 +190,7 @@ export default function ProgressBar() {
                   </button>
                         ) : (
                             <button
-                              onClick={handlePlay}
+                              onClick={changeButton}
                               id="play-btn"
                               className="bg-white rounded-full w-8 h-8 flex justify-center items-center"
                             >
@@ -220,15 +230,25 @@ export default function ProgressBar() {
                 </div>
                 
                 <div className="pl-2 pr-2 lg:pl-0 lg:pr-0 flex flex-row justify-between items-center w-full">
-                  <div id="time-elapsed" className="text-gray-300 text-xs text-center">1:41</div>
+                  <div id="time-elapsed" className="text-gray-300 text-xs text-center">{currTime.min}:{currTime.sec}</div>
                   <div
-                    className=" flex w-full h-full rounded-full mx-4"
+                    className="flex w-full h-full rounded-full mx-4"
                   >
-                    <input className=" w-full rounded-full h-3" type="range" />
+                  <input
+                    type="range"
+                    min="0"
+                    max={duration ? (duration / 1000) : 1000}
+                    default="0"
+                    value={seconds}
+                    className="timeline"
+                    style={{ flexGrow: 1 }} // Установка максимальной ширины для input
+                    onChange={(e) => {
+                      sound.seek([e.target.value]);
+                    }}
+                  />
                   </div>
-                  <div id="duration" className="text-gray-300 text-xs text-center">3:04</div>
+                  <div id="duration" className="text-gray-300 text-xs text-center">{time.min}:{time.sec}</div>
                 </div>
-
               </div>
               
               <div className="invisible lg:visible flex flex-row justify-end items-center w-1/3 mr-4">
@@ -264,8 +284,5 @@ export default function ProgressBar() {
               </div>
             </div>
         </div>
-    </div>
-  </div>
-
   )
 }

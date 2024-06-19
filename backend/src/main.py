@@ -2,17 +2,18 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_cache import FastAPICache
 from fastapi_cache.backends.redis import RedisBackend
+
 from redis import asyncio as aioredis
+from sqladmin import Admin, ModelView 
+
 from src.auth.router import auth
 from src.beats.router import beats
 from src.music.router import music
 from src.messages.router import messages
 from src.beats.models import Beat, BeatPack, Like
 from src.auth.models import User, ProducerProfile, ArtistProfile
-from fastapi.staticfiles import StaticFiles
 from src.database import engine
 from src.config import settings
-from sqladmin import Admin, ModelView 
 
 app = FastAPI(
     title = "SeaMusic",
@@ -45,12 +46,6 @@ admin.add_view(UserAdmin)
 admin.add_view(ProducerProfileAdmin)
 admin.add_view(ArtistProfileAdmin)
 admin.add_view(LikesAdmin)
-
-import os
-if not os.path.exists(settings.media.BEATS_PICTURES):
-        os.makedirs(settings.media.BEATS_PICTURES)
-
-app.mount("/beats_pics", StaticFiles(directory=settings.media.BEATS_PICTURES), name="beats_pics")
 
 @music.get("/search", summary="Search")
 async def search(id):   

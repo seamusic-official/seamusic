@@ -14,9 +14,8 @@ import os
 class Chat(Base):
     __tablename__ = 'chats'
  
-    id: Mapped[int] = mapped_column(primary_key=True)
+
 
 class Message(Base):
     __tablename__ = 'messages'
  
-    id: Mapped[int] = mapped_column(primary_key=True)

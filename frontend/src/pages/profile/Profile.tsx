@@ -9,6 +9,7 @@ import DefaultButton from '../../components/buttons/DefaultButton';
 import { useEffect, useState } from 'react';
 import BeatService from '../../services/BeatService';
 import { SongLoading } from '../../components/loadingElements/SongLoading';
+import LicenseLink from '../../components/licenses/LicenseLink';
 
 
 export default function Profile() {
@@ -36,18 +37,7 @@ export default function Profile() {
   return (
     <MainLayout>
            <div className="">
-            <div className="flex  flex-col justify-center items-center md:hidden">
-              <img
-                src={dess}
-                alt="alan walker artist image "
-                className="w-40 h-40 rounded-full "
-              />
-              <h1 className="text-white capitalize font-semibold text-2xl mt-2">
-                This is Alan Walker
-              </h1>
-              <p className="text-xs uppercase text-gray-100 mt-1">1,308,405 likes</p>
-            </div>
-            <div className="hidden mt-2 flex items-center md:flex">
+            <div className="mt-2 flex items-center flex-wrap">
             <div className="relative">              
                 <img
                 id="playlist-thumbnail"
@@ -82,7 +72,7 @@ export default function Profile() {
                   id="playlist-description"
                   className="text-white mt-6 text-sm font-normal leading-none opacity-70"
                 >
-                damn, why spacy? WW/ Шайни, heronwater, T-fest, GONE.FLUDD, uglystephan, xxxmanera etc. 
+                 
                 </p>
 
                 <div className="flex items-center mt-2">
@@ -112,8 +102,6 @@ export default function Profile() {
                     2hr 36 min
                   </p>
                 </div>
-
-
               </div>
             </div>
           </div>
@@ -121,21 +109,8 @@ export default function Profile() {
             <div
               className="w-full p-4"
             >
-
-              <div className="flex justify-center items-center m-4 md:hidden">
-              <div className="mt-2 mb-2 ">
-                    <a className="p-2 border-emerald-600 border-2 hover:border-emerald-800  font-bold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit" href="">
-                    Messages
-                    </a>
-                </div>
-                <button
-                  className="bg-green-500 text-white uppercase text-xs rounded-full font-semibold tracking-widest px-8 py-3"
-                >
-                  Shuffle Play
-                </button>
-              </div>
               <div
-                className="hidden flex items-center text-white w-1/2 mx-4 my-2 md:flex"
+                className=" flex items-center text-white mx-2 my-2 md:flex"
               >
                 <svg
                   className="bg-emerald-600 rounded-full w-12 h-12 p-3 text-white"
@@ -167,7 +142,7 @@ export default function Profile() {
                 </div>
             
                 <div className="m-2">
-                  <DefaultButton href={`/messages/chat/${user.id}`} title="Messages" />
+                  <DefaultButton href={`/profile/update`} title="Edit profile" />
                 </div>                
                 <div className="text-gray-300">
                   <svg
@@ -183,16 +158,29 @@ export default function Profile() {
                   </svg>
                 </div>
             </div>
-            <div >
-            <h1 className="flex items-center text-white font-extrabold text-2xl mt-6">
-                {user.username}'s kits <AddButtonPlus link="/dashboard"/>
-            </h1>
+            <div>
+              <h1 className="flex items-center text-white font-extrabold text-2xl mt-6">
+                    Licenses <AddButtonPlus link="/dashboard"/>
+                </h1>
+                <div className="flex overflow-auto justify-start items-center mb-4">
+                    <div>
+                      <LicenseLink 
+                          link="/license" 
+                          image={dess} 
+                          title="EXCLUSIVE RIGHTS" 
+                          description="U're get a exclusive beat with track out" 
+                          price="from 100$ / contactual" />
+                    </div>
+                </div>              
+            </div>
+
+            <div>
+                <h1 className="flex items-center text-white font-extrabold text-2xl mt-6">
+                    {user.username}'s kits <AddButtonPlus link="/dashboard"/>
+                </h1>
                 <div className="flex overflow-auto justify-start items-center mb-4">
                     <div>
                       <KitLink link="/kit/newera" image={dess} title="✕  RIOT UNIVERSE COMMUNITY STASH KIT 2024  ✕ "/>
-                    </div>
-                    <div>
-                      <KitLink link="/kit/newera" image={dess} title="21' happy birthday stash kit "/>
                     </div>
                 </div>
             </div>
@@ -243,7 +231,7 @@ export default function Profile() {
                           album="Каждый из дизайнеров" 
                           date={beat.created_at}
                           type={beat.type}
-                          isAction={true}
+                          isAction={false}
                         />
                       ))
                     ) 
@@ -260,6 +248,20 @@ export default function Profile() {
                   </tbody>
                 </table>
               </div>
+
+              <h1 className="flex items-center text-white font-extrabold text-2xl mt-6">
+                  It is also found in..
+                </h1>
+                <div className="flex overflow-auto justify-start items-center mb-4">
+                    <div>
+                      <LicenseLink 
+                          link="/license" 
+                          image={dess} 
+                          title="EXCLUSIVE RIGHTS" 
+                          description="U're get a exclusive beat with track out" 
+                          price="from 100$ / contactual" />
+                    </div>
+                </div>   
             </div>
           </div>
     </MainLayout>

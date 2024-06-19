@@ -26,16 +26,16 @@ class SBeat(SBeatBase):
     class Config:
         orm_mode = True
 
-class SBeatPackBase(BaseModel):
+class SBeatpackBase(BaseModel):
     title: str
     description: str
     owner_id: int
     beats: List[SBeat] = Field(...)
     
-class SBeatPackCreate(SBeatPackBase):
+class SBeatPackCreate(SBeatpackBase):
     pass
 
-class SBeatPack(SBeatPackBase):
+class SBeatPack(SBeatpackBase):
     id: int
     liked: bool
     is_available: bool

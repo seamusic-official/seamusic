@@ -24,7 +24,7 @@ const PostingBeatModal = ({ isOpen, onClose }) => {
     setPicture(picture);
 
     const formData = new FormData();
-    formData.append('picture', picture);
+    formData.append('file', picture);
 
     try {
         const response = await BeatService.update_picture(beatId, formData);
@@ -43,7 +43,7 @@ const PostingBeatModal = ({ isOpen, onClose }) => {
 
       try {
           const response = await BeatService.add(formData);
-          setBeatId(response.data);
+          setBeatId(response.data.id);
           console.log(response.data);
       } catch (error) {
           console.error('Error sending data:', error);
@@ -115,17 +115,18 @@ const PostingBeatModal = ({ isOpen, onClose }) => {
                         <div className={`m-6 relative border border-dashed border-gray-400 p-12 ${ !file ? "" : "hidden"}`}>
                             <img alt="Upload Icon" className="mx-auto w-12 mb-2 invert"  src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAGAAAABgCAYAAADimHc4AAAACXBIWXMAAAsTAAALEwEAmpwYAAAE90lEQVR4nO2cXYzdQxTAf92liFXUZyhFwiJBhCZeZMULLfXQ0qRNSJTS6KPgQcQKD42kQZcH9UA0jY8obzwgUQ0Sqk2Jb6HtIlIlEQ0WvSOTnE1uNnfmf+/c/38+9p5fct7unTlzznycOTPzB0VRFEVRFEVRFEVRFEVRFEVRFEVRFEVRBpqFwK3AY8BbwLfAfuBv4D/gN+B74B3gGWAtcAkwJ7XiJXMm8DDwKWACZRJ4CliUujElcTnwqvRsU6N8DNwIDKVuYK6cDbwAtGo2/EzZCYylbmxu3AL80bDhZ8rzwDEMOMcDr0c2fLvYxfxiBpRzga+6NJRdD7YBDwHLgQuAk4EjgGFx5IXAUuBRme8PdVn2QeAGBoxLgV+7MM5nwJ3ACQF12P+sk15eVc+/wM0MCHbIH6gwyJfSm+uI423Us6yLcNaOspuYRSyQHvgG8IUMdWv43z1GmALuBQ5vQJ+5wCPS2331X0nhnAZsqmhoJ/ku0obpMmCPR4+fgdMplOsrerhLdgGnRB6dn3v0ebvENMZdgbvXj4BjE+h7kkRLLr1se4rh2kDj/yC9MRV21P3o0M0m+E6kkDk/ZNr5UzKWqRnzrFdPUACbKoy8QRbXo2XDdAVwD7CCfLjfo/+pZMwCT+/ZI7vTEjjSExnZ0DVb1nl6TinGb08IdmqLXSMOI1NciTQ77ZTGkKQ+OrXnTVkP7gAuIiNcybRST6Du6zKAsNPVeuCs1Aq7cvh2wS31GLTVQyRn17+nU4SrNtP4okexeZTL+wEh9X65NBAFG0b+VKFQVvNkjzwY4IBpeVaSfo2xXCKcKkVsKrlUru7DAUYCExvW1s7SLjKcXwN3A8cRh3GROpkrIfQ5cupm17NR4BpgI7C3Cye8Uvfti0UVPd+mkldFvvIx3lZ/3U7wMSzz/WSFEx6oq0J7c+AbT0VbEiy64x30iOkEywiwtSJCsnec+uZJTyUbEuTNxz36xHbCHLGBS58P+rXPecA/jsJtGEpGxjcidoMUE2vglzz6XNdP4c85Ct0rQzA345uE09Gk53QteO4/6Ch0Jfka3yRywmqHHodCD51WOgrcJ5FAzsY3iaKjfQ49bq9z8V1fiPFNAidMeO6h9syHjsKWUI7xTWQnLHbUvyOkMNeicgZlGd9EdMKoo+5fQgr7y1HYUZRnfBNp+hxx1GufUvXMlKOw2OFnJ1wGTs28Oh3gukBrN2epMZk6YNRzXtAzOx2F2UtYqTGZOmBJnYvwFkdhNiWbGpOpA1xh6OaQwtZ60hAxN2KlOMC3EVsT+mrRdUAd7fyzIAfc5tCpJYf9QbzrKHQycTRkMnPAiFw07qSTfb0fzApPY19L+OjZZOQAm45+2aOTfR4VzFDF26oUBzI5OaDqQGZ3HZ10rOKy0tYE05HJwAEj8kkFly6tOt+bbfRUNL0mrI4YHZmEDhiWBdc150/L43VWah9Ev1dRoZEwbEKyguc3ODJMRAeMSFsWS4reFWq2y/YmLmjN7/PTMSHioq7fNyGfiK0aYX7g3clBccD2Jo3fPh1NRPisjAkwaK+/r0taMuc3ei90JldFmJJKcMDulK/rh+QrVNsaGhG5OqAlO9xlOX2Ba6E84dks6dcDnkOdkhwwJUeKO6Rta/rJ7cwWTI8OUNQBswujI0AdMNAYHQHqAEVRFEVRFEVRFEVRFEVRFEWhEP4HJLF96pRWp/4AAAAASUVORK5CYII="></img>
                             <input
-                            type="file"
-                            name="file"
-                            multiple
-                            onChange={handleFileChange}
-                            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                              type="file"
+                              name="file"
+                              onChange={handleFileChange}
+                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                             />
                             <div className="mb-2">
                               <label htmlFor="file" className="flex justify-center text-center block inline-block font-extrabold text-lg tracking-wider">Select or drug file here</label>
                               <span className="text-center block text-gray-600">*.wav, .mp3, .ogg, .aac</span>
                             </div>
                          </div>
+                      </form>
+                      <form onSubmit={submitForm} method="POST" encType="miltipart/form-data">
                             <div  className={`ml-4 mr-8 w-full ${ !file ? "hidden" : ""} `}>
                                 <div className="m-1">
                                   <label htmlFor="id" className="inline-block  font-extrabold text-sm my-1 tracking-wider ">
@@ -192,13 +193,11 @@ const PostingBeatModal = ({ isOpen, onClose }) => {
                                 </label>
                                   <div className="tracking-tighter block p-2.5 z-20 text-sm rounded-md font-bold  border-neutral-800 rounded-s-2 border bg-zinc-800/30 placeholder-neutral-700 text-white">
                                     <input
-                                      id="picture"
                                       type="file"
-                                      name="file"
-                                      multiple
+                                      name="picture"
                                       onChange={handlePictureChange}
                                       className="opacity-0 cursor-pointer w-full"
-                                      />                      
+                                    />                      
                                   </div>
                                 </div>
                                 <label htmlFor="descritpion" className="inline-block  font-extrabold text-sm my-1 tracking-wider ">

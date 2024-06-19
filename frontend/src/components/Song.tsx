@@ -80,7 +80,6 @@ export const Song = ({ id, picture, name, date, author, album, duration, src, ty
                     "src": src
                     }
                 }));
-                dispatch(play()); 
             }}>
                 <p className="text-white font-bold truncate text-lg lg:w-56">{name}</p>
             </a>

@@ -6,7 +6,7 @@ from src.config import settings
 class BeatsRepository(SQLAlchemyRepository):
     model = Beat
     
-class BeatPacksRepository(SQLAlchemyRepository):
+class BeatpacksRepository(SQLAlchemyRepository):
     model = BeatPack
 
 class PlaylistsRepository(SQLAlchemyRepository):

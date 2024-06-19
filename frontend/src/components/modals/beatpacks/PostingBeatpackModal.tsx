@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
-import Input from '../Input';
-import SubmitButton from '../buttons/SubmitButton';
-import { Song } from '../Song';
-import $api from '../../http';
-import { useAppSelector } from '../../hooks/redux';
+import Input from '../../Input';
+import SubmitButton from '../../buttons/SubmitButton';
+import { Song } from '../../Song';
+import $api from '../../../http';
+import { useAppSelector } from '../../../hooks/redux';
 import axios from 'axios'
-import BeatService from '../../services/BeatService';
+import BeatService from '../../../services/BeatService';
 
 const PostingBeatpackModal = ({ isOpen, onClose }) => {
   const [file, setFile] = useState(null); 

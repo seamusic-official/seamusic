@@ -8,7 +8,9 @@ const Sidebar = () => {
   >
     <div className="text-gray-100 my-2 cursor-pointer">
       <h2 className="mt-1 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="">
-        SeaMusic
+        <Link to="/">
+          SeaMusic
+        </Link>
       </h2>
     </div>
     <button className="text-gray-200 hover:text-white flex items-center mt-4">
@@ -131,30 +133,28 @@ const Sidebar = () => {
         </ Link>
       </button>
     </div>
-    <h2 className="mt-1 mb-1 text-white text-2xl capitalize font-extrabold tracking-tighter" id="playlist-title">
+    <h2 className="mt-1 mb-1 text-white text-2xl font-extrabold tracking-tighter" id="playlist-title">
         Notifications: 
-        <div className="flex overflow-auto justify-start items-center mb-4">
+    </h2>
+        <div className="flex justify-start items-center mb-4">
 
-          <Link to="aga">
-                <div className="p-4 m-2 pr-36 flex transition hover:bg-gray-200 bg-gray-200 bg-opacity-5 hover:bg-opacity-10 rounded-lg">
-                  <img src={des} alt="" className="rounded-lg w-24 h-24 mr-2" />
+          <Link to="/notifications">
+                <div className="p-2 mt-2 w-full flex transition hover:bg-gray-200 bg-gray-200 bg-opacity-5 hover:bg-opacity-10 rounded-lg">
+                  <img src={des} alt="" className="rounded-lg w-12 h-12 mr-2" />
                   <div>
-                    <p className="w-48 text-gray-200 font-semiextrabold text-lg leading-tight whitespace-normal">Your beat is sell!</p>
+                    <p className="text-gray-100 text-lg font-bold hover:text-white whitespace-normal truncate line-clamp-1 ">
+                        messages @whyspacy
+                    </p>
                     <p
-                    id="playlist-description"
-                    className="text-white mt-1 line-clamp-2 text-sm font-normal whitespace-normal opacity-70"
-                  >
-                  ☆ 100+ drum sound's (fav)
-                  ☆ 9 loop's made by me
-                  ☆ 300+ preset's for effectrix, looperator, mixer, portal, shaperbox 3, analog lab & thermal 
-                  </p>
-
-                    <p className="w-48 text-gray-300 font-medium text-sm break-all truncate">@whyspacy x @axietic x @whiteprince</p>
+                       className="text-white line-clamp-1 text-sm font-normal whitespace-normal opacity-70 truncate"
+                      >
+                      ☆ 100+ drum sound's al sdadass
+                      </p>
                   </div>
-                </div>
+                </div>  
+
         </Link>
       </div>
-    </h2>
   </div>
   );
 };

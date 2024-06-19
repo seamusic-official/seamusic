@@ -6,9 +6,11 @@ from pydantic_settings import BaseSettings
 
 load_dotenv()
 
-class MediaSettings(BaseModel):
-    BEATS_PICTURES: str = os.environ.get("BEATS_PICTURES")
-    MEDIA_BEATS: str = os.environ.get("MEDIA_BEATS")
+class YandexCloudSettings(BaseModel):
+    YANDEX_CLOUD_OAUTH_TOKEN: str = os.environ.get("YANDEX_CLOUD_OAUTH_TOKEN")
+    YANDEX_CLOUD_ID: str = os.environ.get("YANDEX_CLOUD_ID")
+    AWS_ACCESS_KEY_ID: str = os.environ.get("AWS_ACCESS_KEY_ID")
+    AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY")
 
 class SpotifySettings(BaseModel):
     CLIENT_SECRET: str = os.environ.get("SPOTIFY_CLIENT_SECRET")
@@ -38,6 +40,6 @@ class Settings(BaseSettings):
     db: DbSettings = DbSettings()
     auth: AuthSettings = AuthSettings()
     spotify: SpotifySettings = SpotifySettings()
-    media: MediaSettings = MediaSettings()
+    yandex_cloud: YandexCloudSettings = YandexCloudSettings()
 
 settings = Settings()

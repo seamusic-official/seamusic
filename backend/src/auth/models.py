@@ -21,7 +21,6 @@ from sqlalchemy.orm import relationship
 class Tag(Base):
     __tablename__ = 'tags'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     title: Mapped[str] = mapped_column(nullable=False)
     
 liked_users = Table(
@@ -33,12 +32,13 @@ liked_users = Table(
 class User(Base):
     __tablename__ = 'users'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
     role: Mapped[str] = mapped_column(nullable=False, default="Listener")
-    
+    picture_url: Mapped[str] = mapped_column(nullable=True, default="https://img.favpng.com/22/0/21/computer-icons-user-profile-clip-art-png-favpng-MhMHJ0Fw21MJadYjpvDQbzu5S.jpg")
+    is_active: Mapped[bool] = mapped_column(nullable=True, default=False)
+
     birthday: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     registered_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
     artist_profile_id: Mapped[int] = mapped_column(ForeignKey("artist_profiles.id"), nullable=True)
@@ -51,7 +51,6 @@ class User(Base):
 class ArtistProfile(Base):
     __tablename__ = 'artist_profiles'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     description: Mapped[str] = mapped_column()
 
     user: Mapped["User"] = relationship("User")
@@ -59,7 +58,6 @@ class ArtistProfile(Base):
 class ProducerProfile(Base):
     __tablename__ = 'producer_profiles'
 
-    id: Mapped[int] = mapped_column(primary_key=True)
     description: Mapped[str] = mapped_column()
     
     user: Mapped["User"] = relationship("User")

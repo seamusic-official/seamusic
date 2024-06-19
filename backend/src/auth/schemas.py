@@ -13,8 +13,16 @@ class SUser(BaseModel):
     email: EmailStr
     birthday: Optional[date]
     role: Role
-    registered_at: date
     
+class SArtist(BaseModel):
+    user_id: int
+    user: SUser
+    description: Optional[str]
+
+class SProducer(BaseModel):
+    user_id: int
+    user: SUser
+    description: Optional[str]
     
 class SRegisterUser(BaseModel):
     username: str = Field(min_length=5, max_length=25)
@@ -26,18 +34,3 @@ class SRegisterUser(BaseModel):
 class SLoginUser(BaseModel):
     email: EmailStr
     password: str
-
-class SArtist(BaseModel):
-    user_id: int
-    user: SUser
-    description: str
-
-class SProducer(BaseModel):
-    user_id: int
-    user: SUser
-    description: str
-    
-class SListener(BaseModel):
-    user_id: int
-    user: SUser
-    description: str

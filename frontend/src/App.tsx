@@ -96,10 +96,10 @@ function App() {
         <div >
         {!loading ? (
               albums ? (
-                <div className="flex overflow-auto justify-start items-center">
+                <div className="flex overflow-hidden justify-start items-center">
                   {albums.map((item) => (
                     <div>
-                      <PictureLink link={`albums/${item.id}`} image={item.image_url} title={item.name}/>
+                      <PictureLink link={`/albums/${item.id}`} image={item.image_url} title={item.name}/>
                     </div>
                   ))}
                 </div>
@@ -107,7 +107,7 @@ function App() {
               <PictureLinkLoading />
             )
         ) : (
-          <div className="flex overflow-auto justify-start items-center">
+          <div className="flex overflow-hidden justify-start items-center">
             <PictureLinkLoading />
             <PictureLinkLoading />
             <PictureLinkLoading />
@@ -127,7 +127,7 @@ function App() {
 
                           {tracks.map((item) => (
                             <div>
-                              <SongLink link={`albums/${item.id}`} image={item.image_url} title={item.name}/>
+                              <SongLink link={`/albums/${item.id}`} image={item.image_url} title={item.name}/>
                             </div>
                           ))}
                           </div>
@@ -188,7 +188,7 @@ function App() {
                 <div className="flex overflow-auto justify-start items-center">
                   {beatpacks.map((item) => (
                     <div>
-                      <PictureLink link={`beatpack/${item.id}`} image={item.picture} title={item.title}/>
+                      <PictureLink link={`/beatpacks/${item.id}`} image={item.picture} title={item.title}/>
                     </div>
                   ))}
                 </div>

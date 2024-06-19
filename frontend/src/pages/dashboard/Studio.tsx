@@ -46,10 +46,10 @@ export default function Studio() {
             <DefaultButton title="Upload beats" onClick={openModal}/>
           </div>
           <div className="mr-2 ">
-            <DefaultButton title="Upload beatpacks" onClick={openModal}/>
+            <DefaultButton title="Upload beatpacks" href="/beatpacks/add"/>
           </div>
           <div className="mr-2 ">
-            <DefaultButton title="Manage music" />
+            <DefaultButton title="Publish sound kits" href="/kits/add"/>
           </div>
         </div>
 

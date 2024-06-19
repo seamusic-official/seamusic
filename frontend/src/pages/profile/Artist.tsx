@@ -3,13 +3,12 @@ import dess from '../../assets/everydesigner.png'
 import { Song } from '../../components/Song'
 import { useAppSelector } from '../../hooks/redux'
 import KitLink from '../../components/KitLink';
-import som from "../../.../../../../backend/MEDIA_BEATS/0020 200bpm stop diorblessed-207586ca-13ac-48be-a21f-c115df4fc648.mp3"
 import AddButtonPlus from '../../components/icons/AddButtonPlus';
 import DefaultButton from '../../components/buttons/DefaultButton';
 import { useState } from 'react';
 
 
-export default function Profile() {
+export default function Artist() {
   const user = useAppSelector((state) => state.auth.user);
 
   return (

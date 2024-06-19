@@ -71,51 +71,95 @@ export default function AlbumDetail() {
                 <div
                 className="w-56 h-56 mr-6 rounded-lg animate-pulse bg-gray-300 bg-opacity-10"></div>
               )}
+              {!loading ? (
 
-              <div className="mt-16">
-                <h2
-                  className="text-gray-50 uppercase text-md font-semibold tracking-tighter mr-2 mt-1"
-                >
-                  Album by 
-                  {data.artists?.map(artist => (
-                    <span className="ml-1 font-extrabold">{artist.name}</span>
-                  ))}
-                </h2>
-                <span
-                  className="text-white text-6xl capitalize font-extrabold tracking-tighter"
-                  ><h1 id="playlist-title">{data.name} </h1></span>
-                <p
-                  id="playlist-description"
-                  className="text-white mt-6 text-sm font-normal leading-none opacity-70"
-                >
-                  {info}
-                </p>
-                <div className="flex items-center mt-2">
-                  <a
-                    className="text-white font-semibold text-md hover:text-underline cursor-pointer"
-                    >SeaMusic</a>
-                  
-                  <div
-                    className="font-extrabold text-md text-white opacity-70 mx-1 mb-1 pb-1"
+                <div className="mt-16">
+                  <h2
+                    className="text-gray-50 uppercase text-md font-semibold tracking-tighter mr-2 mt-1"
                   >
-                    .
-                  </div>
-                  <p className="text-white opacity-70 font-normal text-sm">
-                    1,308,405 likes
-                  </p>
-                  <div
-                    className="font-extrabold text-md text-white opacity-70 mx-1 mb-1 pb-1"
+                    Album by 
+                    {data.artists?.map(artist => (
+                      <span className="ml-1 font-extrabold">{artist.name}</span>
+                    ))}
+                  </h2>
+                  <span
+                    className="text-white text-6xl capitalize font-extrabold tracking-tighter"
+                    ><h1 id="playlist-title">{data.name} </h1></span>
+                  <p
+                    id="playlist-description"
+                    className="text-white mt-6 text-sm font-normal leading-none opacity-70"
                   >
-                    .
+                    {info}
+                  </p>
+                  <div className="flex items-center mt-2">
+                    <a
+                      className="text-white font-extrabold text-md hover:text-underline cursor-pointer"
+                      >SeaMusic</a>
+                    
+                    <div
+                      className="font-extrabold text-md text-white opacity-70 mx-1 mb-1 pb-1"
+                    >
+                      .
+                    </div>
+                    <p className="text-white opacity-70 font-normal text-sm">
+                      1,308,405 likes
+                    </p>
+                    <div
+                      className="font-extrabold text-md text-white opacity-70 mx-1 mb-1 pb-1"
+                    >
+                      .
+                    </div>
+                    <p className="text-white opacity-70 font-normal text-sm mr-1">
+                      {data.total_tracks} songs,
+                    </p>
+                    <p className="text-white opacity-70 font-normal text-sm">
+                      2hr 36 min
+                    </p>
                   </div>
-                  <p className="text-white opacity-70 font-normal text-sm mr-1">
-                    {data.total_tracks} songs,
-                  </p>
-                  <p className="text-white opacity-70 font-normal text-sm">
-                    2hr 36 min
-                  </p>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-16">
+                  <h2
+                    className="rounded-md text-md w-56 h-4 animate-pulse bg-gray-300 bg-opacity-10 mr-2 mt-1"
+                  >
+                  </h2>
+                  <h1
+                    className="rounded-md text-6xl text-sm w-full h-10 animate-pulse bg-gray-300 bg-opacity-10 mt-4"
+                    ></h1>
+                  <p
+                    className="rounded-md  w-12 h-4 animate-pulse bg-gray-300 bg-opacity-10 mt-4"
+                  >
+                    {info}
+                  </p>
+                  <div className="flex items-center mt-2">
+                  <a
+                      className="text-white font-extrabold text-md hover:text-underline cursor-pointer"
+                      >SeaMusic</a>
+
+                    <div
+                      className="font-extrabold text-md text-white opacity-70 mx-1 mb-1 pb-1 m-1"
+                    >
+                      .
+                    </div>
+                    <p className="rounded-md w-12 h-4  animate-pulse bg-gray-300 bg-opacity-10 m-1">
+                      
+                    </p>
+                    <div
+                      className="font-extrabold text-md text-white opacity-70 mx-1 mb-1 pb-1 m-1"
+                    >
+                      .
+                    </div>
+                    <p className="rounded-md w-12 h-4  animate-pulse bg-gray-300 bg-opacity-10 text-sm mr-1">
+                      
+                    </p>
+                    <p className="rounded-md w-8 h-4  animate-pulse bg-gray-300 bg-opacity-10 text-sm m-1 ">
+                      
+                    </p>
+                  </div>
+                </div>
+              )}
+
+
             </div>
           </div>
           <div className="w-full " >

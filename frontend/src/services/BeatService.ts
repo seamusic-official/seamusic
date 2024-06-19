@@ -22,7 +22,7 @@ export default class BeatService {
         });
     }
 
-    static async update(id: number, data): Promise<AxiosResponse> {
+    static async update(id: number, data: {}): Promise<AxiosResponse> {
         return $api.post(`beats/release/${id}`, data, {
             headers: {
                 'Content-Type': 'multipart/form-data'
