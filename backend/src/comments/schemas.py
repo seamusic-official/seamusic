@@ -43,3 +43,14 @@ class SBeatPack(SBeatPackBase):
 
     class Config:
         orm_mode = True
+
+
+
+class CommentResponse(BaseModel):
+
+    id: int
+    author: Optional[str] = None
+    author_id: int
+    comment: str
+    date_pub: datetime
+    

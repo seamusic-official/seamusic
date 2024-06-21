@@ -34,3 +34,13 @@ class Base(DeclarativeBase):
         values = ', '.join(f"{col.name}={getattr(self, col.name)}" for col in self.__table__.columns[:6])
         return f"<{self.__class__.__name__}({values})>"
     
+
+
+async def get_db():
+    db =  async_session_maker()
+    try:
+        yield  db
+    finally:
+        db.close()
+    
+    

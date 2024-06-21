@@ -15,7 +15,7 @@ from sqlalchemy import event
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-
+from src.comments.models import Comment
 
 
 class Tag(Base):
@@ -45,6 +45,7 @@ class User(Base):
     artist_profile: Mapped["ArtistProfile"] = relationship(back_populates="user")
     producer_profile_id: Mapped[int] = mapped_column(ForeignKey("producer_profiles.id"), nullable=True)
     producer_profile: Mapped["ProducerProfile"] = relationship(back_populates="user")
+    comment_author = Mapped['Comment'] = relationship(back_populates='author')
 
     likes = relationship("Like", secondary=liked_users)
 
