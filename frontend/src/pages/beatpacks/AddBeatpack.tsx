@@ -72,12 +72,17 @@ export default function AddBeatpack() {
                 className="w-56 h-56 min-w-56 mr-6 rounded-lg animate-pulse bg-gray-300 bg-opacity-10"></div>
               )}
 
-              <div className="mt-4 w-full ">
+              <div className="mt-8 w-full ">
                 <h2
                   className="text-gray-50 uppercase text-md font-semibold tracking-tighter mr-2 mt-1"
                 >
                   Beatpack by {user.username}
                 </h2>
+                <p
+                  className="text-white mt-1 text-sm font-normal leading-none opacity-70"
+                >
+                  Beatpack - pack of your beats, you can to invite other beatmakers on your beatpack
+                </p>
                 <span
                   className="text-white text-6xl capitalize font-extrabold tracking-tighter"
                   >
@@ -274,8 +279,13 @@ export default function AddBeatpack() {
                   </tbody>
                 </table>
               </div>
+                <p
+                  className="text-white mb-2 text-sm font-normal leading-none opacity-70"
+                >
+                  When you pressed button "Publish", do you accept terms & conditions of SeaMusic
+  
+                </p>
               <SubmitButton title="Publish" />
-
             </div>
           </div>
     </MainLayout>

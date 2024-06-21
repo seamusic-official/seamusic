@@ -82,7 +82,6 @@ export default function BeatPack() {
                   className="text-white text-6xl capitalize font-extrabold tracking-tighter"
                   ><h1 id="playlist-title">{data.title} </h1></span>
                 <p
-                  id="playlist-description"
                   className="text-white mt-6 text-sm font-normal leading-none opacity-70"
                 >
                   {info}

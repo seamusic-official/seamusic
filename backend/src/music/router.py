@@ -6,7 +6,7 @@ from fastapi_cache.decorator import cache
 
 music = APIRouter(
     prefix = "/music",
-    tags = ["Music & Albums"]
+    tags = ["Inspiration"]
 )
 
 
