@@ -22,7 +22,7 @@ user_to_beatpacks_association_table = Table('user_to_beatpacks_association_table
     Column('beatpack_id', Integer, ForeignKey('beatpacks.id')),
     Column('user_id', Integer, ForeignKey('users.id'))
 )
-class BeatPack(Base):
+class Beatpack(Base):
     __tablename__ = "beatpacks"
     
     title: Mapped[str] = mapped_column(nullable=False)

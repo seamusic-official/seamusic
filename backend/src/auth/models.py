@@ -2,8 +2,11 @@ from __future__ import annotations
 from typing import List
 from datetime import datetime
 from src.database import Base
-from src.beats.models import Beat, License, BeatPack, Playlist
+from src.beats.models import Beat
+from src.beatpacks.models import Beatpack
+from src.licenses.models import License
 from src.messages.models import Chat
+
 from sqlalchemy import DateTime
 from sqlalchemy import Column
 from sqlalchemy import Table
@@ -46,7 +49,6 @@ class User(Base):
     producer_profile_id: Mapped[int] = mapped_column(ForeignKey("producer_profiles.id"), nullable=True)
     producer_profile: Mapped["ProducerProfile"] = relationship(back_populates="user")
 
-    likes = relationship("Like", secondary=liked_users)
 
 class ArtistProfile(Base):
     __tablename__ = 'artist_profiles'

@@ -7,11 +7,22 @@ from redis import asyncio as aioredis
 from sqladmin import Admin, ModelView 
 
 from src.auth.router import auth
-from src.beats.router import beats
-from src.music.router import music
-from src.messages.router import messages
-from src.beats.models import Beat, BeatPack, Like
 from src.auth.models import User, ProducerProfile, ArtistProfile
+
+from src.beats.router import beats
+from src.beats.models import Beat
+
+from src.music.router import music
+
+from src.beatpacks.router import beatpacks
+from src.beatpacks.models import Beatpack
+
+from src.soundkits.router import soundkits
+from src.soundkits.models import Soundkit
+
+from src.licenses.router import licenses
+from src.messages.router import messages
+
 from src.database import engine
 from src.config import settings
 
@@ -34,18 +45,14 @@ class ProducerProfileAdmin(ModelView, model=ProducerProfile):
 class ArtistProfileAdmin(ModelView, model=ArtistProfile):
     column_list = [ArtistProfile.id, ArtistProfile.user]
 
-class BeatPackAdmin(ModelView, model=BeatPack):
-    column_list = [BeatPack.id, BeatPack.title]
-
-class LikesAdmin(ModelView, model=Like):
-    column_list = [Like.id]
+class BeatPackAdmin(ModelView, model=Beatpack):
+    column_list = [Beatpack.id, Beatpack.title]
 
 admin.add_view(BeatsAdmin)
 admin.add_view(BeatPackAdmin)
 admin.add_view(UserAdmin)
 admin.add_view(ProducerProfileAdmin)
 admin.add_view(ArtistProfileAdmin)
-admin.add_view(LikesAdmin)
 
 @music.get("/search", summary="Search")
 async def search(id):   
@@ -65,7 +72,10 @@ app.add_middleware(
 
 app.include_router(auth)
 app.include_router(beats)
+app.include_router(beatpacks)
+app.include_router(soundkits)
 app.include_router(music)
+app.include_router(licenses)
 app.include_router(messages)
 
 @app.on_event("startup")

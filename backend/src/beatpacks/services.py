@@ -1,5 +1,5 @@
-from src.beatpacks.models import BeatPack
+from src.beatpacks.models import Beatpack
 from src.services import SQLAlchemyRepository
 
 class BeatpacksRepository(SQLAlchemyRepository):
-    model = BeatPack
+    model = Beatpack

@@ -4,7 +4,7 @@ from src.messages.services import MessagesRepository
 
 messages = APIRouter(
     prefix = "/messages",
-    tags = ["messages & Albums"]
+    tags = ["Messages"]
 )
 
 @messages.get("/my/", summary="Create new messages")

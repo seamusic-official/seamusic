@@ -21,7 +21,8 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = insert(cls.model).values(**data).returning(cls.model.id)
             await session.execute(stmt)
             await session.commit()
-        
+            return stmt
+
     @classmethod
     async def edit_one(cls, id: int, data: dict) -> int:
         async with async_session_maker() as session:

@@ -9,7 +9,7 @@ async def unique_filename(file: UploadFile) -> str:
     try:
         file_name, file_extension = os.path.splitext(file.filename)
         
-        unique_filename = f"{file_name.replace(' ', '-')}_{uuid.uuid4()}{file_extension}"
+        unique_filename = f"beat-{file_name.replace(' ', '-')}_{uuid.uuid4()}{file_extension}"
 
         return unique_filename
 

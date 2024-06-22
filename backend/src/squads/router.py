@@ -9,28 +9,12 @@ from fastapi.responses import FileResponse
 
 beats = APIRouter(
     prefix = "/beats",
-    tags = ["Beats & Kits"]
+    tags = ["Squads"]
 )
 
 @beats.get("/my", summary="Beats by current user")
-async def get_user_beats(user: SUser = Depends(get_current_user)):
+async def get_user_squads(user: SUser = Depends(get_current_user)):
     response = await BeatsRepository.find_all(user=user)
-    return response
-
-@beats.get("/playlists/my", summary="Playlists by current user")
-async def get_user_playlists(user: SUser = Depends(get_current_user)):
-    response = await BeatsRepository.find_all(owner=user)
-    return response
-
-@beats.get("/likes/my", summary="Current user likes")
-async def get_user_likes(user: SUser = Depends(get_current_user)):
-    response = await BeatsRepository.find_all(owner=user)
-    return response
-
-
-@beats.post("/packs/my", summary="Packs by current user")
-async def get_user_packs(user: SUser = Depends(get_current_user)):
-    response = await BeatsRepository.find_all(owner=user)
     return response
 
 @beats.post("/add", summary="Add a file for new beat")

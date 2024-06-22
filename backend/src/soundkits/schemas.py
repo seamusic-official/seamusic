@@ -4,7 +4,8 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 
-class SBeatBase(BaseModel):
+
+class SSoundkitBase(BaseModel):
     title: str
     picture: Optional[str]
     description: Optional[str]
@@ -15,29 +16,11 @@ class SBeatBase(BaseModel):
     user_id: int
     beat_pack_id: Optional[int]
 
-class SBeatCreate(SBeatBase):
+class SSoundkitCreate(SSoundkitBase):
     pass
 
-class SBeat(SBeatBase):
+class SSoundkit(SSoundkitBase):
     id: int
-    is_available: bool
-    created_at: datetime
-
-    class Config:
-        orm_mode = True
-
-class SBeatpackBase(BaseModel):
-    title: str
-    description: str
-    owner_id: int
-    beats: List[SBeat] = Field(...)
-    
-class SBeatPackCreate(SBeatpackBase):
-    pass
-
-class SBeatPack(SBeatpackBase):
-    id: int
-    liked: bool
     is_available: bool
     created_at: datetime
 
