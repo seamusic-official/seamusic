@@ -27,4 +27,4 @@ class Comment(Base):
     author : Mapped['User'] = relationship(back_populates='comment_author')
 
     beat_id : Mapped[int] = mapped_column(ForeignKey("beats.id"))    
-    
+    beat : Mapped['Beat']  = relationship(back_populates = 'comment') 
