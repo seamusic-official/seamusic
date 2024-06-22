@@ -3,7 +3,7 @@ from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
 from sqlalchemy import Column
-from sqlalchemy import Table
+from sqlalchemy import Table, func
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer, DateTime
 
@@ -12,9 +12,18 @@ from src.database import Base
 import os
 from typing import List
 from src.comments.models import Comment
+from src.auth.models import User
 
 
 STATIC_FILES_PATH = os.path.join(os.path.dirname(__file__), '..', 'STATICFILES')
+
+
+chosen = Table(
+    'user_chosen', Base.metadata,
+    Column('user_id', ForeignKey('users.id'), primary_key = True),
+    Column('beat_id', ForeignKey('beats.id'), primary_key = True)
+
+)
 
 
 class Like(Base):
@@ -36,8 +45,9 @@ class Beat(Base):
     user: Mapped["User"] = relationship("User")  # Указываем связь с таблицей User
     comment: Mapped['Comment'] = relationship(back_populates = 'beat')
 
+    view_count: Mapped[int] = mapped_column()
+    views: Mapped['View'] = mapped_column(back_populates = 'beat')
 
-    
 
 
 beats_to_beatpacks_association_table = Table('beats_to_beatpacks_association_table', Base.metadata,
@@ -80,3 +90,15 @@ class Playlist(Base):
     
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship()
+
+
+class View(Base):
+    __tablename__ = 'views'
+
+    id : Mapped[int] = mapped_column(primary_key=True, index=True)
+    beat_id : Mapped[int] = mapped_column(ForeignKey('beats.id'), index=True)
+    user_id = Column(Integer, ForeignKey('users.id'), index=True, nullable=True)
+    timestamp = Column(DateTime(timezone=True), server_default=func.now())
+
+    beat : Mapped['Beat'] = mapped_column(back_populates="views")
+    user : Mapped['User'] = mapped_column(back_populates="views")

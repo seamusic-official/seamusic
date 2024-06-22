@@ -5,9 +5,15 @@ from src.services import MediaRepository
 from src.auth.schemas import SUser
 from src.config import settings
 from src.auth.dependencies import get_current_user
+from sqlalchemy import Session
+from src.database import get_db
+from .models import Beat, View, chosen
 
-from fastapi import UploadFile, File, APIRouter, Depends
+from fastapi import UploadFile, File, APIRouter, Depends, HTTPException
+
 from fastapi.responses import FileResponse
+from datetime import datetime
+from typing import List
 
 
 beats = APIRouter(
@@ -25,9 +31,45 @@ async def get_user_beats(user: SUser = Depends(get_current_user)):
 async def all_beats():
     return await BeatsRepository.find_all()
 
-@beats.get("/get_one/{id}", summary="Create new beats")
-async def get_one_beat(id: int):
-    return await BeatsRepository.find_one_by_id(id)
+@beats.get("/get_one/{id}", summary="Create new beats", response_model = BeatsRepository)
+async def get_one_beat(
+    
+    id: int,
+    current_user: SUser = Depends(get_current_user),
+    db: Session = Depends(get_db),
+
+    ):
+
+    
+    beat = db.query(Beat).filter(Beat.id == id).first()
+
+    if not beat:
+        raise HTTPException(detail = 'Not Found', status_code = 404)
+    
+
+    exist_view = db.query(View).filter(
+        View.beat_id == id,
+        View.user_id == current_user.id,
+        
+    ).first()
+
+    if not exist_view:
+        new_view = View(
+            beat_id = id,
+            user_id = current_user.id,
+            timestap = datetime.utcnow()
+        )
+
+
+        db.add(new_view)
+        beat.view_count = (beat.view_count or 0) + 1
+        db.refresh(new_view)
+
+
+
+
+
+
 
 @beats.post("/add", summary="Add a file for new beat")
 async def add_beats(file: UploadFile = File(...), user: SUser = Depends(get_current_user)):
@@ -181,3 +223,32 @@ async def get_user_likes(user: SUser = Depends(get_current_user)):
     response = await BeatsRepository.find_all(owner=user)
     return response
 
+
+
+# Избранные, получение и добовление 
+
+
+
+    
+    
+    
+
+
+@beats.get('/user/views', response_model=List[BeatsRepository])
+async def get_viewed_contents(
+    db: Session = Depends(get_db),
+    current_user: SUser = Depends(get_current_user)
+):
+    # Запрашиваем все просмотры текущего пользователя
+    viewed_content_ids = db.query(View.beat_id).filter(
+        View.user_id == current_user.id
+    ).all()
+
+    # Если пользователь не просмотрел ни одного контента
+    if not viewed_content_ids:
+        return []
+
+    # Извлекаем контенты, которые пользователь просмотрел
+    viewed_contents = db.query(Beat).filter(
+        Beat.id.in_([vc[0] for vc in viewed_content_ids])
+    ).all()

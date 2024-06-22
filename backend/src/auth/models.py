@@ -16,6 +16,7 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 from src.comments.models import Comment
+from src.beats.models import View, chosen, Beat
 
 
 class Tag(Base):
@@ -45,9 +46,14 @@ class User(Base):
     artist_profile: Mapped["ArtistProfile"] = relationship(back_populates="user")
     producer_profile_id: Mapped[int] = mapped_column(ForeignKey("producer_profiles.id"), nullable=True)
     producer_profile: Mapped["ProducerProfile"] = relationship(back_populates="user")
-    comment_author = Mapped['Comment'] = relationship(back_populates='author')
+    comment_author : Mapped['Comment'] = relationship(back_populates='author')
+
+    views : Mapped['View'] = relationship(back_populates = 'user')
 
     likes = relationship("Like", secondary=liked_users)
+
+    
+
 
 class ArtistProfile(Base):
     __tablename__ = 'artist_profiles'

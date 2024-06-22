@@ -197,3 +197,5 @@ async def spotify_callback(code, response: Response):
             }
     else:
         return {'error': 'Failed to obtain access token'}
+
+
