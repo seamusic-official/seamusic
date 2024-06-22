@@ -12,20 +12,19 @@ from src.database import Base
 import os
 from typing import List
 from src.auth import User
-from src.soundkits import SoundKit
+from src.soundkits.models import Soundkit
+from src.beats.models import Beat
 
 class Comment(Base):
 
     __tablename__ = 'comment'
 
     id = Mapped[int] = mapped_column(index = True, primary_key = True)
-    comment = Mapped[str] = mapped_column(nullable = False)
-    date_pub = Mapped[DateTime] = mapped_column(default = datetime.utc.now())
+    comment : Mapped[str] = mapped_column(nullable = False)
+    date_pub : Mapped[DateTime] = mapped_column(default = datetime.utc.now())
     
-    author_id = Mapped[int] = mapped_column(ForeignKey('users.id'))
-    author = Mapped['User'] = relationship(back_populates='comment_author')
+    author_id : Mapped[int] = mapped_column(ForeignKey('users.id'))
+    author : Mapped['User'] = relationship(back_populates='comment_author')
 
-    sound_track_id = Mapped[int] = mapped_column(ForeignKey('SoundKit.id'))
+    beat_id : Mapped[int] = mapped_column(ForeignKey("beats.id"))    
     
-    
-

@@ -9,6 +9,9 @@ class Role(str, Enum):
     Listener = "Listener"
 
 class SUser(BaseModel):
+
+    id: Optional[int] = None
+
     username: str = Field(min_length=5, max_length=25)
     email: EmailStr
     birthday: Optional[date]

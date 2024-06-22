@@ -12,6 +12,7 @@ from src.database import Base
 import os
 from typing import List
 
+
 STATIC_FILES_PATH = os.path.join(os.path.dirname(__file__), '..', 'STATICFILES')
 
 
@@ -32,6 +33,8 @@ class Beat(Base):
     
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User")  # Указываем связь с таблицей User
+
+
     
 
 
