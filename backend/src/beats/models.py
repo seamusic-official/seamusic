@@ -18,13 +18,6 @@ from src.auth.models import User
 STATIC_FILES_PATH = os.path.join(os.path.dirname(__file__), '..', 'STATICFILES')
 
 
-chosen = Table(
-    'user_chosen', Base.metadata,
-    Column('user_id', ForeignKey('users.id'), primary_key = True),
-    Column('beat_id', ForeignKey('beats.id'), primary_key = True)
-
-)
-
 
 class Like(Base):
     __tablename__ = "likes"
