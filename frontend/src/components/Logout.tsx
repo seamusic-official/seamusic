@@ -15,7 +15,7 @@ export default function Logout() {
   };
 
   return (
-    <a className="block px-4 py-2 text-gray-300 text-sm font-extrabold hover:text-white" onClick={handleLogout}>
+    <a className="text-gray-200 text-sm font-bold hover:text-white capitalize" onClick={handleLogout}>
       Logout
     </a>
   );

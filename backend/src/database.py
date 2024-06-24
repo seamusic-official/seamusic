@@ -28,9 +28,4 @@ class Base(DeclarativeBase):
     
     is_available: Mapped[bool] = mapped_column(nullable=False, default=False)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
-    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now)
-    
-    def __repr__(self):
-        values = ', '.join(f"{col.name}={getattr(self, col.name)}" for col in self.__table__.columns[:6])
-        return f"<{self.__class__.__name__}({values})>"
-    
+    updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())

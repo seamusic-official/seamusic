@@ -27,7 +27,7 @@ const Sidebar = () => {
         ></path>
       </svg>
       <Link to="/">
-        <h2 className="text-gray-100 text-md font-extrabold hover:text-white capitalize">
+        <h2 className="text-gray-100 text-md font-bold hover:text-white capitalize">
           Home
         </h2>
       </Link>
@@ -47,7 +47,7 @@ const Sidebar = () => {
         ></path>
       </svg>
       <Link to="/search">
-        <h2 className="text-gray-100 text-md font-extrabold hover:text-white capitalize">
+        <h2 className="text-gray-100 text-md font-bold hover:text-white capitalize">
           Search
         </h2>
       </Link>
@@ -66,7 +66,7 @@ const Sidebar = () => {
         ></path>
       </svg>
       <Link to="/messages">
-        <h2 className="text-gray-100 text-md font-extrabold hover:text-white capitalize">
+        <h2 className="text-gray-100 text-md font-bold hover:text-white capitalize">
           Messages
         </h2>
       </Link>
@@ -86,13 +86,13 @@ const Sidebar = () => {
         ></path>
       </svg>
       <Link to="/dashboard">
-        <h2 className="text-gray-100 text-md font-extrabold hover:text-white capitalize">
+        <h2 className="text-gray-100 text-md font-bold hover:text-white capitalize">
           Dashboard
         </h2>
       </Link>
 
     </button>
-    <div className="mt-10 mb-3 border-b border-gray-700">
+    <div className="mt-10 mb-3 border-b border-neutral-800">
       <button className="flex items-center text-black">
         <svg
           className="fill-current hover:bg-white mr-4 p-1"
@@ -106,7 +106,7 @@ const Sidebar = () => {
           <path fill="none" d="M0 0h16v16H0z"></path>
         </svg>
         <h2
-          className="text-gray-100 text-md font-extrabold hover:text-white capitalize"
+          className="text-gray-100 text-md font-bold hover:text-white capitalize"
           >Create playlist</h2>
       </button>
       <button
@@ -128,7 +128,7 @@ const Sidebar = () => {
         </svg>
         <Link to="/liked">
         <h2
-          className="text-gray-100 text-md font-extrabold hover:text-white capitalize"
+          className="text-gray-100 text-md font-bold hover:text-white capitalize"
           >Liked songs</h2>
         </ Link>
       </button>

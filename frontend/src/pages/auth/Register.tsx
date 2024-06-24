@@ -4,6 +4,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import AuthService from '../../services/AuthService'
 import HelloLayout from '../../components/layouts/HelloLayout'
 import DecorText from '../../components/DecorText'
+import Input from '../../components/Input'
 
 export default function Register() {
   const [username, setUsername] = useState("")
@@ -33,7 +34,7 @@ export default function Register() {
     <HelloLayout>
     <div className='flex justify-center items-center my-10'>
         <div>
-          <div className="flex justify-center mb-32">
+          <div className="flex justify-center mb-48">
               <div className="lg:w-[1200px] md:w-156 w-108 pb-3 ">
               <h1 className="text-white flex justify-center m-2 font-extrabold text-3xl xl:text-4xl mt-6">
                 <div>
@@ -47,10 +48,10 @@ export default function Register() {
               <label htmlFor="email" className="inline-block font-extrabold text-xs my-2 tracking-wider "><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span>What's your
                 email?
               </label>
-              <input 
+              <Input 
                 id="email"
                 className="w-full py-2 px-2 border text-gray-900 border-gray-700 placeholder-gray-600 rounded-lg text-xs"
-                type="text"
+                type="email"
                 placeholder="Enter your email."
                 onChange={(e) => setEmail(e.target.value)}
                 />
@@ -58,10 +59,10 @@ export default function Register() {
             <div className="flex-grow mt-4">
               <label htmlFor="password" className="inline-block  font-extrabold text-xs my-2 tracking-wider "><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span>Create a password
               </label>
-              <input 
+              <Input 
                 id="password"
                 className="w-full py-2 px-2 border text-gray-900 border-gray-700 placeholder-gray-600 rounded-lg text-xs"
-                type="text" 
+                type="password" 
                 placeholder="Create a password."
                 onChange={(e) => setPassword(e.target.value)}
               />
@@ -69,7 +70,7 @@ export default function Register() {
             <div className="flex-grow mt-4">
               <label htmlFor="profile_name" className="inline-block font-extrabold text-xs my-2 tracking-wider "><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span>What should we
                 call you?</label><br/>
-              <input 
+              <Input 
                 id="profile_name"
                 className="w-full py-2 px-2 border text-gray-900 border-gray-700 placeholder-gray-600 rounded-lg text-xs"
                 type="text" 
@@ -83,12 +84,13 @@ export default function Register() {
                 birth?</span>
               <div className="grid grid-cols-4 gap-4 text-xs font-semibold">
                 <div className="col-span-2">
-                  <label className="block" htmlFor="month">Month</label>
-                  <div className="flex items-start border border-gray-500  focus:outline-none focus:border-gray-900 rounded">
+                <label className="block tracking-wide mb-1 " htmlFor="month"><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span> Month</label>
+
+                  <div className="flex items-start rounded">
                   <select 
                         name="month" 
                         id="month"
-                        className="rounded-lg text-gray-900 py-2 px-2 pr-10 block tracking-wide w-full h-full place-self-auto outline-none border-none bg-white appearance-none"
+                        className="tracking-tighter block p-2.5 w-full text-sm rounded-md font-bold  border-neutral-800 rounded-s-2 border bg-zinc-800/30 placeholder-neutral-700 text-white"
                         onChange={(e) => setMonth(e.target.value)}
                     >
                         <option value="" disabled selected>Month</option>
@@ -106,12 +108,11 @@ export default function Register() {
                         <option value="12">December</option>
                     </select>
 
-                    <img src="public/img/down-arrow.svg" className="w-4 mx-auto my-auto pr-1" />
                   </div>
                 </div>
                 <div className="px-2">
-                  <label className="block tracking-wide" htmlFor="day">Day</label>
-                  <input 
+                  <label className="block tracking-wide mb-1 " htmlFor="day"><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span> Day</label>
+                  <Input 
                     id="day"
                     className="w-full text-gray-900 py-2 px-2 border border-gray-500 placeholder-gray-600 rounded-lg text-xs focus:outline-none focus:border-gray-900"
                     type="text" 
@@ -120,8 +121,8 @@ export default function Register() {
                     />
                 </div>
                 <div>
-                  <label className="block tracking-wide" htmlFor="year">Year</label>
-                  <input 
+                  <label className="block tracking-wide mb-1 " htmlFor="year"><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span> Year</label>
+                  <Input 
                     id="year"
                     className="w-full text-gray-900 py-2 px-2 border border-gray-500 placeholder-gray-600 rounded-lg text-xs focus:outline-none focus:border-gray-900"
                     type="text" 
@@ -132,7 +133,7 @@ export default function Register() {
               </div>
             </div>
             <div className="flex-col mt-4">
-              <span className="block font-extrabold text-xs my-2 tracking-wider">Who are you?</span>
+              <span className="mb-1 block font-extrabold text-xs my-2 tracking-wider"><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span> Who are you?</span>
               <div className="flex">
               <label htmlFor="artist" className="flex ">
                   <input 
@@ -179,7 +180,7 @@ export default function Register() {
                   and protects your personal data please read Spotify's <a href="#" className="text-emerald-600 underline">
                     Privacy Policy.</a></span>
                 <button
-                  className="w-full p-2 uppercase text-sm font-bold text-white bg-emerald-600  rounded-full tracking-widest hover:bg-emerald-700 transform hover:scale-105 focus:scale-100 focus:bg-emerald-800 outline-none"
+                  className="w-full transition duration-200 ease-in-out p-2 uppercase text-sm font-bold text-white bg-emerald-600  rounded-full tracking-widest hover:bg-emerald-700 transform hover:scale-105 focus:scale-100 focus:bg-emerald-800 outline-none"
                   type="submit">
                     SIGN UP
                 </button>

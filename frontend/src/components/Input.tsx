@@ -1,7 +1,7 @@
 import React from 'react'
 
 
-export default function Input({ children }, props) {
+export default function Input({ children, props, placeholder, onChange, type}) {
   // const handleSubmit = (event) => {
   //   event.preventDefault();
   // };
@@ -12,6 +12,9 @@ export default function Input({ children }, props) {
           <div className="relative w-full">
               <input 
                     {...props}
+                    type={type}
+                    placeholder={placeholder}
+                    onChange={onChange}
                     className="tracking-tighter block p-2.5 w-full text-sm rounded-md font-bold  border-neutral-800 rounded-s-2 border bg-zinc-800/30 placeholder-neutral-700 text-white"
                     required 
                     />

@@ -9,7 +9,7 @@ const initialState = {
     id: null as string | null,
     username: null as string | null,
     email: null as string | null,
-    image: null,
+    picture_url: null as string | null,
     birthday: null,
     registered_at: null,
     role: null, // Объект с информацией о количестве фолловеров

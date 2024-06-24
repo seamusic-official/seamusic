@@ -6,8 +6,8 @@ import DecorText from '../../components/DecorText'
 export default function Hello() {
   return (
     <HelloLayout>
-        <div className="flex justify-center items-center h-screen">
-            <div>
+        <div className="flex justify-center items-center h-screen ">
+            <div className='mb-36'>
                 <h1 className="font-extrabold text-5xl tracking-tighter text-center">
                     For <DecorText font="extrabold">artists</DecorText>. For <DecorText font="extrabold">producers</DecorText>. <br /> Self-expression for <DecorText font="extrabold">everyone</DecorText>
                 </h1> 

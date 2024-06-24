@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, redirect } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../hooks/redux';
 import Logout from './Logout';
 
@@ -24,31 +24,24 @@ const DropdownMenu = ({ reference }) => {
     };
   }, []);
 
+  const redirectToLogin = () => {
+    return redirect("/auth/login")
+  }
+
   return (
     <div className="relative " ref={reference}>
       <button
         type="button"
-        className="text-white  text-sm font-bold rounded-full p-2 flex items-center bg-opacity-5  bg-gray-200"
-        onClick={toggleDropdown}
+        className="flex flex-row items-center text-white text-sm font-bold rounded-full p-2 flex items-center bg-opacity-5  bg-gray-200"
+        onClick={isAuthenticated ? (toggleDropdown) : (redirectToLogin)}
 
       >
-          <svg
-            className="bg-gray-300 opacity-5 rounded-full p-1 border border-gray-700"
-            width="24"
-            height="24"
-            fill="currentColor"
-            viewBox="0 0 18 20"
-            xmlns="http://www.w3.org/2000/svg"
-            data-testid="user-icon"
-          >
-            <path
-              d="M15.216 13.717L12 11.869C11.823 11.768 11.772 11.607 11.757 11.521C11.742 11.435 11.737 11.267 11.869 11.111L13.18 9.57401C14.031 8.58001 14.5 7.31101 14.5 6.00001V5.50001C14.5 3.98501 13.866 2.52301 12.761 1.48601C11.64 0.435011 10.173 -0.0879888 8.636 0.0110112C5.756 0.198011 3.501 2.68401 3.501 5.67101V6.00001C3.501 7.31101 3.97 8.58001 4.82 9.57401L6.131 11.111C6.264 11.266 6.258 11.434 6.243 11.521C6.228 11.607 6.177 11.768 5.999 11.869L2.786 13.716C1.067 14.692 0 16.526 0 18.501V20H1V18.501C1 16.885 1.874 15.385 3.283 14.584L6.498 12.736C6.886 12.513 7.152 12.132 7.228 11.691C7.304 11.251 7.182 10.802 6.891 10.462L5.579 8.92501C4.883 8.11101 4.499 7.07201 4.499 6.00001V5.67101C4.499 3.21001 6.344 1.16201 8.699 1.00901C9.961 0.928011 11.159 1.35601 12.076 2.21501C12.994 3.07601 13.5 4.24301 13.5 5.50001V6.00001C13.5 7.07201 13.117 8.11101 12.42 8.92501L11.109 10.462C10.819 10.803 10.696 11.251 10.772 11.691C10.849 12.132 11.115 12.513 11.503 12.736L14.721 14.585C16.127 15.384 17.001 16.884 17.001 18.501V20H18.001V18.501C18 16.526 16.932 14.692 15.216 13.717Z"
-            ></path>
-          </svg>
+          <img className="bg-gray-300 rounded-full border border-gray-700 w-6 h-6" src={user.picture_url} alt="" />
+
           {isAuthenticated ? (
-            <span className="px-3">{user.username}</span>
+            <span className="px-2">{user.username}</span>
           ): (
-            <span className="px-3"><Link to="/auth/login">Login</Link></span>
+            <span className="px-2"><Link to="/auth/login">LOGIN</Link></span>
           )}
           <svg
             className="fill-current"
@@ -62,8 +55,8 @@ const DropdownMenu = ({ reference }) => {
       </button>
 
       {isOpen && (
-        <div className="absolute rounded-md right-0 mt-2 py-1 w-[175px] border border-neutral-800 bg-gradient-to-b bg-black from-zinc-200 backdrop-blur-lg  dark:bg-zinc-800/30 dark:from-inherit z-20 lg:bg-gray-200 lg:p-2 lg:dark:bg-zinc-800/30">
-            <button className="text-gray-200 hover:text-white flex items-center">
+        <div className="p-2 absolute rounded-md right-0 mt-2 py-1 w-[175px] border border-neutral-800 bg-gradient-to-b bg-black from-zinc-200   dark:bg-zinc-800/30 dark:from-inherit z-20 lg:bg-gray-200 lg:p-2 lg:dark:bg-zinc-800/30">
+            <button className="text-gray-200  hover:text-white flex items-center">
               <svg
                 className="mr-4"
                 viewBox="0 0 512 512"
@@ -143,7 +136,21 @@ const DropdownMenu = ({ reference }) => {
 
             </button>
           {isAuthenticated ? (
-            <Logout/>
+                        <button className="text-gray-200 hover:text-white flex items-center mt-4">
+                        <svg
+                          className="mr-4"
+                          viewBox="0 0 512 512"
+                          width="24"
+                          height="24"
+                          xmlns="http://www.w3.org/2000/svg"
+                        >
+                          <path
+                            d="M291.301 81.778l166.349 373.587-19.301 8.635-166.349-373.587zM64 463.746v-384h21.334v384h-21.334zM192 463.746v-384h21.334v384h-21.334z"
+                            fill="currentColor"
+                          ></path>
+                        </svg>
+                        <Logout/>
+                      </button>
           ): (
             <></>
           )}

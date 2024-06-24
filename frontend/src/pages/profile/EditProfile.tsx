@@ -83,7 +83,7 @@ export default function EditProfile() {
                 <div className="mx-auto ">
                     <img
                         id="playlist-thumbnail"
-                        src="https://ugc.production.linktr.ee/e463406b-3ceb-4c69-9576-b9693c699bd1_photo-2024-01-06-19-09-46.jpeg?io=true&size=avatar-v3_0"
+                        src={user.picture_url}
                         alt="alan walker artist"
                         className="mx-auto w-56 h-56 md:mr-6 rounded-full border border-neutral-600"
                     />
@@ -104,18 +104,12 @@ export default function EditProfile() {
                     <a className="p-2 m-1 font-semibold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit" href="">
                     Opium
                     </a>
-                    <a className="p-2 m-1 font-semibold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit" href="">
-                    Newjazz
-                    </a>
-                    <a className="p-2 m-1 font-semibold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit" href="">
-                    Trap
-                    </a>
                 </div>
                 <p
                   id="playlist-description"
                   className="text-white mt-6 text-sm font-normal leading-none opacity-70"
                 >
-                damn, why spacy? WW/ Шайни, heronwater, T-fest, GONE.FLUDD, uglystephan, xxxmanera etc. 
+                {user.description}
                 </p>
 
                 <div className="flex items-center mt-2">

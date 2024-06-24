@@ -1,6 +1,6 @@
 export default function Menu() {
   return (
-    <div className="p-2 md:hidden fixed left-0 bottom-0 right-0">
+    <div className="p-2 lg:hidden xl:hidden fixed left-0 bottom-0 right-0">
         <div
         className="flex justify-around mt-2 text-gray-200 text-xs hover:text-white"
     >

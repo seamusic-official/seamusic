@@ -4,11 +4,10 @@ from src.auth.dependencies import get_current_user
 from fastapi import APIRouter, HTTPException, Response, Depends
 from src.auth.services import UsersDAO, ArtistDAO, ProducerDAO
 from src.auth.utils import authenticate_user, create_access_token, create_refresh_token, get_hashed_password, verify_password
-from src.auth.schemas import SUser, SArtist, SProducer, SRegisterUser, SLoginUser, SUserBase
+from src.auth.schemas import SUser, SArtist, SProducer, SRegisterUser, SLoginUser, SUserBase, SUserUpdate
 from src.config import settings
 import requests
 from typing import List
-
 
 auth = APIRouter(
     prefix = "/auth",
@@ -28,13 +27,18 @@ async def get_users() -> List[SUser]:
     return response
 
 @auth.get('/users/{id}', summary='Get one user by id')
-async def get_users(id) -> SUser:
+async def get_user(id: int) -> SUser:
     response = await UsersDAO.find_one_by_id(id)
     return response
 
 @auth.put('/users/{id}', summary='Update user info by id')
-async def update_users(id, data: SUserBase):
-    response = await UsersDAO.edit_one(id, data)
+async def update_users(id: int, data: SUserUpdate):
+    update_data = {
+        "username": data.username,
+        "email": data.email,
+        "picture_url": data.picture_url,
+    }
+    response = await UsersDAO.edit_one(id, update_data)
     return response
 
 @auth.delete('/users/{id}', summary='Delete user by id')

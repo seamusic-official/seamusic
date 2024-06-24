@@ -41,7 +41,7 @@ export default function Profile() {
             <div className="relative">              
                 <img
                 id="playlist-thumbnail"
-                src="https://ugc.production.linktr.ee/e463406b-3ceb-4c69-9576-b9693c699bd1_photo-2024-01-06-19-09-46.jpeg?io=true&size=avatar-v3_0"
+                src={user.picture_url}
                 alt="alan walker artist"
                 className="w-56 h-56 mr-6 rounded-full border border-neutral-600"
                 />
@@ -54,9 +54,7 @@ export default function Profile() {
                 >
                   {user.role}
                 </h2>
-                <span
-                  className="text-white text-6xl tracking-tighter font-extrabold"
-                  ><h1 id="playlist-title">{user.username}</h1></span>
+                <h1 className='text-white text-6xl tracking-tighter font-extrabold truncate'>{user.username}</h1>
                 <div className="mr-1 mb-4 mt-4">
                     <a className="p-2 m-1 font-semibold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit" href="">
                     Opium

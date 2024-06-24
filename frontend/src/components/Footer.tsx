@@ -5,7 +5,7 @@ export default function Footer() {
 
 
 <footer className="">
-    <div className="mx-2 w-full p-2 py-6 lg:py-8">
+    <div className=" w-full p-2 py-6 lg:py-8">
         <div className="md:flex md:justify-between">
           <div className="mb-6 md:mb-0">
               <a href="https://flowbite.com/" className="flex items-center">

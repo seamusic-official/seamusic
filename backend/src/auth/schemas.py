@@ -14,6 +14,12 @@ class SUserBase(BaseModel):
     birthday: Optional[date]
     role: Role
     
+class SUserUpdate(BaseModel):
+    username: Optional[str] = Field(min_length=5, max_length=25)
+    email: EmailStr
+    description: Optional[str] = Field(min_length=10, max_length=255)
+    picture_url: Optional[str]
+
 class SUser(SUserBase):
     id: int
     created_at: datetime

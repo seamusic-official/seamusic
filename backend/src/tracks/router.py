@@ -1,4 +1,4 @@
-from src.tracks.services import TrackRepository
+from src.tracks.services import TracksRepository
 from src.tracks.schemas import STrackBase, STrack, STrackCreate
 from src.auth.schemas import SUser
 from src.tracks.utils import save_audio, save_image
@@ -9,7 +9,7 @@ from fastapi.responses import FileResponse
 
 tracks = APIRouter(
     prefix = "/tracks",
-    tags = ["Squads"]
+    tags = ["Tracks"]
 )
 
 @tracks.get("/my", summary="tracks by current user")
@@ -44,7 +44,7 @@ async def add_tracks(file: UploadFile = File(...), user: SUser = Depends(get_cur
 async def update_pic_tracks(tracks_id: int, file: UploadFile = File(...), user: SUser = Depends(get_current_user)):
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
-    
+
     data = {
         "picture_url": file_url
     }

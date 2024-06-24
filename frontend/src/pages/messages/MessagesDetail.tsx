@@ -52,7 +52,7 @@ export default function MessagesDetail() {
 
         </div>
         <div className="">
-          <Input buttonText="Send" placeholderText="Write a message.." addictButtonText="Add"/>
+          <Input placeholder="Write a message.." >Send message</Input>
         </div>
       </div>
     </MainLayout>

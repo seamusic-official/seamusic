@@ -18,18 +18,16 @@ class SQLAlchemyRepository(AbstractRepository):
     @classmethod
     async def add_one(cls, data: dict) -> int:
         async with async_session_maker() as session:
-            stmt = insert(cls.model).values(**data).returning(cls.model.id)
+            stmt = insert(cls.model).values(**data).returning(cls.model)
             await session.execute(stmt)
             await session.commit()
-            return stmt
 
     @classmethod
     async def edit_one(cls, id: int, data: dict) -> int:
         async with async_session_maker() as session:
-            stmt = update(cls.model).values(**data).filter_by(id=id).returning(cls.model.id)
+            stmt = update(cls.model).values(**data).filter_by(id=id).returning(cls.model)
             await session.execute(stmt)
             await session.commit()
-            return stmt
 
     @classmethod
     async def find_one_by_id(cls, id: int):
