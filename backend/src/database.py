@@ -4,12 +4,18 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import event
 from src.config import settings
-from sqlalchemy.orm import Mapped
+from sqlalchemy.orm import Mapped, session
 from sqlalchemy.orm import mapped_column
 from sqlalchemy import DateTime
 from datetime import datetime
 from sqlalchemy import func, text, Column
 from sqlalchemy.dialects.postgresql import TIMESTAMP
+from typing import AsyncGenerator
+from sqlalchemy import MetaData
+
+metadata = MetaData()
+
+
 
 engine = create_async_engine(
     settings.db.url,
@@ -36,11 +42,6 @@ class Base(DeclarativeBase):
     
 
 
-async def get_db():
-    db =  async_session_maker()
-    try:
-        yield  db
-    finally:
-        db.close()
-    
-    
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
+        yield session

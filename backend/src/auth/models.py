@@ -15,8 +15,7 @@ from sqlalchemy import event
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
-from src.comments.models import Comment
-from src.beats.models import View, chosen, Beat
+from src.beats.models import View,  Beat
 
 
 class Tag(Base):
@@ -30,41 +29,48 @@ liked_users = Table(
     Column('user_id', Integer, ForeignKey('users.id'))
 )
 
+# src/auth/models.py
+
+from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey, Integer, DateTime, String
+from src.database import Base
+from src.comments.models import Comment
+from src.beats.models import Beat, View
+from datetime import datetime
+
 class User(Base):
     __tablename__ = 'users'
 
-    username: Mapped[str] = mapped_column(nullable=False)
-    email: Mapped[str] = mapped_column(nullable=False)
-    password: Mapped[str] = mapped_column(nullable=False)
-    role: Mapped[str] = mapped_column(nullable=False, default="Listener")
-    picture_url: Mapped[str] = mapped_column(nullable=True, default="https://img.favpng.com/22/0/21/computer-icons-user-profile-clip-art-png-favpng-MhMHJ0Fw21MJadYjpvDQbzu5S.jpg")
-    is_active: Mapped[bool] = mapped_column(nullable=True, default=False)
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, nullable=False)
+    email = Column(String, nullable=False, unique=True)
+    password = Column(String, nullable=False)
+    role = Column(String, nullable=False, default="Listener")
+    picture_url = Column(String, nullable=True, default="https://img.favpng.com/22/0/21/computer-icons-user-profile-clip-art-png-favpng-MhMHJ0Fw21MJadYjpvDQbzu5S.jpg")
+    is_active = Column(Boolean, nullable=True, default=False)
+    birthday = Column(DateTime, nullable=False)
+    registered_at = Column(DateTime, default=datetime.utcnow)
 
-    birthday: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    registered_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
-    artist_profile_id: Mapped[int] = mapped_column(ForeignKey("artist_profiles.id"), nullable=True)
-    artist_profile: Mapped["ArtistProfile"] = relationship(back_populates="user")
-    producer_profile_id: Mapped[int] = mapped_column(ForeignKey("producer_profiles.id"), nullable=True)
-    producer_profile: Mapped["ProducerProfile"] = relationship(back_populates="user")
-    comment_author : Mapped['Comment'] = relationship(back_populates='author')
-
-    views : Mapped['View'] = relationship(back_populates = 'user')
-
-    likes = relationship("Like", secondary=liked_users)
-
-    
-
+    artist_profile = relationship("ArtistProfile", back_populates="user", uselist=False)
+    producer_profile = relationship("ProducerProfile", back_populates="user", uselist=False)
+    comments = relationship('Comment', back_populates='author')
+    views = relationship('View', back_populates='user')
+    likes = relationship('Like', secondary=liked_users, back_populates='users')
 
 class ArtistProfile(Base):
     __tablename__ = 'artist_profiles'
 
-    description: Mapped[str] = mapped_column()
+    id = Column(Integer, primary_key=True, index=True)
+    description = Column(String)
 
-    user: Mapped["User"] = relationship("User")
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("User", back_populates="artist_profile")
 
 class ProducerProfile(Base):
     __tablename__ = 'producer_profiles'
 
-    description: Mapped[str] = mapped_column()
+    id = Column(Integer, primary_key=True, index=True)
+    description = Column(String)
     
-    user: Mapped["User"] = relationship("User")
+    user_id = Column(Integer, ForeignKey('users.id'))
+    user = relationship("User", back_populates="producer_profile")

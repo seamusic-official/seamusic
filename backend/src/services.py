@@ -5,7 +5,6 @@ from abc import ABC
 from fastapi import UploadFile, File
 import boto3
 from botocore.exceptions import ClientError
-from io import BytesIO
 
 
 class AbstractRepository(ABC):

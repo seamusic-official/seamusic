@@ -31,41 +31,46 @@ async def get_user_beats(user: SUser = Depends(get_current_user)):
 async def all_beats():
     return await BeatsRepository.find_all()
 
-@beats.get("/get_one/{id}", summary="Create new beats", response_model = BeatsRepository)
+
+@beats.get('/{id}/')
 async def get_one_beat(
+    id: int
+):
     
+    return await BeatsRepository.find_one_by_id(id=id)
+
+
+@beats.get('/{id}/', summary="Get one beat", response_model=SBeatBase)
+async def get_one_beat(
     id: int,
     current_user: SUser = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    db: Session = Depends(get_db)
+):
 
-    ):
-
+    beat = await SBeatBase.find_one_by_id(id=id)
     
-    beat = db.query(Beat).filter(Beat.id == id).first()
-
     if not beat:
-        raise HTTPException(detail = 'Not Found', status_code = 404)
-    
+        raise HTTPException(status_code=404, detail="Not Found")
 
     exist_view = db.query(View).filter(
         View.beat_id == id,
-        View.user_id == current_user.id,
-        
+        View.user_id == current_user.id
     ).first()
+
 
     if not exist_view:
         new_view = View(
-            beat_id = id,
-            user_id = current_user.id,
-            timestap = datetime.utcnow()
+            beat_id=id,
+            user_id=current_user.id,
+            timestap=datetime.utcnow()
         )
-
-
         db.add(new_view)
+        db.commit()
+
         beat.view_count = (beat.view_count or 0) + 1
-        db.refresh(new_view)
+        db.commit()  
 
-
+    return beat
 
 
 
@@ -225,16 +230,8 @@ async def get_user_likes(user: SUser = Depends(get_current_user)):
 
 
 
-# Избранные, получение и добовление 
 
-
-
-    
-    
-    
-
-
-@beats.get('/user/views', response_model=List[BeatsRepository])
+@beats.get('/user/views', response_model=SBeatBase)
 async def get_viewed_contents(
     db: Session = Depends(get_db),
     current_user: SUser = Depends(get_current_user)
