@@ -31,7 +31,7 @@ class View(Base):
     user_id = Column(Integer, ForeignKey('users.id'), index=True, nullable=True)
     timestamp = Column(DateTime(timezone=True), server_default=func.now())
 
-    beat = relationship('Beat', back_populates='views')  # Проблема здесь
+    beat = relationship('Beat', back_populates='views') 
     user = relationship('User', back_populates='views')
 
 
