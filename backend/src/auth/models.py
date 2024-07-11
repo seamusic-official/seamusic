@@ -19,17 +19,14 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
+class Role(Base):
+    __tablename__ = 'roles'
 
+    name: Mapped[str] = mapped_column(nullable=False)
 
-class Tag(Base):
-    __tablename__ = 'tags'
-
-    title: Mapped[str] = mapped_column(nullable=False)
-    
-liked_users = Table(
-    'liked_users', Base.metadata,
-    Column('like_id', Integer, ForeignKey('likes.id')),
-    Column('user_id', Integer, ForeignKey('users.id'))
+user_roles = Table('user_roles', Base.metadata,
+    Column('user_id', Integer, ForeignKey('users.id')),
+    Column('role_id', Integer, ForeignKey('roles.id'))
 )
 
 class User(Base):
@@ -48,7 +45,7 @@ class User(Base):
     artist_profile: Mapped["ArtistProfile"] = relationship(back_populates="user")
     producer_profile_id: Mapped[int] = mapped_column(ForeignKey("producer_profiles.id"), nullable=True)
     producer_profile: Mapped["ProducerProfile"] = relationship(back_populates="user")
-
+    roles = relationship("Role", secondary=user_roles, backref="users")
 
 class ArtistProfile(Base):
     __tablename__ = 'artist_profiles'

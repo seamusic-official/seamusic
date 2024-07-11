@@ -3,8 +3,8 @@ import MainLayout from '../../components/layouts/MainLayout'
 import { Link, useNavigate } from 'react-router-dom'
 import AuthService from '../../services/AuthService'
 import HelloLayout from '../../components/layouts/HelloLayout'
-import DecorText from '../../components/DecorText'
-import Input from '../../components/Input'
+import DecorText from '../../components/decor-text/DecorText'
+import Input from '../../components/inputs/Input'
 
 export default function Register() {
   const [username, setUsername] = useState("")
@@ -32,7 +32,7 @@ export default function Register() {
 
   return (
     <HelloLayout>
-    <div className='flex justify-center items-center my-10'>
+    <div className='flex justify-center items-center my-16'>
         <div>
           <div className="flex justify-center mb-48">
               <div className="lg:w-[1200px] md:w-156 w-108 pb-3 ">

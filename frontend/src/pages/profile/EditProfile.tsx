@@ -1,27 +1,28 @@
 import MainLayout from '../../components/layouts/MainLayout'
 import dess from '../../assets/everydesigner.png'
-import { Song } from '../../components/Song'
-import { useAppSelector } from '../../hooks/redux'
-import KitLink from '../../components/KitLink';
+import { Song } from '../../components/songs/Song'
+import { useAppDispatch, useAppSelector } from '../../hooks/redux'
+import KitLink from '../../components/kits/KitLink';
 import AddButtonPlus from '../../components/icons/AddButtonPlus';
 import DefaultButton from '../../components/buttons/DefaultButton';
 import { useEffect, useState } from 'react';
 import BeatService from '../../services/BeatService';
 import { SongLoading } from '../../components/loadingElements/SongLoading';
-import Input from '../../components/Input';
+import Input from '../../components/inputs/Input';
 import SubmitButton from '../../components/buttons/SubmitButton';
+import { useNavigate } from 'react-router-dom';
+import { setAuthData, updateAuthData } from '../../store/reducers/authSlice';
+import AuthService from '../../services/AuthService';
 
 
 export default function EditProfile() {
   const user = useAppSelector((state) => state.auth.user);
-  const [file, setFile] = useState(null); 
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate()
   const [picture, setPicture] = useState(null);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [co_prod, setCo_prod] = useState('');
-  const [prod_by, setProd_by] = useState('');
+  const [username, setUsername] = useState('');
 
-  const [beatId, setBeatId] = useState<number>(0);
+  const userId = user.id
 
   const handlePictureChange = async (event) => {
     const picture = event.target.files[0];
@@ -31,45 +32,29 @@ export default function EditProfile() {
     formData.append('file', picture);
 
     try {
-        const response = await BeatService.update_picture(beatId, formData);
+        const response = await AuthService.update_user_picture(userId, formData);
+        const update_data = await AuthService.get_user(userId);
         console.log(response.data);
+        user_data = {
+          
+        }
+        dispatch(updateAuthData(update_data))
     } catch (error) {
         console.error('Error sending data:', error);
     }
 };
 
-  const handleFileChange = async (event) => {
-      const file = event.target.files[0];
-      setFile(file);
-
-      const formData = new FormData();
-      formData.append('file', file);
-
-      try {
-          const response = await BeatService.add(formData);
-          setBeatId(response.data.id);
-          console.log(response.data);
-      } catch (error) {
-          console.error('Error sending data:', error);
-      }
-  };
   
   const submitForm = async (event) => {
     event.preventDefault();
-  
     try {
-      const beats_data = {
-        title: title,
-        description: description,
-        co_prod: co_prod,
-        prod_by: prod_by,
-      };
+      const response = await AuthService.update_user(userId, {
+        username: username,
+      });
 
-      console.log(beats_data);
-
-      const response = await BeatService.update(beatId, beats_data);
       console.log(response.data);
-      navigate("/dashboard")
+      navigate("/profile")
+      dispatch(updateAuthData(response.data))
     } catch (error) {
       console.error('Ошибка при отправке данных:', error);
     }
@@ -109,7 +94,7 @@ export default function EditProfile() {
                   id="playlist-description"
                   className="text-white mt-6 text-sm font-normal leading-none opacity-70"
                 >
-                {user.description}
+                
                 </p>
 
                 <div className="flex items-center mt-2">
@@ -153,37 +138,23 @@ export default function EditProfile() {
                 className="flex items-center text-white mx-4 my-2"
               >
                 <div  className={` w-full `}>
+                  <form onSubmit={submitForm} encType="multipart/form-data">
                                 <div className="m-1">
                                   <label htmlFor="id" className="inline-block  font-extrabold text-sm my-1 tracking-wider ">
                                   <span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span>
                                     Your nickname
                                   </label>
                                     <Input
-                                        value={user.username}
                                         id="title"
                                         type="text"
-                                        placeholder="title 153bpm F#"
-                                        onChange={(e) => setTitle(e.target.value)}
+                                        placeholder={user.username}
+                                        onChange={(e) => setUsername(e.target.value)}
                                         buttonText=""
                                     />
                                 </div>
                                 
-                                <div className="m-1">
-                                <label htmlFor="id" className="inline-block  font-extrabold text-sm my-1 tracking-wider ">
-                                <span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span>
-                                Who's prod. it?
-                                </label>
-                                    <Input  
-                                        id="prod_by"
-                                        type="text"
-                                        placeholder="f1lty"
-                                        value={prod_by}
-                                        onChange={(e) => setProd_by(e.target.value)}
-                                        buttonText=""
-                                    />
-                                </div>
 
-                                <div className="m-1">
+                                {/* <div className="m-1">
                                 <label htmlFor="descritpion" className="inline-block  font-extrabold text-sm my-1 tracking-wider ">
                                 <span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'></span>
                                 Description
@@ -196,7 +167,7 @@ export default function EditProfile() {
                                         onChange={(e) => setDescription(e.target.value)}
                                         buttonText=""
                                     />
-                                </div>
+                                </div> */}
                                 <div className="m-1">
                                 <label htmlFor="descritpion" className="inline-block  font-extrabold text-sm my-1 tracking-wider ">
                                   <span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'></span>
@@ -208,7 +179,6 @@ export default function EditProfile() {
                                       id="picture"
                                       type="file"
                                       name="file"
-                                      multiple
                                       onChange={handlePictureChange}
                                       className="opacity-0 cursor-pointer w-full"
                                       />                      
@@ -217,7 +187,8 @@ export default function EditProfile() {
                                 <div className='m-1 my-2'>
                                   <SubmitButton title="Publish" />
                                 </div>
-                            </div>
+                        </form>
+                      </div>
             </div>
             <div >
             <h1 className="flex items-center text-white font-extrabold text-2xl mt-6">

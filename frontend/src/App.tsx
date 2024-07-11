@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react';
 import PictureLink from './components/PictureLink'
 import MainLayout from './components/layouts/MainLayout'
 import SpotifyService from './services/SpotifyService';
-import SongLink from './components/SongLink';
-import ArtistLink from './components/ArtistLink';
+import SongLink from './components/songs/SongLink';
+import ArtistLink from './components/artists/ArtistLink';
 import useAuth from './hooks/useAuth';
-import { SongLoading } from './components/loadingElements/SongLoading';
-import SongLinkLoading from './components/loadingElements/SongLinkLoading';
-import ArtistLinkLoading from './components/loadingElements/ArtistLinkLoading';
-import KitLinkLoading from './components/loadingElements/KitLinkLoading';
-import PictureLinkLoading from './components/loadingElements/PictureLinkLoading';
+import { SongLoading } from './components/loading-elements/SongLoading';
+import SongLinkLoading from './components/loading-elements/SongLinkLoading';
+import ArtistLinkLoading from './components/loading-elements/ArtistLinkLoading';
+import KitLinkLoading from './components/loading-elements/KitLinkLoading';
+import PictureLinkLoading from './components/loading-elements/PictureLinkLoading';
 import BeatpackService from './services/BeatpackServise';
+import AuthService from './services/AuthService';
 
 function App() {
   const [albums, setAlbums] = useState([]);
@@ -19,7 +20,7 @@ function App() {
   // const [beats, setBeats] = useState([]);
   const [tracks, setTracks] = useState([]);
   // const [artists, setArtists] = useState([]);
-  // const [beatmeakers, setBeatmeakers] = useState([])
+  const [producers, setProducers] = useState([])
 
   const searchParams = new URLSearchParams(window.location.search);
   const code = searchParams.get('code');
@@ -33,6 +34,22 @@ function App() {
         const response = await SpotifyService.get_albums();
         const responseData = response.data;
         setAlbums(responseData);
+        setLoading(false)
+      } catch (error) {
+        setLoading(true)
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await AuthService.get_producers();
+        const responseData = response.data;
+        setProducers(responseData);
         setLoading(false)
       } catch (error) {
         setLoading(true)
@@ -73,7 +90,6 @@ function App() {
 
     fetchData();
   }, []);
-
 
   
   return (
@@ -159,13 +175,24 @@ function App() {
                 </div>
               )}
           <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">
-            Beatmakers:
+            Producers:
             </h2>
             <div className="flex overflow-auto justify-start items-center m-1">
-              <ArtistLinkLoading />
-              <ArtistLinkLoading />
-              <ArtistLinkLoading />
-              <ArtistLinkLoading />
+              {!loading ? (
+                <div>
+                  {producers.map((producer) => (
+                    <ArtistLink title={producer.name} image={producer.picture_url}/>
+                  ))}
+                </div>
+              ) : (
+                <div>
+                  <ArtistLinkLoading />
+                  <ArtistLinkLoading />
+                  <ArtistLinkLoading />
+                  <ArtistLinkLoading />
+                </div>
+              )}
+
               <ArtistLinkLoading />
           </div>
               <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">

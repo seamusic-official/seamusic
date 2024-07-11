@@ -6,7 +6,7 @@ const initialState = {
   refreshToken: null as string | null,
   expiresInToken: null as number | null,
   user: {
-    id: null as string | null,
+    id: null as number | null,
     username: null as string | null,
     email: null as string | null,
     picture_url: null as string | null,
@@ -27,6 +27,9 @@ const authSlice = createSlice({
       state.expiresInToken = action.payload.expiresInToken;
       state.user = { ...action.payload.user };
     },
+    updateAuthData: (state, action) => {
+      state.user = { ...action.payload };
+    },
     clearAuthData: (state) => {
       state.isAuthenticated = false,
       state.accessToken = null;
@@ -36,7 +39,7 @@ const authSlice = createSlice({
         id: null,
         username: null,
         email: null,
-        image: null,
+        picture_url: null,
         birthday: null, // Массив объектов с URL изображений
         registered_at: null,
         role: null, // Объект с информацией о количестве фолловеров
@@ -45,6 +48,6 @@ const authSlice = createSlice({
   },
 });
 
-export const { setAuthData, clearAuthData } = authSlice.actions;
+export const { setAuthData, clearAuthData, updateAuthData } = authSlice.actions;
 
 export default authSlice.reducer;

@@ -1,9 +1,31 @@
 import MainLayout from '../../components/layouts/MainLayout'
 import dess from '../../assets/everydesigner.png'
-import { Song } from '../../components/Song'
+import { Song } from '../../components/songs/Song'
+import { useParams } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import KitService from '../../services/KitService';
 
 
 export default function KitDetail() {
+  const { id } = useParams();
+  const [data, setData] = useState()
+  const [loading, setLoading] = useState(true)
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await KitService.get_one(id);
+        const responseData = response.data;
+        setData(responseData);
+        setLoading(false) 
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <MainLayout>
            <div className="mt-8">

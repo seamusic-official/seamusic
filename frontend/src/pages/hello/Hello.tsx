@@ -1,7 +1,7 @@
 import React from 'react'
 import HelloLayout from '../../components/layouts/HelloLayout'
 import { Link } from 'react-router-dom'
-import DecorText from '../../components/DecorText'
+import DecorText from '../../components/decor-text/DecorText'
 
 export default function Hello() {
   return (

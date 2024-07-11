@@ -18,16 +18,19 @@ class SQLAlchemyRepository(AbstractRepository):
     @classmethod
     async def add_one(cls, data: dict) -> int:
         async with async_session_maker() as session:
-            stmt = insert(cls.model).values(**data).returning(cls.model)
-            await session.execute(stmt)
+            stmt = insert(cls.model).values(**data).returning(cls.model.id)
+            result = await session.execute(stmt)
             await session.commit()
+            return result.scalar()
+
 
     @classmethod
     async def edit_one(cls, id: int, data: dict) -> int:
         async with async_session_maker() as session:
             stmt = update(cls.model).values(**data).filter_by(id=id).returning(cls.model)
-            await session.execute(stmt)
+            result = await session.execute(stmt)
             await session.commit()
+            return result.scalar_one_or_none()
 
     @classmethod
     async def find_one_by_id(cls, id: int):
@@ -49,7 +52,6 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = delete(cls.model).filter_by(id=id)
             await session.execute(stmt)
             await session.commit()
-            return {"success": "ok"}
     
     @classmethod
     async def find_all(cls, **filter_by) -> list:

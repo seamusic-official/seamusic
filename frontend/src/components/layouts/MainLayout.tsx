@@ -1,9 +1,9 @@
 import React, { useRef } from 'react'
 import ProgressBar from '../player/ProgressBar'
-import Sidebar from '../Sidebar'
-import NavBar from '../NavBar';
-import Menu from '../Menu';
-import Footer from '../Footer';
+import Sidebar from './Sidebar'
+import NavBar from './NavBar';
+import Menu from './Menu';
+import Footer from './Footer';
 
 
 type MyComponentProps = React.PropsWithChildren;

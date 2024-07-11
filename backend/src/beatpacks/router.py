@@ -30,7 +30,7 @@ async def add_beatpack(data: SBeatpackBase, user: SUser = Depends(get_current_us
     data = {
         "title": data.title,
         "description": data.description,
-        "beatpacks": data.beatpacks
+        "beatpacks": data.beats
     }
     
     response = await BeatpacksRepository.add_one(data)

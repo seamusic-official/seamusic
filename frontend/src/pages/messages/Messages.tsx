@@ -1,6 +1,6 @@
 import MainLayout from '../../components/layouts/MainLayout'
 import des from '../../assets/everydesigner.png'
-import MessagePreview from '../../components/MessagePreview'
+import MessagePreview from '../../components/messages/MessagePreview'
 
 export default function Messages() {
   return (

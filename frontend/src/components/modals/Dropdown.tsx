@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link, redirect } from 'react-router-dom';
-import { useAppDispatch, useAppSelector } from '../hooks/redux';
-import Logout from './Logout';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import Logout from '../Logout';
 
 const DropdownMenu = ({ reference }) => {
   const {isAuthenticated, user} = useAppSelector((state) => state.auth)

@@ -66,7 +66,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
               <Route path="update" element={<EditProfile />} />
             </Route>
             
-            <Route path="/kits">
+            <Route path="/soundkits">
               <Route path=":id" element={<KitDetail />} />
               <Route path="add/" element={<BeatPack />} />
               <Route path="update" element={<BeatPack />} />

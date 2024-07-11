@@ -2,17 +2,14 @@ import { Link, useParams } from "react-router-dom"
 import MainLayout from "../../components/layouts/MainLayout"
 import SpotifyService from "../../services/SpotifyService";
 import { useEffect, useState } from "react";
-import { Song } from "../../components/Song";
+import { Song } from "../../components/songs/Song";
 import { msToMin } from "../../utils/msToMin";
-import SongLinkLoading from "../../components/loadingElements/SongLinkLoading";
-import { SongLoading } from "../../components/loadingElements/SongLoading";
+import { SongLoading } from "../../components/loading-elements/SongLoading";
 
 export default function AlbumDetail() {
   const [data, setData] = useState([]);
-  const [tracks, setTracks] = useState([]);
   const { id } = useParams()
   const [loading, setLoading] = useState(true);
-  const [info, setInfo] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -63,7 +60,7 @@ export default function AlbumDetail() {
               {!loading ? (
               <img
                 id="playlist-thumbnail"
-                src={data.image_url}
+                src={data.picture_url}
                 alt="alan walker artist"
                 className="w-56 h-56 ml-4 mr-6 rounded-lg"
               />                
@@ -129,7 +126,7 @@ export default function AlbumDetail() {
                   <p
                     className="rounded-md  w-12 h-4 animate-pulse bg-gray-300 bg-opacity-10 mt-4"
                   >
-                    {info}
+                    {data.description}
                   </p>
                   <div className="flex items-center mt-2">
                   <a

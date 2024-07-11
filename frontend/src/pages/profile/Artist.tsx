@@ -1,8 +1,8 @@
 import MainLayout from '../../components/layouts/MainLayout'
 import dess from '../../assets/everydesigner.png'
-import { Song } from '../../components/Song'
+import { Song } from '../../components/songs/Song'
 import { useAppSelector } from '../../hooks/redux'
-import KitLink from '../../components/KitLink';
+import KitLink from '../../components/kits/KitLink';
 import AddButtonPlus from '../../components/icons/AddButtonPlus';
 import DefaultButton from '../../components/buttons/DefaultButton';
 import { useState } from 'react';

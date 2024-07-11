@@ -17,6 +17,19 @@ class SBeatBase(BaseModel):
     user_id: int
     beat_pack_id: Optional[int]
 
+class SBeatUpdate(BaseModel):
+    title: Optional[str]
+    description: Optional[str]
+    picture_url: Optional[str]
+    co_prod: Optional[str]
+    prod_by: Optional[str]
+
+class SBeatRelease(BaseModel):
+    title: Optional[str]
+    description: Optional[str]
+    co_prod: Optional[str]
+    prod_by: Optional[str]
+
 class SBeatCreate(SBeatBase):
     pass
 

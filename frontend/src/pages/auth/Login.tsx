@@ -5,7 +5,7 @@ import AuthService from '../../services/AuthService'
 import { useAppDispatch } from '../../hooks/redux'
 import { setAuthData } from '../../store/reducers/authSlice'
 import HelloLayout from '../../components/layouts/HelloLayout'
-import Input from '../../components/Input'
+import Input from '../../components/inputs/Input'
 
 export default function Login() {
   const [password, setPassword] = useState("")
@@ -45,7 +45,7 @@ export default function Login() {
 };
   return (
     <HelloLayout>
-    <div className='flex justify-center items-center my-10'>
+    <div className='flex justify-center items-center my-16'>
       <div>
         <div className="flex justify-center mb-48">
             <div className="lg:w-[1200px] md:w-[1000px] w-108 pb-3 ">

@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
-import Input from '../../Input';
+import Input from '../../inputs/Input';
 import SubmitButton from '../../buttons/SubmitButton';
-import { Song } from '../../Song';
+import { Song } from '../../songs/Song';
 import $api from '../../../http';
 import { useAppSelector } from '../../../hooks/redux';
 import axios from 'axios'
@@ -43,7 +43,7 @@ const PostingBeatModal = ({ isOpen, onClose }) => {
 
       try {
           const response = await BeatService.add(formData);
-          setBeatId(response.data.id);
+          setBeatId(response.data);
           console.log(response.data);
       } catch (error) {
           console.error('Error sending data:', error);
@@ -52,25 +52,21 @@ const PostingBeatModal = ({ isOpen, onClose }) => {
   
   const submitForm = async (event) => {
     event.preventDefault();
-  
+
     try {
-      const beats_data = {
+      const response = await BeatService.update(beatId, {
         title: title,
         description: description,
         co_prod: co_prod,
         prod_by: prod_by,
-      };
+      });
 
-      console.log(beats_data);
-
-      const response = await BeatService.update(beatId, beats_data);
       console.log(response.data);
-      navigate("/dashboard")
+      navigate("/profile");
     } catch (error) {
       console.error('Ошибка при отправке данных:', error);
     }
   };
-
 
   return (
     <>

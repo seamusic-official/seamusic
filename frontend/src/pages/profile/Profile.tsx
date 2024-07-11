@@ -1,14 +1,13 @@
 import MainLayout from '../../components/layouts/MainLayout'
 import dess from '../../assets/everydesigner.png'
-import { Song } from '../../components/Song'
+import { Song } from '../../components/songs/Song'
 import { useAppSelector } from '../../hooks/redux'
-import KitLink from '../../components/KitLink';
-import som from "../../.../../../../backend/MEDIA_BEATS/0020 200bpm stop diorblessed-207586ca-13ac-48be-a21f-c115df4fc648.mp3"
+import KitLink from '../../components/kits/KitLink';
 import AddButtonPlus from '../../components/icons/AddButtonPlus';
 import DefaultButton from '../../components/buttons/DefaultButton';
 import { useEffect, useState } from 'react';
 import BeatService from '../../services/BeatService';
-import { SongLoading } from '../../components/loadingElements/SongLoading';
+import { SongLoading } from '../../components/loading-elements/SongLoading';
 import LicenseLink from '../../components/licenses/LicenseLink';
 
 
@@ -70,7 +69,7 @@ export default function Profile() {
                   id="playlist-description"
                   className="text-white mt-6 text-sm font-normal leading-none opacity-70"
                 >
-                 
+                 Lorem ipsum is placeholder text commonly used in the graphic, print, and publishing industries for previewing layouts and visual mockups.
                 </p>
 
                 <div className="flex items-center mt-2">
@@ -223,10 +222,10 @@ export default function Profile() {
                         <Song
                           id={beat.id}
                           name={beat.title} 
-                          picture={beat.picture} 
+                          picture={beat.picture_url} 
                           author={beat.prod_by} 
-                          src={beat.file_path} 
-                          album="Каждый из дизайнеров" 
+                          src={beat.file_url} 
+                          album="any" 
                           date={beat.created_at}
                           type={beat.type}
                           isAction={false}

@@ -1,45 +1,51 @@
 import React, { ChangeEvent, ChangeEventHandler, useEffect, useState } from 'react'
 import MainLayout from '../../components/layouts/MainLayout'
-import Input from '../../components/Input'
-import ArtistLink from '../../components/ArtistLink'
+import Input from '../../components/inputs/Input'
+import ArtistLink from '../../components/artists/ArtistLink'
 import SpotifyService from '../../services/SpotifyService';
-import { Song } from '../../components/Song';
-import SongLink from '../../components/SongLink';
+import { Song } from '../../components/songs/Song';
+import SongLink from '../../components/songs/SongLink';
 import PictureLink from '../../components/PictureLink';
 import { msToMin } from '../../utils/msToMin';
-import ArtistLinkLoading from '../../components/loadingElements/ArtistLinkLoading';
-import PictureLinkLoading from '../../components/loadingElements/PictureLinkLoading';
-import { SongLoading } from '../../components/loadingElements/SongLoading';
+import ArtistLinkLoading from '../../components/loading-elements/ArtistLinkLoading';
+import PictureLinkLoading from '../../components/loading-elements/PictureLinkLoading';
+import { SongLoading } from '../../components/loading-elements/SongLoading';
+import { useAppDispatch, useAppSelector } from '../../hooks/redux';
+import { setSearchQuery } from '../../store/reducers/searchSlice';
 
 export default function Search() {
+    const dispatch = useAppDispatch()
+    const { query } = useAppSelector(state => state.search)
+    
     const [data, setData] = useState(null);
-    const [query, setQuery] = useState('');
     const [loading, setLoading] = useState(true);
     const [status, setStatus] = useState(false);
 
     const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
-      setQuery(event.target.value);
+      dispatch(setSearchQuery(event.target.value));
     };
 
-    const handleInputSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-      e.preventDefault();
-      setStatus(true)
-      setLoading(true)
-      try {
-        if (query === '') return;
-        const response = await SpotifyService.search(query);
-        const responseData = response.data;
-        setData(responseData);
-        setLoading(false);
-        console.log(responseData);
-      } catch (error) {
-        console.error(error);
-      }
-    }
+    useEffect(() => {
+      const get_response = async () => {
+        try {
+            const response = await SpotifyService.search(query);
+            const responseData = response.data;
+            setData(responseData)
+            setLoading(false)
+            setStatus(true)
+            console.log("THIS IS RESPONSE", response);
+          } catch(error){
+            setLoading(false)
+            console.error()
+          }
+        };
+  
+        get_response()
+    }, [query]);
 
   return (
     <MainLayout>
-      <form onSubmit={(e) => handleInputSubmit(e)}>
+      <form >
         <Input 
             type="text"
             buttonText="Search" 

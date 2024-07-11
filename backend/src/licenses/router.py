@@ -23,7 +23,7 @@ async def all_licenses():
 
 @licenses.get("/{id}", summary="Create new licenses")
 async def get_one(id: int):
-    return await LicensesRepository.find_one_by_id(id)
+    return await LicensesRepository.find_one_by_id(int(id))
 
 @licenses.post("/beatbacks/add", summary="Add a file for new beat")
 async def add_licenses(data: SLicenseBase, user: SUser = Depends(get_current_user)):

@@ -1,9 +1,9 @@
 import { Dropdown } from 'flowbite'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
-import DropdownMenu from './Dropdown'
+import DropdownMenu from '../modals/Dropdown'
 import { useNavigate } from 'react-router-dom';
-import DefaultButton from './buttons/DefaultButton';
+import DefaultButton from '../buttons/DefaultButton';
 
 
 export default function NavBar({reference}) {

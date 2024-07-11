@@ -4,7 +4,7 @@ from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
 
-class SBeatBase(BaseModel):
+class STrackBase(BaseModel):
     title: str
     picture: Optional[str]
     description: Optional[str]
@@ -13,31 +13,13 @@ class SBeatBase(BaseModel):
     prod_by: Optional[str]
     playlist_id: Optional[int]
     user_id: int
-    beat_pack_id: Optional[int]
+    Track_pack_id: Optional[int]
 
-class SBeatCreate(SBeatBase):
+class STrackCreate(STrackBase):
     pass
 
-class SBeat(SBeatBase):
+class STrack(STrackBase):
     id: int
-    is_available: bool
-    created_at: datetime
-
-    class Config:
-        orm_mode = True
-
-class SBeatPackBase(BaseModel):
-    title: str
-    description: str
-    owner_id: int
-    beats: List[SBeat] = Field(...)
-    
-class SBeatPackCreate(SBeatPackBase):
-    pass
-
-class SBeatPack(SBeatPackBase):
-    id: int
-    liked: bool
     is_available: bool
     created_at: datetime
 

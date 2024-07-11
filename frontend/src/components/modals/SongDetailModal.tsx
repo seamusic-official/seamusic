@@ -4,7 +4,7 @@ import { play, pause, updateTime, updateDuration } from '../../store/reducers/pl
 import { useEffect, useState } from "react";
 import SpotifyService from "../../services/SpotifyService";
 import { Link } from "react-router-dom";
-import SongLinkLoading from "../loadingElements/SongLinkLoading";
+import SongLinkLoading from "../loading-elements/SongLinkLoading";
 import default_picture from "../../assets/default-track-picture.png"
 
 

@@ -16,6 +16,13 @@ class SSoundkitBase(BaseModel):
     user_id: int
     beat_pack_id: Optional[int]
 
+class SSoundkitUpdate(BaseModel):
+    title: Optional[str]
+    picture: Optional[str]
+    description: Optional[str]
+    co_prod: Optional[str]
+    prod_by: Optional[str]
+
 class SSoundkitCreate(SSoundkitBase):
     pass
 

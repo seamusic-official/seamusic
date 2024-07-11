@@ -12,7 +12,7 @@ from src.database import Base
 import os
 from typing import List
 
-STATIC_FILES_PATH = os.path.join(os.path.dirname(__file__), '..', 'STATICFILES')
+from src.auth.models import User
 
 class Soundkit(Base):
     __tablename__ = "soundkits"
@@ -23,12 +23,7 @@ class Soundkit(Base):
     file_url: Mapped[str] = mapped_column(nullable=False)
     
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship("User")  # Указываем связь с таблицей User
-
-beats_to_soundkits_association_table = Table('beats_to_soundkits_association_table', Base.metadata,
-    Column('beat_id', Integer, ForeignKey('beats.id')),
-    Column('soundkit_id', Integer, ForeignKey('soundkits.id'))
-)
+    user: Mapped["User"] = relationship("User") 
 
 user_to_soundkits_association_table = Table('user_to_soundkits_association_table', Base.metadata,
     Column('soundkit_id', Integer, ForeignKey('soundkits.id')),

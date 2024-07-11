@@ -10,6 +10,7 @@ from sqlalchemy import DateTime
 from datetime import datetime
 from sqlalchemy import func, text, Column
 from sqlalchemy.dialects.postgresql import TIMESTAMP
+from typing import AsyncGenerator
 
 engine = create_async_engine(
     settings.db.url,
@@ -26,6 +27,11 @@ class Base(DeclarativeBase):
 
     id: Mapped[int] = mapped_column(primary_key=True)
     
-    is_available: Mapped[bool] = mapped_column(nullable=False, default=False)
+    is_available: Mapped[bool] = mapped_column(nullable=False, default=True)
     created_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now())
+
+
+async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
+    async with async_session_maker() as session:
+        yield session

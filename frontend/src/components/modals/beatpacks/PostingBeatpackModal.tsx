@@ -1,7 +1,7 @@
 import React, { useRef, useState } from 'react';
-import Input from '../../Input';
+import Input from '../../inputs/Input';
 import SubmitButton from '../../buttons/SubmitButton';
-import { Song } from '../../Song';
+import { Song } from '../../songs/Song';
 import $api from '../../../http';
 import { useAppSelector } from '../../../hooks/redux';
 import axios from 'axios'

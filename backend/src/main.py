@@ -20,6 +20,12 @@ from src.beatpacks.models import Beatpack
 from src.soundkits.router import soundkits
 from src.soundkits.models import Soundkit
 
+from src.albums.router import albums
+from src.albums.models import Album
+
+from src.tracks.router import tracks
+from src.tracks.models import Track
+
 from src.licenses.router import licenses
 from src.messages.router import messages
 
@@ -71,14 +77,16 @@ app.add_middleware(
 )
 
 app.include_router(auth)
+app.include_router(licenses)
 app.include_router(beats)
 app.include_router(beatpacks)
+app.include_router(tracks)
+app.include_router(albums)
 app.include_router(soundkits)
-app.include_router(music)
-app.include_router(licenses)
 app.include_router(messages)
+app.include_router(music)
 
-@app.on_event("startup")
-async def startup():
-    redis = aioredis.from_url("redis://localhost:6379", encoding="utf8")
-    FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+# @app.on_event("startup")
+# async def startup():
+#     redis = aioredis.from_url("redis://localhost:6379", encoding="utf8")
+#     FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")

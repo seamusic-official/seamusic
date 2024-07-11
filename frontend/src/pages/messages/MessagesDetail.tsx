@@ -1,8 +1,10 @@
 import MainLayout from '../../components/layouts/MainLayout'
 import des from '../../assets/everydesigner.png'
 import { Link } from 'react-router-dom'
-import Input from '../../components/Input'
+import Input from '../../components/inputs/Input'
 import { useAppSelector } from '../../hooks/redux';
+import DefaultButton from '../../components/buttons/DefaultButton';
+import DecorText from '../../components/decor-text/DecorText';
 
 export default function MessagesDetail() {
   const user = useAppSelector((state) => state.auth.user);
@@ -17,25 +19,18 @@ export default function MessagesDetail() {
           </div>
           <div className="p-2">
             <p className="font-semibold">xxxmanera</p>
-            <p className="text-sm font-semibold text-gray-300">печатает..</p>
+            <p className="text-sm font-semibold text-gray-300"><DecorText>печатает..</DecorText></p>
           </div>
-          <Link to="/profile">
-            <button
-              type="button"
-              className="justify-end ml-2 text-white uppercase text-xs font-extrabold text-opacity-90 tracking-widest bg-black bg-opacity-70 border border-gray-300 rounded-full px-8 py-2 mr-6 hover:bg-black"
-            >
-              Profile
-            </button>
-          </Link>
+          <DefaultButton className={"ml-2"} title="Profile" />
         </div>
 
-        <div className="p-2 overflow-y-auto max-w-screen block">
-          <div className="left">
-            <div className="flex items-center ">
-              <img className="w-10 h-10 rounded-full" src={des} alt=""/>
-              <div className="m-2">
-                <p className="text-lg font-bold">xxxmanera</p>
-                <p className="text-gray-300 text-md font-semibold">сколько exc стоит бро?</p>
+        <div className="mt-4">
+          <div className="left ">
+            <div className="flex items-center ml-2 bg-zinc-800/30 dark:from-inherit border-neutral-900 border rounded-md bg-opacity-5 backdrop-blur-md w-1/2 ">
+              <img className="m-2 w-10 h-10 rounded-full" src={des} alt=""/>
+              <div className="">
+                <h1 className="text-md font-semibold">xxxmanera | 12:32</h1>
+                <p className="text-gray-100 text-md font-normal">слушай братан может давай пойдем в телеграм отсюда нахуй?)</p>
               </div>
             </div>
           </div>

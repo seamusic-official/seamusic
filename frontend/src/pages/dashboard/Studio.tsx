@@ -1,16 +1,19 @@
 import React, { useEffect, useRef, useState } from 'react'
 import MainLayout from '../../components/layouts/MainLayout'
-import { Song } from '../../components/Song'
+import { Song } from '../../components/songs/Song'
 import PostingBeatModal from '../../components/modals/beats/PostingBeatModal';
 import BeatService from '../../services/BeatService';
 import DefaultButton from '../../components/buttons/DefaultButton';
-import { SongLoading } from '../../components/loadingElements/SongLoading';
-import KitLinkLoading from '../../components/loadingElements/KitLinkLoading';
+import { SongLoading } from '../../components/loading-elements/SongLoading';
+import KitLinkLoading from '../../components/loading-elements/KitLinkLoading';
+import DecorText from '../../components/decor-text/DecorText';
+import { useAppSelector } from '../../hooks/redux';
 
 export default function Studio() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [beats, setBeats] = useState([])
   const [loading, setLoading] = useState(true)
+  const { user } = useAppSelector(state => state.auth)
 
   const openModal = () => {
     setIsModalOpen(true);
@@ -49,11 +52,23 @@ export default function Studio() {
             <DefaultButton title="Upload beatpacks" href="/beatpacks/add"/>
           </div>
           <div className="mr-2 ">
-            <DefaultButton title="Publish sound kits" href="/kits/add"/>
+            <DefaultButton title="Publish sound kits" href="/soundkits/add"/>
+          </div>
+          <div className="mr-2 ">
+            <DefaultButton title="Add & Create squad" href=""/>
+          </div>
+          <div className="mr-2 ">
+            <DefaultButton title="Add license" href=""/>
           </div>
         </div>
 
         <PostingBeatModal isOpen={isModalOpen} onClose={closeModal} />
+              <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">
+                Information:
+              </h2>
+              <h2 className="mt-2 mb-1 text-white text-lg capitalize font-semibold tracking-tighter flex items-center">You're a member of span<img className="w-8 rounded-full m-2" src={user.picture_url} alt="" /> <DecorText font="extrabold">REVENGE SQUAD</DecorText></h2>
+              <h2 className="mb-1 text-white text-lg capitalize font-semibold ">You're a member of span </h2>
+
              <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">
                 Your beatpacks:
               </h2>
@@ -106,9 +121,9 @@ export default function Studio() {
                 <Song 
                   id={beat.id}
                   name={beat.title} 
-                  picture={beat.picture} 
+                  picture={beat.picture_url} 
                   author={beat.prod_by} 
-                  src={beat.file_path} 
+                  src={beat.file_url} 
                   album="Каждый из дизайнеров" 
                   date={beat.created_at}
                   type={beat.type}
@@ -126,9 +141,9 @@ export default function Studio() {
               </>
             )
           }
-                            </tbody>
-                </table>
-        </div>
+          </tbody>
+        </table>
+      </div>
     </MainLayout>
   )
 }

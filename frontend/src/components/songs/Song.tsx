@@ -1,9 +1,9 @@
 import { Link, useNavigate } from "react-router-dom"
-import { useAppDispatch } from "../hooks/redux"
-import { play, setSong } from "../store/reducers/playerSlice"
-import default_picture from "../assets/default-track-picture.png"
-import DefaultButton from "./buttons/DefaultButton"
-import BeatService from "../services/BeatService"
+import { useAppDispatch } from "../../hooks/redux"
+import { play, setSong } from "../../store/reducers/playerSlice"
+import default_picture from "../../assets/default-track-picture.png"
+import DefaultButton from "../buttons/DefaultButton"
+import BeatService from "../../services/BeatService"
 import { useState, useEffect } from "react"
 
 
@@ -51,13 +51,13 @@ export const Song = ({ id, picture, name, date, author, album, duration, src, ty
                     <img
                         src={picture}
                         alt={name}
-                        className="min-w-12 h-12 mr-1 rounded-md duration-300 filter brightness-100 hover:brightness-50"
+                        className="min-w-12 h-12 max-w-12 mr-1 rounded-md duration-300 filter brightness-100 hover:brightness-50"
                     />
                 ) : (
                     <img
                         src={default_picture}
                         alt={name}
-                        className="invert min-w-12 h-12 mr-1 rounded-md duration-300 filter brightness-100 hover:brightness-10"
+                        className="invert min-w-12 max-w-12 h-12 mr-1 rounded-md duration-300 filter brightness-100 hover:brightness-10"
                     />
                 )}
 
@@ -71,12 +71,11 @@ export const Song = ({ id, picture, name, date, author, album, duration, src, ty
                     currentSong: {
                     "id": id,
                     "type": type,
-                    "picture": picture,
+                    "picture_url": picture,
                     "author": author,
                     "name": name,
                     "album": album,
                     "date": date,
-                    "duration": duration,
                     "src": src
                     }
                 }));

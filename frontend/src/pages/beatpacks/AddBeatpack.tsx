@@ -2,11 +2,11 @@ import { Link, useParams } from "react-router-dom"
 import MainLayout from "../../components/layouts/MainLayout"
 import SpotifyService from "../../services/SpotifyService";
 import { useEffect, useState } from "react";
-import { Song } from "../../components/Song";
+import { Song } from "../../components/songs/Song";
 import { msToMin } from "../../utils/msToMin";
-import { SongLoading } from "../../components/loadingElements/SongLoading";
+import { SongLoading } from "../../components/loading-elements/SongLoading";
 import BeatpackService from "../../services/BeatpackServise";
-import Input from "../../components/Input";
+import Input from "../../components/inputs/Input";
 import { useAppSelector } from "../../hooks/redux";
 import SubmitButton from "../../components/buttons/SubmitButton";
 

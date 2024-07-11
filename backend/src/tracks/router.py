@@ -1,11 +1,14 @@
 from src.tracks.services import TracksRepository
 from src.tracks.schemas import STrackBase, STrack, STrackCreate
+from src.tracks.utils import unique_track_filename
 from src.auth.schemas import SUser
-from src.tracks.utils import save_audio, save_image
-from src.config import settings
 from src.auth.dependencies import get_current_user
+from src.config import settings
+from src.services import MediaRepository
+
 from fastapi import UploadFile, File, APIRouter, Depends
 from fastapi.responses import FileResponse
+
 
 tracks = APIRouter(
     prefix = "/tracks",
@@ -21,28 +24,29 @@ async def get_user_tracks(user: SUser = Depends(get_current_user)):
 async def all_tracks():
     return await TracksRepository.find_all()
 
-@tracks.get("/get_one/{id}", summary="Get one beat by id")
-async def get_one_beat(id: int):
+@tracks.get("/get_one/{id}", summary="Get one track by id")
+async def get_one_track(id: int):
     return await TracksRepository.find_one_by_id(id)
 
-@tracks.post("/add", summary="Init a beat with file")
+@tracks.post("/add", summary="Init a track with file")
 async def add_tracks(file: UploadFile = File(...), user: SUser = Depends(get_current_user)):
-    file_info = await unique_filename(file) if file else None
+    file_info = await unique_track_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
     
     data = {
         "title": "Unknown title",
         "file_url": file_url,
         "prod_by": user.username,
-        "user_id": user.id
+        "user_id": user.id,
+        "type": "Track"
     }
 
     response = await TracksRepository.add_one(data)
     return response
 
-@tracks.post("/picture/{tracks_id}", summary="Update a picture for one beat by id")
+@tracks.post("/picture/{tracks_id}", summary="Update a picture for one track by id")
 async def update_pic_tracks(tracks_id: int, file: UploadFile = File(...), user: SUser = Depends(get_current_user)):
-    file_info = await unique_filename(file) if file else None
+    file_info = await unique_track_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
 
     data = {
@@ -52,8 +56,8 @@ async def update_pic_tracks(tracks_id: int, file: UploadFile = File(...), user: 
     response = await TracksRepository.edit_one(tracks_id, data)
     return response
 
-@tracks.post("/release/{id}", summary="Release one beat by id")
-async def release_tracks(id: int, tracks_data: SBeatBase, user: SUser = Depends(get_current_user)):    
+@tracks.post("/release/{id}", summary="Release one track by id")
+async def release_tracks(id: int, tracks_data: STrackBase, user: SUser = Depends(get_current_user)):    
     data = {
         "title": tracks_data.title ,
         "description": tracks_data.description,
@@ -64,7 +68,7 @@ async def release_tracks(id: int, tracks_data: SBeatBase, user: SUser = Depends(
     return data
 
 @tracks.put("/update/{id}", summary="Create new tracks")
-async def update_tracks(id: int, tracks_data: SBeatBase, user: SUser = Depends(get_current_user)):
+async def update_tracks(id: int, tracks_data: STrackBase, user: SUser = Depends(get_current_user)):
     data = {
         "title": tracks_data.title,
         "description": tracks_data.description,

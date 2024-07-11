@@ -1,15 +1,14 @@
-import Menu from "../Menu"
 import { useAppSelector, useAppDispatch } from "../../hooks/redux"
-import { play, pause, updateTime, updateDuration, setLike } from '../../store/reducers/playerSlice'
+import { play, pause, updateTime, updateDuration, setIsLiked, setDuration } from '../../store/reducers/playerSlice'
 import { useEffect, useState } from "react";
-import SongDetailModal from "../modals/SongDetailModal";
 import default_picture from "../../assets/default-track-picture.png"
 import useSound from "use-sound";
+import { Link } from "react-router-dom";
+import { memo } from "react";
+import DecorText from "../decor-text/DecorText";
 
-
-export default function ProgressBar() {
+const ProgressBar = memo(() => {
   const { currentSong, timeElapsed, isActive, isLiked } = useAppSelector((state) => state.player);     
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const src = currentSong.src
   const [play, { pause, duration, sound }] = useSound(src);
@@ -26,16 +25,15 @@ export default function ProgressBar() {
   const [seconds, setSeconds] = useState(); // current position of the audio in seconds
 
   useEffect(() => {
-    const sec = duration / 1000;
+    const sec = Math.floor(duration / 1000);
     const min = Math.floor(sec / 60);
-    const secRemain = Math.floor(sec % 60);
-    const time = {
-      min: min.toString(),
-      sec: secRemain.toString()
-    };
+    const roundedSec = (sec % 60).toFixed(0)
 
-    setTime(time)
-  }, [])
+    setTime({
+      min,
+      sec: roundedSec
+    });
+  }, [sound])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -47,6 +45,7 @@ export default function ProgressBar() {
           sec,
           min,
         });
+
       }
     }, 1000);
     return () => clearInterval(interval);
@@ -72,9 +71,9 @@ export default function ProgressBar() {
         <div className={isActive ? "bg-opacity-5 h-auto" : "border-neutral-800 border-t bg-opacity-5 h-auto"}>
             <div className="justify-between md:mb-0 lg:flex flex-row items-center">
               <div className="mx-2 pt-2 lg:pt-0 flex justify-start items-center w-full lg:w-1/3">
-                {currentSong.picture ? (
+                {currentSong.picture_url ? (
                   <img
-                    src={currentSong.picture}
+                    src={currentSong.picture_url}
                     alt={currentSong.name}
                     className="shadow-2xl m-1 rounded-md w-16 h-16 lg:w-24 lg:h-24"
                   />                  
@@ -86,12 +85,15 @@ export default function ProgressBar() {
                   />
                 )}
 
-                <div onClick={() => setIsModalOpen(!isModalOpen)} className="flex cursor-pointer flex-col justify-center m-1 lg:m-4">
-                  <h6 id="song-name" className="w-56 text-white font-semibold text-xl text-left truncate ">
-                    {currentSong.name}
+                <div className="flex flex-col justify-center m-1 lg:m-4">
+                  <h6 id="song-name" className="w-56 text-white font-bold text-xl text-left truncate ">
+                    <Link to={`/beats/${currentSong.id}`}>{currentSong.name}</Link>
                   </h6>
-                  <p id="artist-name" className="text-gray-400 font-semi-bold text-lg">
-                    {currentSong.author}
+                  <p id="artist-name" className="text-gray-200 font-semibold text-md">
+                    <Link to={`/users/${currentSong.id}`}>@{currentSong.author}</Link> | <DecorText>20 likes</DecorText>
+                  </p>
+                  <p id="artist-name" className="text-gray-100 font-semibold text-md">
+                    <DecorText>Add to</DecorText>
                   </p>
                 </div>
                 <div className="text-gray-300 flex justify-center items-center">
@@ -230,7 +232,7 @@ export default function ProgressBar() {
                 </div>
                 
                 <div className="pl-2 pr-2 lg:pl-0 lg:pr-0 flex flex-row justify-between items-center w-full">
-                  <div id="time-elapsed" className="text-gray-300 text-xs text-center">{currTime.min}:{currTime.sec}</div>
+                  <div id="time-elapsed" className="text-white text-lg fond-semibold text-center">{currTime.min}:{currTime.sec}</div>
                   <div
                     className="flex w-full h-full rounded-full mx-4"
                   >
@@ -247,7 +249,7 @@ export default function ProgressBar() {
                     }}
                   />
                   </div>
-                  <div id="duration" className="text-gray-300 text-xs text-center">{time.min}:{time.sec}</div>
+                  <div id="duration" className="text-white text-lg fond-semibold text-center">{time.min}:{time.sec}</div>
                 </div>
               </div>
               
@@ -285,4 +287,6 @@ export default function ProgressBar() {
             </div>
         </div>
   )
-}
+})
+
+export default ProgressBar

@@ -2,9 +2,9 @@ import React from 'react'
 import MainLayout from '../../components/layouts/MainLayout'
 import { Link } from 'react-router-dom'
 import dess from '../../assets/everydesigner.png'
-import { Song } from '../../components/Song'
+import { Song } from '../../components/songs/Song'
 import PictureLink from '../../components/PictureLink'
-import KitLink from '../../components/KitLink'
+import KitLink from '../../components/kits/KitLink'
 
 export default function Producer() {
   return (

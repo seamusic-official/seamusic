@@ -4,6 +4,7 @@ import { persistReducer, persistStore } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 import playerSlice from './reducers/playerSlice';
 import authSlice from './reducers/authSlice';
+import searchSlice from './reducers/searchSlice';
 
 
 const persistConfig = {
@@ -14,6 +15,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   player: playerSlice,
   auth: authSlice,    
+  search: searchSlice,    
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer); // Corrected to use rootReducer
