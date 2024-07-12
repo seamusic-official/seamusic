@@ -2,12 +2,12 @@ import { AxiosResponse } from "axios";
 import $api from "../http";
 
 export default class AuthService {
-    static async register(username: string, role: string, birthday: string, password: string, email: string): Promise<AxiosResponse> {
+    static async register(username: string, roles: string[], birthday: string, password: string, email: string): Promise<AxiosResponse> {
         return $api.post("auth/register/", {
             password,
             email,
             username,
-            role,
+            roles,
             birthday,
         });
     }

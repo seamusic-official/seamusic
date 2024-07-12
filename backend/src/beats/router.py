@@ -38,7 +38,7 @@ async def add_beats(file: UploadFile = File(...), user: SUser = Depends(get_curr
         "file_url": file_url,
         "prod_by": user.username,
         "user_id": user.id,
-        "type": "Beat"
+        "type": "beat"
     }
 
     response = await BeatsRepository.add_one(data)

@@ -43,7 +43,7 @@ const PostingBeatModal = ({ isOpen, onClose }) => {
 
       try {
           const response = await BeatService.add(formData);
-          setBeatId(response.data);
+          setBeatId(response.data.id);
           console.log(response.data);
       } catch (error) {
           console.error('Error sending data:', error);

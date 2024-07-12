@@ -1,8 +1,7 @@
-from src.beats.models import Beat, BeatPack, Playlist, License
+from src.squads.models import Squad
 from src.services import SQLAlchemyRepository
-from src.config import settings
 
 
-class BeatsRepository(SQLAlchemyRepository):
-    model = Beat
+class SquadRepository(SQLAlchemyRepository):
+    model = Squad
     

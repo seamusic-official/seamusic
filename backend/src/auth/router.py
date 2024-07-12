@@ -1,16 +1,18 @@
 from fastapi import UploadFile, File, APIRouter, Depends, HTTPException, Response
-from typing import List
-import requests
-
+from src.config import settings
+from src.beats.utils import unique_filename
 from src.exceptions import CustomException, NotFoundException, NoRightsException
 from src.notifications.utils import send_message
 from src.auth.dependencies import get_current_user
 from src.services import MediaRepository
-from src.auth.services import UsersDAO, ArtistDAO, ProducerDAO
+from src.auth.services import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
+from src.tags.services import ListenerTagsDAO
 from src.auth.utils import authenticate_user, create_access_token, create_refresh_token, get_hashed_password, verify_password
-from src.auth.schemas import SUser, SArtist, SProducer, SRegisterUser, SLoginUser, SUserBase, SUserUpdate, SUserResponse
-from src.config import settings
-from src.beats.utils import unique_filename
+from src.auth.schemas import (SUser, SArtist, SProducer, SRegisterUser, SLoginUser,
+                              SUserBase, SUserUpdate, SArtistUpdate, SProducerUpdate
+                              )
+from typing import List
+import requests
 
 
 auth = APIRouter(
@@ -18,9 +20,10 @@ auth = APIRouter(
     tags = ["Auth & Users"]
 )
 
-redirect_uri = "http://localhost:5173"
 
-
+"""
+Users routes
+"""
 @auth.get('/users/me', summary='Get details of currently logged in user')
 async def get_me(user: SUser = Depends(get_current_user)) -> SUser:
     return user 
@@ -67,7 +70,7 @@ async def update_user_picture(id: int, file: UploadFile = File(...), user: SUser
 async def update_user(id: int, data: SUserUpdate, user: SUser = Depends(get_current_user)):
     if not user:
         raise NotFoundException()
-
+    
     if user.id != id:
         raise NoRightsException()
     
@@ -94,74 +97,179 @@ async def delete_users(id: int, user: SUser = Depends(get_current_user)):
     await UsersDAO.delete(id)
     return CustomException(200, f"User with id {id} has been deleted")
 
+
+"""
+Artists routes
+"""
+@auth.get('/users/artists/me', summary='Get my artist profile')
+async def get_me_as_artist(user: SUser = Depends(get_current_user)) -> SArtist:
+    artist_profile = await ArtistDAO.find_one_or_none(user=user)
+    return artist_profile
+
 @auth.get('/users/artists', summary='Get all artists')
 async def get_artists() -> List[SArtist]:
     response = await ArtistDAO.find_all()
     return response
 
 @auth.get('/users/artists/{id}', summary='Get one artists by id')
-async def get_one_artist() -> List[SArtist]:
-    response = await UsersDAO.find_one_by_id()
-    return response
+async def get_one_artist(id: int) -> SArtist:
+    user = await ArtistDAO.find_one_by_id(id)
+    if not user:
+        raise NotFoundException()
+    
+    user_dict = {
+        "id": user.id,
+        "username": user.username,
+        "email": user.email,
+        "picture_url": user.picture_url,
+        "birthday": user.birthday,
+        "role": user.role,
+        "updated_at": user.updated_at,
+        "created_at": user.created_at
+    }
+
+    return SUser(**user_dict)
 
 @auth.put('/users/artists/{id}', summary='Update artist by id')
-async def update_artists():
-    response = await UsersDAO.edit_one()
-    return response
+async def update_artists(artist_id: int, data: SArtistUpdate, user: SUser = Depends(get_current_user)):
+    if not user:
+        raise NotFoundException()
+    
+    if user.id != artist_id:
+        raise NoRightsException()
+    
+    update_data = {}
+
+    if data.username:
+        update_data["description"] = data.username
+
+    await UsersDAO.edit_one(id, update_data)
+    return SUser(**update_data)
+
+@auth.delete('/users/artists/{id}', summary='Deactivate artist profile by id')
+async def deactivate_artists(id: int, user: SUser = Depends(get_current_user)):
+    if not user:
+        raise NotFoundException()
+    
+    if user.id != id:
+        raise NoRightsException()
+    
+    await ArtistDAO.delete(id)
+    return CustomException(200, f"User with id {id} has been deleted")
+
+
+"""
+Producers routes
+"""
+@auth.get('/users/producers/me', summary='Get my producer profile')
+async def get_me_as_producer(user: SUser = Depends(get_current_user)) -> SProducer:
+    producer_profile = await ProducerDAO.find_one_or_none(user=user)
+    return producer_profile
 
 @auth.get('/users/producers', summary='Get all producers')
-async def get_producers():
+async def get_all_producers() -> List[SProducer]:
     response = await ProducerDAO.find_all()
     return response
 
 @auth.get('/users/producers/{id}', summary='Get one producer by id')
-async def get_producer():
+async def get_one_producer() -> SProducer:
     response = await ProducerDAO.find_one_by_id()
     return response
 
 @auth.put('/users/producers/{id}', summary='Update producer by id')
-async def update_producer():
-    response = await ProducerDAO.edit_one()
-    return response
+async def update_one_producer(artist_id: int, data: SArtistUpdate, user: SUser = Depends(get_current_user)):
+    if not user:
+        raise NotFoundException()
+    
+    if user.id != artist_id:
+        raise NoRightsException()
+    
+    update_data = {}
+
+    if data.username:
+        update_data["description"] = data.username
+
+    await UsersDAO.edit_one(id, update_data)
+    return SUser(**update_data)
+
+@auth.post('/users/producers/{id}', summary='Deactivate artist profile by id')
+async def deactivate_one_producer(id: int, user: SUser = Depends(get_current_user)):
+    if not user:
+        raise NotFoundException()
+    
+    if user.id != id:
+        raise NoRightsException()
+
+    await ArtistDAO.edit_one(id, {"is_available": False})
+    return CustomException(200, f"User with id {id} has been deleted")
 
 
+"""
+Auth routes
+"""
 @auth.post('/register', summary="Create new user")
 async def register(user: SRegisterUser):
     existing_user = await UsersDAO.find_one_or_none(email=user.email)
     if existing_user:
         raise HTTPException(status_code=403)
+    
+    role_superuser = await RoleDAO.find_one_by_id(id=1)
+    
+    if not role_superuser: 
+        role_superuser = await RoleDAO.add_one({"name": "superuser"})
+        role_moder = await RoleDAO.add_one({"name": "moder"})
+        role_producer = await RoleDAO.add_one({"name": "producer"})
+        role_artist = await RoleDAO.add_one({"name": "artist"})
+        role_listener = await RoleDAO.add_one({"name": "listener"})
+    
+    user_roles = []
+    
+    for role_name in user.roles:
+        role = await RoleDAO.find_one_or_none(name=role_name)
+        if role:
+            user_roles.append(role)
+        else:
+            raise HTTPException(status_code=400, detail="Role not found")
+
+    user_tags = []
+    
+    for tag_name in user.tags:
+        role = await ListenerTagsDAO.find_one_or_none(name=tag_name)
+        if role:
+            user_tags.append(role)
+        else:
+            raise HTTPException(status_code=400, detail="Role not found")
 
     hashed_password = get_hashed_password(user.password)
 
-    user_data = {
+    user = await UsersDAO.add_one({
         "username": user.username,
         "email": user.email,
         "password": hashed_password,
-        "role": user.role,
         "birthday": user.birthday
-    }
-
-    user_id = await UsersDAO.add_one(user_data)
+    })
     
-    print(f"{user_id} FSDEWJKKJLREJKL:")
+    for tag in user_roles:
+        await ListenerTagsDAO.add_one({
+            "user_id": user.id,
+            "tag_id": tag.id
+        })
     
-    if user.role == "Artist":
-        artist_profile_data = {
-            "description": "Hi, I'm an artist"
-        }
-        artist_profile_id = await ArtistDAO.add_one(artist_profile_data)
+    for role in user_roles:
+        await UserToRoleDAO.add_one({
+            "user_id": user.id,
+            "role_id": role.id
+        })
+    
+    artist_profile_id = await ArtistDAO.add_one({"description": "Hi, I'm an artist"})
+    await UsersDAO.edit_one(user.id, {"artist_profile_id": artist_profile_id})
+    await ProducerDAO.edit_one(artist_profile_id, {"is_available": False})
 
-        await UsersDAO.edit_one(user_id, {"artist_profile_id": artist_profile_id})
+    producer_profile_id = await ProducerDAO.add_one({"description": "Hi, I'm a producer"})
+    await UsersDAO.edit_one(user.id, {"producer_profile_id": producer_profile_id})
+    await ArtistDAO.edit_one(user.id, {"is_available": False})
 
-    if user.role == "Producer":
-        producer_profile_data = {
-            "description": "Hi, I'm a producer"
-        }
-        producer_profile_id = await ProducerDAO.add_one(producer_profile_data)
-
-        await UsersDAO.edit_one(user_id, {"producer_profile_id": producer_profile_id})
-
-    return user_id
+    return user.id
 
      
 @auth.post('/login', summary="Signin")
@@ -204,7 +312,7 @@ async def spotify_callback(code, response: Response):
         'client_id': settings.spotify.CLIENT_ID,
         'client_secret': settings.spotify.CLIENT_SECRET,
         "grant_type": "authorization_code",
-        'redirect_uri': redirect_uri,
+        'redirect_uri': "http://localhost:5173/profile",
     }
 
     auth_response = requests.post('https://accounts.spotify.com/api/token', headers={'Content-Type': 'application/x-www-form-urlencoded'}, data=payload)

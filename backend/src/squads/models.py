@@ -12,21 +12,27 @@ from src.database import Base
 import os
 from typing import List
 
+squad_artist_profile_association = Table('squad_artist_profile_association', Base.metadata,
+    Column('squad_id', Integer, ForeignKey('squads.id')),
+    Column('artist_profile_id', Integer, ForeignKey('artist_profiles.id'))
+)
 
-class Beat(Base):
-    __tablename__ = "beats"
+squad_producer_profile_association = Table('squad_producer_profile_association', Base.metadata,
+    Column('squad_id', Integer, ForeignKey('squads.id')),
+    Column('producer_profile_id', Integer, ForeignKey('producer_profiles.id'))
+)
+
+class Squad(Base):
+    __tablename__ = "squads"
     
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False)
     picture: Mapped[str] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(nullable=True)
     file_path: Mapped[str] = mapped_column(nullable=False)
     co_prod: Mapped[str] = mapped_column(nullable=True)
     prod_by: Mapped[str] = mapped_column(nullable=True)
+    artist_profiles: Mapped[List["ArtistProfile"]] = relationship(secondary=squad_artist_profile_association, back_populates="squads")
+    producer_profiles: Mapped[List["ProducerProfile"]] = relationship(secondary=squad_producer_profile_association, back_populates="squads")
     
-    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship("User")  # Указываем связь с таблицей User
-    
-    is_available: Mapped[bool] = mapped_column(default=False)
-    created_at: Mapped[datetime.datetime] = mapped_column(DateTime, default=datetime.datetime.utcnow)
-
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user: Mapped["User"] = relationship("User")

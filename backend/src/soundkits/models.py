@@ -17,7 +17,7 @@ from src.auth.models import User
 class Soundkit(Base):
     __tablename__ = "soundkits"
     
-    title: Mapped[str] = mapped_column(nullable=False)
+    name: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=True)
     picture_url: Mapped[str] = mapped_column(nullable=True)
     file_url: Mapped[str] = mapped_column(nullable=False)

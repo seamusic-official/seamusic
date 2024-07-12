@@ -18,7 +18,7 @@ class SQLAlchemyRepository(AbstractRepository):
     @classmethod
     async def add_one(cls, data: dict) -> int:
         async with async_session_maker() as session:
-            stmt = insert(cls.model).values(**data).returning(cls.model.id)
+            stmt = insert(cls.model).values(**data).returning(cls.model)
             result = await session.execute(stmt)
             await session.commit()
             return result.scalar()

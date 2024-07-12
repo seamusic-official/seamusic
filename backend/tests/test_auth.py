@@ -8,7 +8,8 @@ def test_register():
         "email": "test_email@test.test",
         "birthday": "2024-06-30",
         "password": "test_password",
-        "role": "Listener"
+        "tags": ["supertrap, newjazz, rage, hyperpop"],
+        "role": ["listener"]
     })
 
     assert response.status_code == 201

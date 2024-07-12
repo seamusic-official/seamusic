@@ -26,8 +26,17 @@ from src.albums.models import Album
 from src.tracks.router import tracks
 from src.tracks.models import Track
 
+from src.subscription.router import subscription
+from src.subscription.models import TelegramAccount
+
+from src.tags.router import tags
+from src.tags.models import Tag
+
 from src.licenses.router import licenses
 from src.messages.router import messages
+
+from src.squads.models import Squad
+from src.squads.router import squads
 
 from src.database import engine
 from src.config import settings
@@ -37,6 +46,20 @@ app = FastAPI(
     description = "High-perfomance musical application",
 )
 
+app.include_router(auth)
+app.include_router(licenses)
+app.include_router(beats)
+app.include_router(beatpacks)
+app.include_router(tracks)
+app.include_router(albums)
+app.include_router(soundkits)
+app.include_router(messages)
+app.include_router(music)
+app.include_router(subscription)
+app.include_router(tags)
+app.include_router(squads)
+
+
 admin = Admin(app, engine)
 
 class BeatsAdmin(ModelView, model=Beat):
@@ -44,6 +67,15 @@ class BeatsAdmin(ModelView, model=Beat):
 
 class UserAdmin(ModelView, model=User):
     column_list = [User.id, User.username]
+
+class SquadAdmin(ModelView, model=Squad):
+    column_list = [Squad.id, Squad.name]
+
+class TagAdmin(ModelView, model=Tag):
+    column_list = [Tag.id, Tag.name]
+
+class SoundkitAdmin(ModelView, model=Soundkit):
+    column_list = [Tag.id, Soundkit.name]
     
 class ProducerProfileAdmin(ModelView, model=ProducerProfile):
     column_list = [ProducerProfile.id, ProducerProfile.user]
@@ -51,18 +83,14 @@ class ProducerProfileAdmin(ModelView, model=ProducerProfile):
 class ArtistProfileAdmin(ModelView, model=ArtistProfile):
     column_list = [ArtistProfile.id, ArtistProfile.user]
 
-class BeatPackAdmin(ModelView, model=Beatpack):
+class BeatpackAdmin(ModelView, model=Beatpack):
     column_list = [Beatpack.id, Beatpack.title]
 
 admin.add_view(BeatsAdmin)
-admin.add_view(BeatPackAdmin)
+admin.add_view(BeatpackAdmin)
 admin.add_view(UserAdmin)
 admin.add_view(ProducerProfileAdmin)
 admin.add_view(ArtistProfileAdmin)
-
-@music.get("/search", summary="Search")
-async def search(id):   
-    return 0
 
 origins = [
     "http://127.0.0.1:5173", "http://localhost:5173"
@@ -75,16 +103,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(auth)
-app.include_router(licenses)
-app.include_router(beats)
-app.include_router(beatpacks)
-app.include_router(tracks)
-app.include_router(albums)
-app.include_router(soundkits)
-app.include_router(messages)
-app.include_router(music)
 
 # @app.on_event("startup")
 # async def startup():

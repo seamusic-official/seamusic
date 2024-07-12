@@ -6,22 +6,36 @@ import HelloLayout from '../../components/layouts/HelloLayout'
 import DecorText from '../../components/decor-text/DecorText'
 import Input from '../../components/inputs/Input'
 
+interface CheckboxProps {
+  id: string;
+  value: string;
+  handleCheckboxChange: (value: string, checked: boolean) => void;
+}
+
 export default function Register() {
   const [username, setUsername] = useState("")
-  const [role, setRole] = useState("")
+  const [roles, setRoles] = useState<string[]>([])
   const [year, setYear] = useState(0)
   const [month, setMonth] = useState(0)
   const [day, setDay] = useState(0) 
   const [password, setPassword] = useState("")
   const [email, setEmail] = useState("")
   const navigate = useNavigate()
-
+  const handleCheckboxChange = (value: string, checked: boolean) => {
+    if (checked) {
+      setRoles([...roles, value]);
+    } else {
+      setRoles(roles.filter((role) => role !== value));
+    }
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     const birthday = new Date(year, month - 1, day);
+    console.log(roles)
 
     try {
-        const response = await AuthService.register(username, role, birthday.toISOString().split('T')[0], password, email);
+        const response = await AuthService.register(username, roles, birthday.toISOString().split('T')[0], password, email);
         navigate("/auth/login")
         console.log('Registration successful:', response.data);
       } catch (error) {
@@ -133,27 +147,27 @@ export default function Register() {
               </div>
             </div>
             <div className="flex-col mt-4">
-              <span className="mb-1 block font-extrabold text-xs my-2 tracking-wider"><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'>*</span> Who are you?</span>
+              <span className="mb-1 block font-extrabold text-xs my-2 tracking-wider"><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'></span> Who are you?</span>
               <div className="flex">
               <label htmlFor="artist" className="flex ">
                   <input 
                     id="artist" 
-                    type="radio" 
+                    type="checkbox" 
                     name="role" 
-                    value="Artist"
+                    value="artist"
                     className="my-auto hover:color-red-700"
-                    onChange={(e) => setRole(e.target.value)}
+                    onChange={(e) => handleCheckboxChange(e.target.value, e.target.checked)}
                   />
                   <span className="text-xs my-auto ml-3 mr-8 text-center font-semibold tracking-wide">Artist</span>
               </label>
-              <label htmlFor="beatmaker" className="flex ">
+              <label htmlFor="producer" className="flex ">
                   <input 
-                    id="beatmaker" 
-                    type="radio" 
+                    id="producer" 
+                    type="checkbox" 
                     name="role" 
-                    value="Producer"
+                    value="producer"
                     className="my-auto border-solid border-green-900"
-                    onChange={(e) => setRole(e.target.value)}
+                    onChange={(e) => handleCheckboxChange(e.target.value, e.target.checked)}
                   />
                   <span className="text-xs my-auto ml-3 mr-8 text-center font-semibold tracking-wide">Producer</span>
               </label>
@@ -161,18 +175,32 @@ export default function Register() {
                   <input 
                     id="listener" 
                     defaultChecked 
-                    type="radio" 
+                    type="checkbox" 
                     name="role" 
-                    value="Listener"
+                    value="listener"
                     className="my-auto" 
-                    onChange={(e) => setRole(e.target.value)}
+                    onChange={(e) => handleCheckboxChange(e.target.value, e.target.checked)}
                   />
-                  <span className="text-xs my-auto ml-3 mr-8 text-center font-semibold tracking-wide">Listener</span>
+                  <span className="text-xs my-auto ml-3 mr-8 text-center font-semibold tracking-wide">Listener (every role with it)</span>
               </label>
           </div>
-
-
-              <br />
+          <div className="flex-col mt-4">
+              <span className="mb-1 block font-extrabold text-xs my-2 tracking-wider"><span className='mr-1 bg-clip-text text-transparent bg-gradient-to-r from-emerald-800 to-emerald-500'></span>What do you prefer in music?</span>
+              <div className="flex">
+              <label htmlFor="artist" className="flex ">
+                  <input 
+                    id="artist" 
+                    type="checkbox" 
+                    name="role" 
+                    value="artist"
+                    className="my-auto hover:color-red-700"
+                    onChange={(e) => handleCheckboxChange(e.target.value, e.target.checked)}
+                  />
+                  <span className="text-xs my-auto ml-3 mr-8 text-center font-semibold tracking-wide">Artist</span>
+              </label>
+              </div>
+          </div>
+          <br />
               <div className="text-xs tracking-wide font-medium ">
                 <span className="inline-block text-center  mb-3">By clicking on Sign up, you agree to Spotify's <a href=""
                     className="text-emerald-600 underline"> Terms and Conditions of Use.</a></span>
