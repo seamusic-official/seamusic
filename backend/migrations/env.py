@@ -20,13 +20,16 @@ if config.config_file_name is not None:
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
 
-from src.auth.models import Base as AuthBases
-from src.music.models import Base as MusicBases
+from src.albums.models import Album, album_track_association, artist_profile_album_association
+from src.auth.models import User, ProducerProfile, ArtistProfile, Role, user_to_roles_association
+from src.beats.models import Beat
+from src.beatpacks.models import Beatpack
+from src.tags.models import Tag
+from src.database import Base
 
 
 target_metadata = [
-    AuthBases.metadata,
-    MusicBases.metadata
+    Base.metadata, 
 ]
 
 import sys

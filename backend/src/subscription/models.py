@@ -25,6 +25,9 @@ class OnlyTelegramSubscribeMonth(Base):
 
     telegram_id: Mapped[str] = mapped_column(nullable=False)
     subscribe: Mapped[bool] = mapped_column(nullable=False, default=False)
+    
+    telegram_account_id = Column(Integer, ForeignKey('telegram_accounts.id'))
+    telegram_account = relationship("TelegramAccount", back_populates="only_telegram_subscribe_month")
 
 class OnlyTelegramSubscribeYear(Base):
     __tablename__ = 'only_telegram_subscribe_year'
@@ -32,8 +35,13 @@ class OnlyTelegramSubscribeYear(Base):
     telegram_id: Mapped[str] = mapped_column(nullable=False)
     subscribe: Mapped[bool] = mapped_column(nullable=False, default=False)
 
+    telegram_account_id = Column(Integer, ForeignKey('telegram_accounts.id'))
+    telegram_account = relationship("TelegramAccount", back_populates="only_telegram_subscribe_year")
+
 class TelegramAccount(Base):
     __tablename__ = 'telegram_accounts'
 
     telegram_id: Mapped[str] = mapped_column(nullable=False)
     subscribe: Mapped[bool] = mapped_column(nullable=False, default=False)
+    only_telegram_subscribe_year: Mapped["OnlyTelegramSubscribeYear"] = relationship(back_populates="telegram_account")
+    only_telegram_subscribe_month: Mapped["OnlyTelegramSubscribeMonth"] = relationship(back_populates="telegram_account")

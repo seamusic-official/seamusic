@@ -86,6 +86,9 @@ class ArtistProfileAdmin(ModelView, model=ArtistProfile):
 class BeatpackAdmin(ModelView, model=Beatpack):
     column_list = [Beatpack.id, Beatpack.title]
 
+admin.add_view(SoundkitAdmin)
+admin.add_view(TagAdmin)
+admin.add_view(SquadAdmin)
 admin.add_view(BeatsAdmin)
 admin.add_view(BeatpackAdmin)
 admin.add_view(UserAdmin)

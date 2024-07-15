@@ -2,7 +2,7 @@ from fastapi import UploadFile, File, APIRouter, Depends, HTTPException, Respons
 from src.exceptions import CustomException, NotFoundException, NoRightsException
 from src.notifications.utils import send_message
 from src.auth.dependencies import get_current_user
-from src.tags.services import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO
+from src.tags.services import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
 from src.auth.services import ProducerDAO, UsersDAO, ArtistDAO
 from src.tags.schemas import STag
 from src.auth.schemas import SUser
@@ -14,6 +14,10 @@ tags = APIRouter(
     tags = ["All tags"]
 )
 
+@tags.post('/', summary='Add tags')
+async def add_tag(tag_data: STag, user: SUser = Depends(get_current_user)) -> List[STag]:
+    listener_tags = await TagsDAO(tag_data)
+    return listener_tags
 
 @tags.get('/my_listener_tags', summary='Get my listener tags')
 async def get_my_listener_tags(user: SUser = Depends(get_current_user)) -> List[STag]:

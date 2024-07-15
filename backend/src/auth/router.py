@@ -6,7 +6,7 @@ from src.notifications.utils import send_message
 from src.auth.dependencies import get_current_user
 from src.services import MediaRepository
 from src.auth.services import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
-from src.tags.services import ListenerTagsDAO
+from src.tags.services import ListenerTagsDAO, TagsDAO
 from src.auth.utils import authenticate_user, create_access_token, create_refresh_token, get_hashed_password, verify_password
 from src.auth.schemas import (SUser, SArtist, SProducer, SRegisterUser, SLoginUser,
                               SUserBase, SUserUpdate, SArtistUpdate, SProducerUpdate
@@ -234,9 +234,10 @@ async def register(user: SRegisterUser):
     user_tags = []
     
     for tag_name in user.tags:
-        role = await ListenerTagsDAO.find_one_or_none(name=tag_name)
-        if role:
-            user_tags.append(role)
+        tag = await TagsDAO.find_one_or_none(name=tag_name)
+
+        if tag:
+            user_tags.append(tag)
         else:
             raise HTTPException(status_code=400, detail="Role not found")
 
