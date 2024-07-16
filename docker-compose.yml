@@ -21,7 +21,7 @@ services:
     restart: always
     container_name: backend
     build:
-      context: .
+      context: backend
       dockerfile: "Dockerfile"
     env_file:
       - .env
@@ -30,7 +30,17 @@ services:
     depends_on:
       - postgres
     volumes:
-      - ./src:/src
+      - ./backend/src:/src
+
+  migrations:
+    container_name: migrations
+    env_file:
+      - .env
+    build:
+      context: backend
+      dockerfile: "Dockerfile_migrations"
+    depends_on:
+      - postgres
 
 volumes:
   postgres_music_volume:
