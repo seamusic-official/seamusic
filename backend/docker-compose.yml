@@ -14,8 +14,8 @@ services:
       timeout: 5s
       retries: 5
     ports:
-      - ${DB_PORT}:${DB_PORT}
-    command: -p ${DB_PORT}
+      - ${POSTGRES_PORT}:${POSTGRES_PORT}
+    command: -p ${POSTGRES_PORT}
 
   backend:
     restart: always
