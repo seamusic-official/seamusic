@@ -44,7 +44,7 @@ services:
     depends_on:
       db:
         condition: service_healthy
-    command: ['/app/app.sh']
+    command: ['sh', '/app/app.sh']
     ports:
       - 8000:8000
     restart: always
