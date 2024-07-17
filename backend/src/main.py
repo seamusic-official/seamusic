@@ -8,7 +8,7 @@ from sqladmin import Admin, ModelView
 
 from src.auth.router import auth
 from src.auth.models import User, ProducerProfile, ArtistProfile
-
+from src.comments.router import comments
 from src.beats.router import beats
 from src.beats.models import Beat
 
@@ -58,6 +58,8 @@ app.include_router(music)
 app.include_router(subscription)
 app.include_router(tags)
 app.include_router(squads)
+app.include_router(comments)
+
 
 
 admin = Admin(app, engine)
