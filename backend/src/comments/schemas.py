@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
-from src.auth.schemas import SUser
-from pydantic import BaseModel
+# from src.auth.schemas import SUser
+from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
 
@@ -43,3 +43,42 @@ class SBeatPack(SBeatPackBase):
 
     class Config:
         orm_mode = True
+
+
+
+class CommentCreate(BaseModel):
+    
+    """
+
+    Это схема нужно для того что бы создать коментарию
+
+    """
+
+    comment: str
+
+
+class CommentUpdate(BaseModel):
+    comment: str
+    
+
+class GetAuthor(BaseModel):
+    id: int
+    username: str
+    picture_url: str
+    email: EmailStr
+
+
+class CommentResponse(BaseModel):
+    id: int
+    comment: str
+    comment_creator_id: int
+    beat_id: int
+    beat_pack_id: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
+    is_available: bool
+    comment_author: GetAuthor
+
+    class Config:
+        orm_mode = True
+
