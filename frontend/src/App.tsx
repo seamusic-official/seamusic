@@ -1,239 +1,96 @@
-import { useEffect, useState } from 'react';
-import PictureLink from './components/PictureLink'
-import MainLayout from './components/layouts/MainLayout'
-import SpotifyService from './services/SpotifyService';
-import SongLink from './components/songs/SongLink';
-import ArtistLink from './components/artists/ArtistLink';
-import useAuth from './hooks/useAuth';
-import { SongLoading } from './components/loading-elements/SongLoading';
-import SongLinkLoading from './components/loading-elements/SongLinkLoading';
-import ArtistLinkLoading from './components/loading-elements/ArtistLinkLoading';
-import KitLinkLoading from './components/loading-elements/KitLinkLoading';
-import PictureLinkLoading from './components/loading-elements/PictureLinkLoading';
-import BeatpackService from './services/BeatpackServise';
-import AuthService from './services/AuthService';
+import { Route, Routes } from 'react-router-dom'
+import Hello from './pages/hello/Hello'
+import Search from './pages/search/Search'
+import Notifications from './pages/notifications/Notifications'
+import Liked from './pages/playlists/Liked'
+import Login from './pages/auth/Login'
+import Register from './pages/auth/Register'
+import Profile from './pages/profile/Profile'
+import EditProfile from './pages/profile/EditProfile'
+import KitDetail from './pages/kits/KitDetail'
+import BeatPack from './pages/beatpacks/Beatpack'
+import AddBeatpack from './pages/beatpacks/AddBeatpack'
+import BeatDetail from './pages/beat-detail/BeatDetail'
+import Studio from './pages/dashboard/Studio'
+import Messages from './pages/messages/Messages'
+import MessagesDetail from './pages/messages/MessagesDetail'
+import AlbumDetail from './pages/albums/AlbumDetail'
+import RouterLayoutWithStaticPlayer from './components/layouts/RouterLayoutWithStaticPlayer'
+import { useAppSelector } from './hooks/redux'
+import Home from './pages/home/Home'
 
 function App() {
-  const [albums, setAlbums] = useState([]);
-  const [beatpacks, setBeatpacks] = useState([]);
-  const [loading, setLoading] = useState(true);
-  // const [beats, setBeats] = useState([]);
-  const [tracks, setTracks] = useState([]);
-  // const [artists, setArtists] = useState([]);
-  const [producers, setProducers] = useState([])
+	const { isAuthenticated } = useAppSelector(state => state.auth)
+	console.log(isAuthenticated)
+	return (
+		<>
+			<Routes>
+				<Route path='/' element={<Hello />} />
 
-  const searchParams = new URLSearchParams(window.location.search);
-  const code = searchParams.get('code');
-  useAuth(code)
+				<Route path='/auth'>
+					<Route path='login' element={<Login />} />
+					<Route path='register' element={<Register />} />
+				</Route>
 
-  // const user = useAppSelector((state) => state.auth.user);
+				<Route
+					element={<RouterLayoutWithStaticPlayer auth={isAuthenticated} />}
+				>
+					<Route path='/home' element={<Home />} />
+					<Route path='/search' element={<Search />} />
+					<Route path='/notifications' element={<Notifications />} />
+					<Route path='/liked' element={<Liked />} />
+					<Route path='/profile'>
+						<Route index element={<Profile />} />
+						<Route path=':id' element={<Profile />} />
+						<Route path='update' element={<EditProfile />} />
+					</Route>
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await SpotifyService.get_albums();
-        const responseData = response.data;
-        setAlbums(responseData);
-        setLoading(false)
-      } catch (error) {
-        setLoading(true)
-        console.error(error);
-      }
-    };
+					<Route path='/artist'>
+						<Route index element={<Profile />} />
+						<Route path=':id' element={<Profile />} />
+						<Route path='update' element={<EditProfile />} />
+					</Route>
 
-    fetchData();
-  }, []);
+					<Route path='/producer'>
+						<Route index element={<Profile />} />
+						<Route path=':id' element={<Profile />} />
+						<Route path='update' element={<EditProfile />} />
+					</Route>
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await AuthService.get_producers();
-        const responseData = response.data;
-        setProducers(responseData);
-        setLoading(false)
-      } catch (error) {
-        setLoading(true)
-        console.error(error);
-      }
-    };
+					<Route path='/soundkits'>
+						<Route path=':id' element={<KitDetail />} />
+						<Route path='add/' element={<BeatPack />} />
+						<Route path='update' element={<BeatPack />} />
+					</Route>
 
-    fetchData();
-  }, []);
+					<Route path='/beatpacks'>
+						<Route path=':id' element={<BeatPack />} />
+						<Route path='add/' element={<AddBeatpack />} />
+						<Route path='update/' element={<BeatPack />} />
+					</Route>
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await BeatpackService.all();
-        const responseData = response.data;
-        setBeatpacks(responseData);
-        setLoading(false)
-      } catch (error) {
-        setLoading(true)
-        console.error(error);
-      }
-    };
+					<Route path='/beats'>
+						<Route path=':id' element={<BeatDetail />} />
+						<Route path='add/' element={<BeatDetail />} />
+						<Route path='update/:id' element={<BeatDetail />} />
+					</Route>
 
-    fetchData();
-  }, []);
+					<Route path='/dashboard'>
+						<Route index element={<Studio />} />
+					</Route>
 
+					<Route path='/messages'>
+						<Route index element={<Messages />} />
+						<Route path='chat/:slug' element={<MessagesDetail />} />
+					</Route>
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await SpotifyService.get_all();
-        const responseData = response.data;
-        setTracks(responseData);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-    fetchData();
-  }, []);
-
-  
-  return (
-    <MainLayout>
-      <div className="mb-4 ml-2 mt-4">
-        <a className="p-2 m-1 border-emerald-600 border hover:border-emerald-800 font-semibold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit" href="">
-          Beats
-        </a>
-        <a className="p-2 m-1 border-emerald-600 border hover:border-emerald-800 font-semibold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit" href="">
-          Artists
-        </a>
-        <a className="p-2 m-1 border-emerald-600 border hover:border-emerald-800 font-semibold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit" href="">
-          Tracks
-        </a>
-      </div>
-
-      <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">
-                Playlists:
-              </h2>
-        <div >
-        {!loading ? (
-              albums ? (
-                <div className="flex overflow-hidden justify-start items-center">
-                  {albums.map((item) => (
-                    <div>
-                      <PictureLink link={`/albums/${item.id}`} image={item.image_url} title={item.name}/>
-                    </div>
-                  ))}
-                </div>
-            ) : (
-              <PictureLinkLoading />
-            )
-        ) : (
-          <div className="flex overflow-hidden justify-start items-center">
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-          </div>
-        )}
-        </div>
-        <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">
-                Tracks:
-              </h2>
-              {!loading ? (
-                tracks ? (
-                        <div className="p-4">
-                          <div className="flex justify-start items-center gap-4 flex-wrap">
-
-                          {tracks.map((item) => (
-                            <div>
-                              <SongLink link={`/albums/${item.id}`} image={item.image_url} title={item.name}/>
-                            </div>
-                          ))}
-                          </div>
-                        </div>
-                    ) : (
-                      <div className="p-4">
-                        <div className="flex justify-start items-center gap-4 flex-wrap">
-                          <SongLinkLoading />
-                        </div>
-                      </div>
-                    )              
-              ) : (
-                <div className="p-4">
-                  <div className="flex justify-start items-center gap-4 flex-wrap">
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                    <SongLinkLoading />
-                  </div>
-                </div>
-              )}
-          <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">
-            Producers:
-            </h2>
-            <div className="flex overflow-auto justify-start items-center m-1">
-              {!loading ? (
-                <div>
-                  {producers.map((producer) => (
-                    <ArtistLink title={producer.name} image={producer.picture_url}/>
-                  ))}
-                </div>
-              ) : (
-                <div>
-                  <ArtistLinkLoading />
-                  <ArtistLinkLoading />
-                  <ArtistLinkLoading />
-                  <ArtistLinkLoading />
-                </div>
-              )}
-
-              <ArtistLinkLoading />
-          </div>
-              <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">
-                Artists:
-              </h2>
-            <div className="flex overflow-auto justify-start items-center m-1">
-              <ArtistLinkLoading />
-              <ArtistLinkLoading />
-              <ArtistLinkLoading />
-              <ArtistLinkLoading />
-              <ArtistLinkLoading />
-            </div>
-
-
-        <h2 className="mt-2 mb-1 text-white text-3xl capitalize font-extrabold tracking-tighter" id="playlist-title">
-                Beatpacks:
-              </h2>
-              {!loading ? (
-              beatpacks ? (
-                <div className="flex overflow-auto justify-start items-center">
-                  {beatpacks.map((item) => (
-                    <div>
-                      <PictureLink link={`/beatpacks/${item.id}`} image={item.picture} title={item.title}/>
-                    </div>
-                  ))}
-                </div>
-            ) : (
-              <PictureLinkLoading />
-            )
-        ) : (
-          <div className="flex overflow-auto justify-start items-center">
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-            <PictureLinkLoading />
-          </div>
-        )}
-    </MainLayout>
-  )
+					<Route path='/albums'>
+						<Route path=':id' element={<AlbumDetail />} />
+					</Route>
+				</Route>
+			</Routes>
+		</>
+	)
 }
 
 export default App

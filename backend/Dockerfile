@@ -1,38 +1,12 @@
-FROM python:3.12.1
+FROM python:slim
 
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+WORKDIR /app
 
-# Settings
-ENV DB_HOST_TEST="0.0.0.0"
-ENV DB_PORT_TEST="5432"
-ENV DB_USER_TEST="postgres"
-ENV DB_NAME_TEST="postgres"
-ENV DB_PASS_TEST="postgres"
+ENV PYTHONDONTWRITEBYCODE 1
+ENV PYTHONUNBUFFERED 1
 
-ENV DB_HOST="0.0.0.0"
-ENV DB_PORT="5432"
-ENV DB_USER="postgres"
-ENV DB_NAME="postgres"
-ENV DB_PASS="postgres"
+COPY requirements/dev.txt requirements/dev.txt
 
-ENV JWT_SECRET_KEY="HYPERCYBEREBATBSECRETKEY"
-ENV JWT_REFRESH_SECRET_KEY="HYPERCYBEREBATBSECRETKEYREFRESH"
+RUN pip install -r requirements/dev.txt
 
-ENV SPOTIFY_CLIENT_SECRET="79e9fa5641eb4f5c8d091aa0ed7f2037"
-ENV SPOTIFY_CLIENT_ID="58f5791a8b624f0fbe804737ead263c0"
-ENV SPOTIFY_REDIRECT_URI="http://localhost:5173"
-
-ENV YANDEX_CLOUD_OAUTH_TOKEN="y0_AgAAAABk71zrAATuwQAAAAEE408sAAAPjub7fqtH57mFwHu8Puu4jrnV0g"
-ENV YANDEX_CLOUD_ID="b1g58vi6e2tqs4i8do0g"
-
-ENV AWS_ACCESS_KEY_ID="YCAJEIZ7SEKMs5Fpe8sDhg8rO"
-ENV AWS_SECRET_ACCESS_KEY="YCNvpHgLm3xbwsySlHmsPd9oKWIEsVAdFbO6Ivil"
-
-# Building
-RUN pip install --upgrade pip  --no-cache-dir
-COPY "requirements/dev.txt" .
-RUN pip install --no-cache-dir -r "dev.txt"
-COPY src src
-
-CMD uvicorn src.main:app --host "0.0.0.0" --port "8000"
+COPY . .

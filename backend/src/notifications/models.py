@@ -5,7 +5,10 @@ from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
 from sqlalchemy.orm import relationship
 
-Base = declarative_base()
+from src.database import Base
+
+
+# Base = declarative_base()
 
 class Notification(Base):
     __tablename__ = "notifications"

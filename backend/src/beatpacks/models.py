@@ -29,5 +29,5 @@ class Beatpack(Base):
     title: Mapped[str] = mapped_column(nullable=False)
     description: Mapped[str] = mapped_column(nullable=False)    
     
-    user: Mapped["User"] = relationship("User", secondary=user_to_beatpacks_association_table)
-    beats: Mapped["Beat"] = relationship("Beat", secondary=beats_to_beatpacks_association_table)
+    user: Mapped[list["User"]] = relationship("User", secondary=user_to_beatpacks_association_table)
+    beats: Mapped[list["Beat"]] = relationship("Beat", secondary=beats_to_beatpacks_association_table)

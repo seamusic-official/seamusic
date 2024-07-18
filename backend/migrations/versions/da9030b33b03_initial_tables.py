@@ -1,8 +1,8 @@
-"""INITAL BLYAT
+"""Initial tables
 
-Revision ID: b3c5602e1a6f
-Revises: ac5f3bbae7d6
-Create Date: 2024-07-13 10:36:06.150051
+Revision ID: da9030b33b03
+Revises: 
+Create Date: 2024-07-19 00:42:16.563661
 
 """
 from typing import Sequence, Union
@@ -12,8 +12,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision: str = 'b3c5602e1a6f'
-down_revision: Union[str, None] = 'ac5f3bbae7d6'
+revision: str = 'da9030b33b03'
+down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
@@ -30,6 +30,40 @@ def upgrade() -> None:
     )
     op.create_table('beatpacks',
     sa.Column('title', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('chats',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('licenses',
+    sa.Column('title', sa.String(), nullable=False),
+    sa.Column('price', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=False),
+    sa.Column('picture_url', sa.String(), nullable=True),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('messages',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('notifications',
+    sa.Column('name', sa.String(), nullable=False),
     sa.Column('description', sa.String(), nullable=False),
     sa.Column('id', sa.Integer(), nullable=False),
     sa.Column('is_available', sa.Boolean(), nullable=False),
@@ -61,11 +95,42 @@ def upgrade() -> None:
     sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.PrimaryKeyConstraint('id')
     )
+    op.create_table('telegram_accounts',
+    sa.Column('telegram_id', sa.String(), nullable=False),
+    sa.Column('subscribe', sa.Boolean(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('artist_tags_association',
     sa.Column('artist_profile_id', sa.Integer(), nullable=True),
     sa.Column('tag_id', sa.Integer(), nullable=True),
     sa.ForeignKeyConstraint(['artist_profile_id'], ['artist_profiles.id'], ),
     sa.ForeignKeyConstraint(['tag_id'], ['tags.id'], )
+    )
+    op.create_table('only_telegram_subscribe_month',
+    sa.Column('telegram_id', sa.String(), nullable=False),
+    sa.Column('subscribe', sa.Boolean(), nullable=False),
+    sa.Column('telegram_account_id', sa.Integer(), nullable=True),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['telegram_account_id'], ['telegram_accounts.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_table('only_telegram_subscribe_year',
+    sa.Column('telegram_id', sa.String(), nullable=False),
+    sa.Column('subscribe', sa.Boolean(), nullable=False),
+    sa.Column('telegram_account_id', sa.Integer(), nullable=True),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['telegram_account_id'], ['telegram_accounts.id'], ),
+    sa.PrimaryKeyConstraint('id')
     )
     op.create_table('producer_tags_association',
     sa.Column('producer_profile_id', sa.Integer(), nullable=True),
@@ -128,6 +193,19 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['tag_id'], ['tags.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], )
     )
+    op.create_table('soundkits',
+    sa.Column('name', sa.String(), nullable=False),
+    sa.Column('description', sa.String(), nullable=True),
+    sa.Column('picture_url', sa.String(), nullable=True),
+    sa.Column('file_url', sa.String(), nullable=False),
+    sa.Column('user_id', sa.Integer(), nullable=False),
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
     op.create_table('squads',
     sa.Column('name', sa.String(), nullable=False),
     sa.Column('picture', sa.String(), nullable=True),
@@ -165,6 +243,12 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['beatpack_id'], ['beatpacks.id'], ),
     sa.ForeignKeyConstraint(['user_id'], ['users.id'], )
     )
+    op.create_table('user_to_licenses_association',
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.Column('license_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['license_id'], ['licenses.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], )
+    )
     op.create_table('user_to_roles_association',
     sa.Column('user_id', sa.Integer(), nullable=False),
     sa.Column('role_id', sa.Integer(), nullable=False),
@@ -190,6 +274,21 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['artist_profile_id'], ['artist_profiles.id'], ),
     sa.ForeignKeyConstraint(['track_id'], ['tracks.id'], )
     )
+    op.create_table('base_comment',
+    sa.Column('id', sa.Integer(), nullable=False),
+    sa.Column('comment', sa.String(), nullable=False),
+    sa.Column('comment_creator_id', sa.Integer(), nullable=False),
+    sa.Column('beat_id', sa.Integer(), nullable=False),
+    sa.Column('beat_pack_id', sa.Integer(), nullable=False),
+    sa.Column('is_available', sa.Boolean(), nullable=False),
+    sa.Column('created_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', postgresql.TIMESTAMP(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['beat_id'], ['beats.id'], ),
+    sa.ForeignKeyConstraint(['beat_pack_id'], ['beatpacks.id'], ),
+    sa.ForeignKeyConstraint(['comment_creator_id'], ['users.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_base_comment_id'), 'base_comment', ['id'], unique=False)
     op.create_table('beats_to_beatpacks_association_table',
     sa.Column('beat_id', sa.Integer(), nullable=True),
     sa.Column('beat_pack_id', sa.Integer(), nullable=True),
@@ -217,31 +316,16 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['producer_profile_id'], ['producer_profiles.id'], ),
     sa.ForeignKeyConstraint(['squad_id'], ['squads.id'], )
     )
+    op.create_table('user_to_soundkits_association_table',
+    sa.Column('soundkit_id', sa.Integer(), nullable=True),
+    sa.Column('user_id', sa.Integer(), nullable=True),
+    sa.ForeignKeyConstraint(['soundkit_id'], ['soundkits.id'], ),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], )
+    )
     # ### end Alembic commands ###
 
 
 def downgrade() -> None:
     # ### commands auto generated by Alembic - please adjust! ###
-    op.drop_table('squad_producer_profile_association')
-    op.drop_table('squad_artist_profile_association')
-    op.drop_table('likes')
-    op.drop_table('beats_to_beatpacks_association_table')
-    op.drop_table('artist_profile_track_association')
-    op.drop_table('artist_profile_album_association')
-    op.drop_table('album_track_association')
-    op.drop_table('user_to_roles_association')
-    op.drop_table('user_to_beatpacks_association_table')
-    op.drop_table('tracks')
-    op.drop_table('squads')
-    op.drop_table('listener_tags_association')
-    op.drop_table('beats')
-    op.drop_table('albums')
-    op.drop_table('users')
-    op.drop_table('producer_tags_association')
-    op.drop_table('artist_tags_association')
-    op.drop_table('tags')
-    op.drop_table('roles')
-    op.drop_table('producer_profiles')
-    op.drop_table('beatpacks')
-    op.drop_table('artist_profiles')
+    pass
     # ### end Alembic commands ###
