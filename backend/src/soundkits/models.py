@@ -12,7 +12,7 @@ from src.database import Base
 import os
 from typing import List
 
-# from src.auth.models import User
+from src.auth.models import User
 
 class Soundkit(Base):
     __tablename__ = "soundkits"
