@@ -44,6 +44,7 @@ class User(Base):
     roles: Mapped[List["Role"]] = relationship(secondary=user_to_roles_association, back_populates="users")
     tags: Mapped[List["Tag"]] = relationship(secondary=listener_tags_association, back_populates="listener_profiles")
     squads: Mapped["Squad"] = relationship("Squad", overlaps="user")
+    views: Mapped['View'] = relationship('View', back_populates = 'user')
 
 class ArtistProfile(Base):
     __tablename__ = 'artist_profiles'

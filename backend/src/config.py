@@ -15,23 +15,23 @@ class YandexCloudSettings(BaseModel):
 
 
 class SpotifySettings(BaseModel):
-    CLIENT_SECRET: str = os.environ.get("SPOTIFY_CLIENT_SECRET")
-    CLIENT_ID: str = os.environ.get("SPOTIFY_CLIENT_ID")
+    CLIENT_SECRET: str = os.environ.get("SPOTIFY_CLIENT_SECRET", '79e9fa5641eb4f5c8d091aa0ed7f2037')
+    CLIENT_ID: str = os.environ.get("SPOTIFY_CLIENT_ID", '58f5791a8b624f0fbe804737ead263c0')
     REDIRECT_URI: str = os.environ.get("REDIRECT_URI")
 
 
 class DbSettings(BaseModel):
-    DB_HOST: str = os.environ.get("DB_HOST")
-    DB_PORT: int = int(os.environ.get("DB_PORT"))
-    DB_NAME: str = os.environ.get("DB_NAME")
-    DB_USER: str = os.environ.get("DB_USER")
-    DB_PASS: str = os.environ.get("DB_PASS")
+    DB_HOST: str = os.environ.get("DB_HOST", 'localhost')
+    DB_PORT: int = int(os.environ.get("DB_PORT", 5432))
+    DB_NAME: str = os.environ.get("DB_NAME", 'Music')
+    DB_USER: str = os.environ.get("DB_USER", 'postgres')
+    DB_PASS: str = os.environ.get("DB_PASS", 'python$_venv')
 
-    DB_HOST_TEST: str = os.environ.get("DB_HOST_TEST")
-    DB_PORT_TEST: int = int(os.environ.get("DB_PORT_TEST"))
-    DB_USER_TEST: str = os.environ.get("DB_USER_TEST")
-    DB_NAME_TEST: str = os.environ.get("DB_NAME_TEST")
-    DB_PASS_TEST: str = os.environ.get("DB_PASS_TEST")
+    DB_HOST_TEST: str = os.environ.get("DB_HOST_TEST", 'localhost')
+    DB_PORT_TEST: int = int(os.environ.get("DB_PORT_TEST", 5432))
+    DB_USER_TEST: str = os.environ.get("DB_USER_TEST", 'postgres')
+    DB_NAME_TEST: str = os.environ.get("DB_NAME_TEST", 'Music')
+    DB_PASS_TEST: str = os.environ.get("DB_PASS_TEST", 'python$_venv')
 
     @property
     def url(self):

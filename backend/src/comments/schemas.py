@@ -72,8 +72,9 @@ class CommentResponse(BaseModel):
     id: int
     comment: str
     comment_creator_id: int
-    beat_id: int
+    beat_id: Optional[int] = None
     beat_pack_id: Optional[int] = None
+    soundkit_id: Optional[int] = None
     created_at: datetime
     updated_at: datetime
     is_available: bool
