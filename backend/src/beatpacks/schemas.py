@@ -1,22 +1,26 @@
-from pydantic import BaseModel, Field
-from typing import Optional, List
-from datetime import datetime
-from src.beats.schemas import SBeat
+from pydantic import BaseModel
+from typing import List, Optional
 
-class SBeatpackBase(BaseModel):
+class BeatCreate(BaseModel):
+    id: int
+
+class BeatpackCreate(BaseModel):
     title: str
     description: str
-    owner_id: int
-    beats: List[SBeat] = Field(...)
-    
-class SBeatPackCreate(SBeatpackBase):
-    pass
+    beats: List[BeatCreate]
 
-class SBeatPack(SBeatpackBase):
+class BeatResponse(BaseModel):
     id: int
-    liked: bool
-    is_available: bool
-    created_at: datetime
+    name: str
+
+    class Config:
+        orm_mode = True
+
+class BeatpackResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    beats: List[BeatResponse]
 
     class Config:
         orm_mode = True
