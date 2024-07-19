@@ -6,16 +6,18 @@ from datetime import datetime
 
 
 class SBeatBase(BaseModel):
+    id: int
     title: str
     description: Optional[str]
     picture_url: Optional[str]
     file_url: str
     co_prod: Optional[str]
     prod_by: Optional[str]
+    view_count: Optional[int] = None
     
-    playlist_id: Optional[int]
+    playlist_id: Optional[int] = None
     user_id: int
-    beat_pack_id: Optional[int]
+    beat_pack_id: Optional[int] = None
 
 class SBeatUpdate(BaseModel):
     title: Optional[str]

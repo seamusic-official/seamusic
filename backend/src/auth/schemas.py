@@ -19,7 +19,7 @@ class SUserBase(BaseModel):
     email: EmailStr
     picture_url: Optional[str]
     birthday: Optional[date]
-    roles: List[Role]
+    roles: Optional[List[Role]] = None
 
 class SUser(SUserBase):
     id: int

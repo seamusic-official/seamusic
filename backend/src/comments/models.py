@@ -13,6 +13,7 @@ from typing import List
 
 
 
+
 class BaseComment(Base):
     __tablename__ = 'base_comment'
 
@@ -33,4 +34,4 @@ class BaseComment(Base):
     comment_author: Mapped['User'] = relationship('User')
     beat_id: Mapped[int] = mapped_column(Integer, ForeignKey('beats.id'))
     beat_pack_id: Mapped[int] = mapped_column(Integer, ForeignKey('beatpacks.id'))
-
+    soundkit_id: Mapped[int] = mapped_column(Integer, ForeignKey('soundkits.id'))

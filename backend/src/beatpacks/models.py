@@ -5,11 +5,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column
 from sqlalchemy import Table
 from sqlalchemy import ForeignKey
-from sqlalchemy import Integer, DateTime
+from sqlalchemy import Integer, DateTime, String
 
 import datetime
 from src.database import Base
-import os
 from typing import List
 
 
@@ -26,8 +25,9 @@ user_to_beatpacks_association_table = Table('user_to_beatpacks_association_table
 class Beatpack(Base):
     __tablename__ = "beatpacks"
     
-    title: Mapped[str] = mapped_column(nullable=False)
-    description: Mapped[str] = mapped_column(nullable=False)    
-    
-    user: Mapped[list["User"]] = relationship("User", secondary=user_to_beatpacks_association_table)
-    beats: Mapped[list["Beat"]] = relationship("Beat", secondary=beats_to_beatpacks_association_table)
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    title: Mapped[str] = mapped_column(String, nullable=False)
+    description: Mapped[str] = mapped_column(String, nullable=False)    
+    user: Mapped[List["User"]] = relationship("User", secondary=user_to_beatpacks_association_table)
+    beats: Mapped[List["Beat"]] = relationship("Beat", secondary=beats_to_beatpacks_association_table)
+
