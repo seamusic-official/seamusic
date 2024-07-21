@@ -1,4 +1,3 @@
-from src.services import SQLAlchemyRepository
 from src.config import settings
 import spotipy
 from abc import ABC

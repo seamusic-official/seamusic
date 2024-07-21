@@ -5,12 +5,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column
 from sqlalchemy import Table
 from sqlalchemy import ForeignKey
-from sqlalchemy import Integer, DateTime
+from sqlalchemy import Integer
 
-import datetime
 from src.database import Base
-import os
-from typing import List
 
 artist_profile_album_association = Table(
     'artist_profile_album_association',

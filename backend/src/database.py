@@ -2,13 +2,13 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.ext.asyncio import create_async_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import event
+
 from src.config import settings
 from sqlalchemy.orm import Mapped
 from sqlalchemy.orm import mapped_column
-from sqlalchemy import DateTime
+
 from datetime import datetime
-from sqlalchemy import func, text, Column
+from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import TIMESTAMP
 from typing import AsyncGenerator
 

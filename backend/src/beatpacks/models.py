@@ -5,13 +5,9 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column
 from sqlalchemy import Table
 from sqlalchemy import ForeignKey
-from sqlalchemy import Integer, DateTime
+from sqlalchemy import Integer
 
-import datetime
 from src.database import Base
-import os
-from typing import List
-
 
 beats_to_beatpacks_association_table = Table('beats_to_beatpacks_association_table', Base.metadata,
     Column('beat_id', Integer, ForeignKey('beats.id')),

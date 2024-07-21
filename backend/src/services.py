@@ -1,6 +1,6 @@
 from src.database import async_session_maker
 from src.config import settings
-from sqlalchemy import insert, select, update, delete, desc
+from sqlalchemy import insert, select, update, delete
 from abc import ABC
 from fastapi import UploadFile, File
 import boto3
