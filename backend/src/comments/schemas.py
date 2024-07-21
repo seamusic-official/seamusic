@@ -1,5 +1,4 @@
-from pydantic import BaseModel, Field
-# from src.auth.schemas import SUser
+from pydantic import Field
 from pydantic import BaseModel, EmailStr
 from typing import Optional, List
 from datetime import datetime
@@ -45,6 +44,9 @@ class SBeatPack(SBeatPackBase):
         orm_mode = True
 
 
+class SCommentDeleteResponse(BaseModel):
+    response: str = 'Comment deleted'
+
 
 class CommentCreate(BaseModel):
     
@@ -60,6 +62,9 @@ class CommentCreate(BaseModel):
 class CommentUpdate(BaseModel):
     comment: str
     
+class CommentUpdateResponse(BaseModel):
+    response: str = 'Comment updated'
+
 
 class GetAuthor(BaseModel):
     id: int

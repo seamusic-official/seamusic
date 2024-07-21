@@ -1,4 +1,4 @@
-from sqlalchemy import DateTime, Column, Table, ForeignKey, Integer
+from sqlalchemy import DateTime, Column, Table, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.database import Base
@@ -31,7 +31,10 @@ class User(Base):
     username: Mapped[str] = mapped_column(nullable=False)
     email: Mapped[str] = mapped_column(nullable=False)
     password: Mapped[str] = mapped_column(nullable=False)
-    picture_url: Mapped[str] = mapped_column(nullable=True, default="https://img.favpng.com/22/0/21/computer-icons-user-profile-clip-art-png-favpng-MhMHJ0Fw21MJadYjpvDQbzu5S.jpg")
+    picture_url: Mapped[str] = mapped_column(
+        nullable=True,
+        default="https://img.favpng.com/22/0/21/computer-icons-user-profile-clip-art-png-favpng-MhMHJ0Fw21MJadYjpvDQbzu5S.jpg"
+    )
     is_active: Mapped[bool] = mapped_column(nullable=True, default=False)
     birthday: Mapped[datetime] = mapped_column(DateTime, nullable=False)
     registered_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.utcnow)
@@ -50,10 +53,22 @@ class ArtistProfile(Base):
 
     description: Mapped[str] = mapped_column()
     
-    tracks: Mapped[List["Track"]] = relationship(secondary=artist_profile_track_association, back_populates="artist_profiles")
-    albums: Mapped[List["Album"]] = relationship(secondary=artist_profile_album_association, back_populates="artist_profiles")
-    squads: Mapped[List["Squad"]] = relationship(secondary=squad_artist_profile_association, back_populates="artist_profiles")
-    tags: Mapped[List["Tag"]] = relationship(secondary=artist_tags_association, back_populates="artist_profiles")
+    tracks: Mapped[List["Track"]] = relationship(
+        secondary=artist_profile_track_association,
+        back_populates="artist_profiles"
+    )
+    albums: Mapped[List["Album"]] = relationship(
+        secondary=artist_profile_album_association,
+        back_populates="artist_profiles"
+    )
+    squads: Mapped[List["Squad"]] = relationship(
+        secondary=squad_artist_profile_association,
+        back_populates="artist_profiles"
+    )
+    tags: Mapped[List["Tag"]] = relationship(
+        secondary=artist_tags_association,
+        back_populates="artist_profiles"
+    )
     user: Mapped["User"] = relationship("User")
 
 
@@ -63,5 +78,11 @@ class ProducerProfile(Base):
     description: Mapped[str] = mapped_column()
     
     user: Mapped["User"] = relationship("User")
-    tags: Mapped[List["Tag"]] = relationship(secondary=producer_tags_association, back_populates="producer_profiles")
-    squads: Mapped[List["Squad"]] = relationship(secondary=squad_producer_profile_association, back_populates="producer_profiles")
+    tags: Mapped[List["Tag"]] = relationship(
+        secondary=producer_tags_association,
+        back_populates="producer_profiles"
+    )
+    squads: Mapped[List["Squad"]] = relationship(
+        secondary=squad_producer_profile_association,
+        back_populates="producer_profiles"
+    )

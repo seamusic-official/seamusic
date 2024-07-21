@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter
 from src.messages.services import MessagesRepository 
 
 
@@ -9,4 +9,5 @@ messages = APIRouter(
 
 @messages.get("/my/", summary="Create new messages")
 async def get_spotify_tracks():
+    # ????
     return MessagesRepository.get_tracks()

@@ -4,7 +4,7 @@ from passlib.context import CryptContext
 from src.auth.services import UsersDAO
 from src.config import settings
 from pydantic import EmailStr
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import UploadFile
 import os
 import uuid
 from fastapi import HTTPException

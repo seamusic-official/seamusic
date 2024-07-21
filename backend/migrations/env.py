@@ -25,6 +25,9 @@ from src.auth.models import User, ProducerProfile, ArtistProfile, Role, user_to_
 from src.beats.models import Beat
 from src.beatpacks.models import Beatpack
 from src.tags.models import Tag
+from src.comments.models import BaseComment
+from src.licenses.models import License
+from src.soundkits.models import Soundkit
 from src.database import Base
 
 

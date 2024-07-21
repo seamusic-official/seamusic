@@ -1,7 +1,5 @@
-import asyncio
 from src.music.services import Spotify
-from fastapi import APIRouter, HTTPException
-from fastapi_cache.decorator import cache
+from fastapi import APIRouter
 
 
 music = APIRouter(

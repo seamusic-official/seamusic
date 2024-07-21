@@ -1,10 +1,12 @@
+from typing import List
+
 from src.beatpacks.services import BeatpacksRepository
-from src.beatpacks.schemas import SBeatpackBase, SBeatPack, SBeatPackCreate
+from src.beatpacks.schemas import SBeatpackBase, SBeatpackResponse, SBeatpackEditResponse, SBeatpackDeleteResponse
 from src.auth.schemas import SUser
-from src.config import settings
+
 from src.auth.dependencies import get_current_user
 
-from fastapi import UploadFile, File, APIRouter, Depends
+from fastapi import APIRouter, Depends, status
 
 
 beatpacks = APIRouter(
@@ -12,41 +14,96 @@ beatpacks = APIRouter(
     tags = ["Beatpacks"]
 )
 
-@beatpacks.post("/my", summary="Packs by current user")
-async def get_user_beatpacks(user: SUser = Depends(get_current_user)):
+@beatpacks.post(
+    "/my",
+    summary="Get beat packs by current user",
+    response_model=SBeatpackResponse,
+    responses={
+        status.HTTP_200_OK: {'model': SBeatpackResponse}
+    }
+)
+async def get_user_beatpacks(user: SUser = Depends(get_current_user)) -> SBeatpackResponse:
     response = await BeatpacksRepository.find_all(owner=user)
-    return response
 
-@beatpacks.get("/all", summary="Create new beatpacks")
-async def all_beatpacks():
-    return await BeatpacksRepository.find_all()
+    return SBeatpackResponse.from_db_model(beatpack=response)
 
-@beatpacks.get("/{id}", summary="Create new beatpacks")
+@beatpacks.get(
+    "/all",
+    summary="Get all beat packs",
+    response_model=List[SBeatpackResponse],
+    responses={
+        status.HTTP_200_OK: {'model': List[SBeatpackResponse]}
+    }
+)
+async def all_beatpacks() -> List[SBeatpackResponse]:
+    response =  await BeatpacksRepository.find_all()
+
+    return [SBeatpackResponse.from_db_model(beatpack=beatpack) for beatpack in response]
+
+@beatpacks.get(
+    "/{id}",
+    summary="Get one beat pack by id",
+    response_model=SBeatpackResponse,
+    responses={
+        status.HTTP_200_OK: {'model': SBeatpackResponse}
+    }
+)
 async def get_one(id: int):
-    return await BeatpacksRepository.find_one_by_id(id)
+    response = await BeatpacksRepository.find_one_by_id(id)
 
-@beatpacks.post("/add", summary="Add a file for new beat")
-async def add_beatpack(data: SBeatpackBase, user: SUser = Depends(get_current_user)):
+    return SBeatpackResponse.from_db_model(beatpack=response)
+
+@beatpacks.post(
+    "/add",
+    summary="Add a file for new beat",
+    response_model=SBeatpackResponse,
+    responses={
+        status.HTTP_200_OK: {'model': SBeatpackResponse}
+    }
+)
+async def add_beatpack(
+        data: SBeatpackBase,
+        user: SUser = Depends(get_current_user)
+) -> SBeatpackResponse:
     data = {
         "title": data.title,
         "description": data.description,
-        "beatpacks": data.beats
+        "beats": data.beats
     }
     
     response = await BeatpacksRepository.add_one(data)
-    return response
 
-@beatpacks.put("/update/{id}", summary="Create new beatpacks")
-async def update_beatpacks(id: int, beatpacks_data: SBeatpackBase):
+    return SBeatpackResponse.from_db_model(beatpack=response)
+
+@beatpacks.put(
+    "/update/{id}",
+    summary="Edit beat pack",
+    response_model=SBeatpackEditResponse,
+    responses={
+        status.HTTP_200_OK: {'model': SBeatpackResponse}
+    }
+
+)
+async def update_beatpacks(id: int, beatpacks_data: SBeatpackBase) -> SBeatpackEditResponse:
     data = {
         "title": beatpacks_data.title,
         "description": beatpacks_data.description,
     }
     
     await BeatpacksRepository.edit_one(id, data)
-    return data
 
-@beatpacks.delete("/delete/{id}", summary="Create new beatpacks")
-async def delete_beatpacks(id: int):
-    return await BeatpacksRepository.delete(id=id)
+    return SBeatpackEditResponse
+
+@beatpacks.delete(
+    "/delete/{id}",
+    summary="Delete beat pack",
+    response_model=SBeatpackDeleteResponse,
+    responses={
+        status.HTTP_200_OK: {'model': SBeatpackDeleteResponse}
+    }
+)
+async def delete_beatpacks(id: int) -> SBeatpackDeleteResponse:
+    await BeatpacksRepository.delete(id=id)
+
+    return SBeatpackDeleteResponse
 

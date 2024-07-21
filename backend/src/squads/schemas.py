@@ -1,5 +1,4 @@
-from pydantic import BaseModel, Field
-from src.auth.schemas import SUser
+from pydantic import Field
 from pydantic import BaseModel
 from typing import Optional, List
 from datetime import datetime
