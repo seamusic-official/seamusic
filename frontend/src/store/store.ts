@@ -6,28 +6,27 @@ import searchSlice from './reducers/searchSlice';
 import { configureStore } from '@reduxjs/toolkit';
 import { persistReducer, persistStore } from 'redux-persist';
 
-
 const persistConfig = {
-  key: 'root',
-  storage,
+	key: 'root',
+	storage,
 };
 
 const rootReducer = combineReducers({
-  player: playerSlice,
-  auth: authSlice,    
-  search: searchSlice,    
+	player: playerSlice,
+	auth: authSlice,
+	search: searchSlice,
 });
 
 const persistedReducer = persistReducer(persistConfig, rootReducer); // Corrected to use rootReducer
 
 export const store = configureStore({
-  reducer: persistedReducer,
+	reducer: persistedReducer,
 });
 
 export const persistor = persistStore(store);
 
 export const setupStore = () => {
-  return { store, persistor }; // Return both store and persistor
+	return { store, persistor }; // Return both store and persistor
 };
 
 export type RootState = ReturnType<typeof rootReducer>;
