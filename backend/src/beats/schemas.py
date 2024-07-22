@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field
-from src.auth.schemas import SUser
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
+
+from src.beats.models import Beat
 
 
 class SBeatBase(BaseModel):
@@ -42,3 +42,34 @@ class SBeat(SBeatBase):
 
     class Config:
         orm_mode = True
+
+
+class SBeatResponse(BaseModel):
+    id: int
+    title: str
+    description: str
+    picture_url: str
+    type: str
+    file_url: str
+    user_id: int
+    is_available: bool
+    created_at: datetime
+    updated_at: datetime
+
+    @classmethod
+    def from_db_model(cls, beat: Beat) -> 'SBeatResponse':
+        return cls(
+            id=beat.id,
+            title=beat.title,
+            description=beat.description,
+            picture_url=beat.picture_url,
+            type=beat.type,
+            file_url=beat.file_url,
+            user_id=beat.user_id,
+            is_available=beat.is_available,
+            created_at=beat.created_at,
+            updated_at=beat.updated_at
+        )
+
+class SBeatDeleteResponse(BaseModel):
+    response: str = 'Beat deleted'

@@ -5,7 +5,7 @@ from sqlalchemy.orm import relationship
 from sqlalchemy import Column
 from sqlalchemy import Table
 from sqlalchemy import ForeignKey
-from sqlalchemy import Integer, DateTime
+from sqlalchemy import Integer
 
 from src.database import Base
 

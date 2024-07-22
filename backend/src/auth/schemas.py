@@ -2,6 +2,8 @@ from enum import Enum
 from pydantic import BaseModel, EmailStr, Field
 from datetime import date, datetime
 from typing import Optional, List
+
+from src.auth.models import User
 from src.tags.schemas import STag
 
 class Role(str, Enum):
@@ -25,13 +27,42 @@ class SUser(SUserBase):
     id: int
     created_at: datetime
     updated_at: datetime
-    
+
+
+class SUserEditImageResponse(BaseModel):
+    response: str = 'User image edited'
+
+class SUserResponse(BaseModel):
+    id: int
+    username: str
+    email: EmailStr
+    picture_url: str
+    birthday: Optional[date]
+
+    @classmethod
+    def from_db_model(cls, user: User) -> 'SUserResponse':
+        return cls(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            picture_url=user.picture_url,
+            birthday=user.birthday,
+        )
+
 class SUserUpdate(BaseModel):
     username: Optional[str] = Field(min_length=5, max_length=25)
     email: Optional[EmailStr]
     picture_url: Optional[str]
     tags: Optional[List[STag]]
     roles: Optional[List[Role]]
+
+class SUserUpdateResponse(BaseModel):
+    username: str
+    email: EmailStr
+    picture_url: str
+
+class SUserDeleteResponse(BaseModel):
+    response: str = 'User deleted'
 
 """
 Artist schemas
@@ -49,6 +80,9 @@ class SArtist(SArtistBase):
 class SArtistUpdate(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
+class SArtistDeleteResponse(BaseModel):
+    response: str = 'Artist deleted'
+
 """
 Producer schemas
 """
@@ -61,6 +95,10 @@ class SProducer(SProducerBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
+
+class SProducerDeleteResponse(BaseModel):
+    response: str = 'Producer deleted'
 
 class SProducerUpdate(BaseModel):
     description: Optional[str] = Field(max_length=255)
@@ -75,7 +113,47 @@ class SRegisterUser(BaseModel):
     roles: List[Role]
     birthday: Optional[date]
     tags: Optional[List[STag]]
+
+
+class SAuthUserRegisterResponse(BaseModel):
+    response: str = 'User created'
     
 class SLoginUser(BaseModel):
     email: EmailStr
     password: str
+
+class SUserLoginResponse(BaseModel):
+    accessToken: str
+    refreshToken: str
+    user: SUserResponse
+
+    @classmethod
+    def from_db_model(
+            cls,
+            user: User,
+            access_token: str,
+            refresh_token: str
+    ) -> 'SUserLoginResponse':
+        return cls(
+            accessToken=access_token,
+            refreshToken=refresh_token,
+            user=SUserResponse.from_db_model(user=user)
+        )
+
+
+class SSpotifyCallbackResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    user: SUserResponse
+
+    @classmethod
+    def from_db_model(cls, user: User, refresh_token: str, access_token: str):
+        return cls(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            user=SUserResponse.from_db_model(user=user)
+        )
+
+class SRefreshTokenResponse(BaseModel):
+    accessToken: str
+    refreshToken: str

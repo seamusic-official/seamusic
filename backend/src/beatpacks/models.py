@@ -7,7 +7,6 @@ from sqlalchemy import Table
 from sqlalchemy import ForeignKey
 from sqlalchemy import Integer, DateTime, String
 
-import datetime
 from src.database import Base
 from typing import List
 

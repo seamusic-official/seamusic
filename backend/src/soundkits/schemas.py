@@ -1,8 +1,8 @@
-from pydantic import BaseModel, Field
-from src.auth.schemas import SUser
 from pydantic import BaseModel
-from typing import Optional, List
+from typing import Optional
 from datetime import datetime
+
+from src.soundkits.models import Soundkit
 
 
 class SSoundkitBase(BaseModel):
@@ -33,3 +33,33 @@ class SSoundkit(SSoundkitBase):
 
     class Config:
         orm_mode = True
+
+class SSoundkitResponse(BaseModel):
+    id: int
+    name: str
+    description: str
+    picture_url: str
+    file_url: str
+    picture_url: str
+    user_id: int
+    is_available: bool
+    created_at: datetime
+    updated_at: datetime
+
+    @classmethod
+    def from_db_model(cls, soundkit: Soundkit) -> 'SSoundkitResponse':
+        return cls(
+            id=soundkit.id,
+            name=soundkit.name,
+            description=soundkit.description,
+            picture_url=soundkit.picture_url,
+            file_url=soundkit.file_url,
+            user_id=soundkit.user_id,
+            is_available=soundkit.is_available,
+            created_at=soundkit.created_at,
+            updated_at=soundkit.updated_at
+        )
+
+
+class SSoundkitDeleteResponse(BaseModel):
+    response: str = "Soundkit deleted"

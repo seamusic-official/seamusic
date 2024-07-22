@@ -1,4 +1,4 @@
-from fastapi import UploadFile, File, APIRouter, Depends
+from fastapi import APIRouter
 
 squads = APIRouter(
     prefix = "/squads",
