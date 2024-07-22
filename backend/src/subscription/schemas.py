@@ -55,7 +55,3 @@ class SRegisterUser(BaseModel):
 class SLoginUser(BaseModel):
     email: EmailStr
     password: str
-
-
-class SUserResponse(BaseModel):
-    id: int
