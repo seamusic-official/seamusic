@@ -12,7 +12,7 @@ type IUser = {
 		picture_url: string;
 		birthday: string[] | null;
 		registered_at: number | null;
-		role: object | null;
+		role: string | null;
 	}; // Объект с информацией о количестве фолловеров
 };
 

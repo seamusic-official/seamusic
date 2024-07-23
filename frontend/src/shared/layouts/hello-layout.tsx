@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useRef } from 'react';
 import { Footer } from '@/widgets/footer';
 import { DropdownMenu } from '@/entities/menu';

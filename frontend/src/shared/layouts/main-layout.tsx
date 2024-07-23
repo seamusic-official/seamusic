@@ -1,3 +1,4 @@
+'use client';
 import React, { useRef } from 'react';
 import { Sidebar } from '@/widgets/sidebar';
 import { NavBar } from '@/widgets/navbar';

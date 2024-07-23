@@ -1,3 +1,5 @@
+'use client';
+
 import { useAppSelector, useAppDispatch } from '@/shared/hooks/redux';
 import {
 	playSong,
@@ -9,7 +11,7 @@ import {
 } from '@/store/reducers/playerSlice';
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import default_picture from '../../assets/default-track-picture.png';
+import default_picture from '@/shared/assets/default-track-picture.png';
 import useSound from 'use-sound';
 import Link from 'next/link';
 import { memo } from 'react';
@@ -147,10 +149,10 @@ export const ProgressBar = memo(function ProgressBar() {
                     height="24"
                     xmlns="http://www.w3.org/2000/svg"
                   >
-                    <g fill="currentColor" fill-rule="evenodd">
+                    <g fill="currentColor" fillRule="evenodd">
                       <path
                         d="M1 3v9h14V3H1zm0-1h14a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H1a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"
-                        fill-rule="nonzero"
+                        fillRule="nonzero"
                       ></path>
                       <path d="M10 8h4v3h-4z"></path>
                     </g>
