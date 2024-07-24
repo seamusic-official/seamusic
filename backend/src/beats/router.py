@@ -9,19 +9,6 @@ from src.services import MediaRepository
 from src.auth.schemas import SUser
 from src.auth.dependencies import get_current_user
 
-<<<<<<< HEAD
-from fastapi import UploadFile, File, APIRouter, Depends, HTTPException
-from fastapi.responses import FileResponse
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from src.database  import get_async_session
-from src.view.models import View
-from src.auth.models import User
-from .models import Beat
-from datetime import datetime
-
-=======
->>>>>>> serg
 
 beats = APIRouter(
     prefix = "/beats",
@@ -41,65 +28,6 @@ async def get_user_beats(user: SUser = Depends(get_current_user)) -> List[SBeatR
 
     return [SBeatResponse.from_db_model(beat=beat) for beat in response]
 
-<<<<<<< HEAD
-@beats.get("/{id}", summary="Get one beat by id")
-async def get_one_beat(id: int, session: AsyncSession = Depends(get_async_session), current_user: User = Depends(get_current_user)):
-
-    detail = await session.execute(
-        select(Beat).filter(Beat.id == id)
-    )
-
-    result_for_detail = detail.scalars().first()
-    if not result_for_detail:
-        raise HTTPException(detail='Beat Not Found', status_code=404)
-
-    existing_view = await session.execute(
-        select(View).filter(View.beats_id == id).filter(View.user_id == current_user.id)
-    )
-
-    result_for_existing_view = existing_view.scalars().first()
-    if not result_for_existing_view:
-        new_view = View(
-            beats_id=id,
-            user_id=current_user.id,
-            is_available=True
-        )
-
-        session.add(new_view)
-        result_for_detail.view_count = (result_for_detail.view_count or 0) + 1
-        await session.commit()
-        await session.refresh(new_view)
-
-    return result_for_detail
-
-from typing import List
-
-@beats.get('/get-user-viewed-beats/', summary="Get beats viewed by the current user", response_model = List[SBeatBase])
-async def get_user_viewed_beats(session: AsyncSession = Depends(get_async_session), current_user: User = Depends(get_current_user)) -> List[Beat] | None:
-
-    # Получение идентификаторов битов, которые пользователь просматривал
-    viewed_beat_ids = await session.execute(
-        select(View.beats_id).filter(View.user_id == current_user.id)
-    )
-
-    viewed_beat_ids_result = viewed_beat_ids.scalars().all()
-
-    if not viewed_beat_ids_result:
-        return []
-
-    # Получение битов по идентификаторам, отсортированных по дате создания
-    viewed_beats = await session.execute(
-        select(Beat)
-        .filter(Beat.id.in_(viewed_beat_ids_result))
-        .order_by(Beat.created_at.desc())
-    )
-
-    viewed_beats_result = viewed_beats.scalars().all()
-
-    return viewed_beats_result
-
-
-=======
 @beats.get(
     "",
     summary="Get all beats",
@@ -110,7 +38,6 @@ async def get_user_viewed_beats(session: AsyncSession = Depends(get_async_sessio
 )
 async def all_beats() -> List[SBeatResponse]:
     response = await BeatsRepository.find_all()
->>>>>>> serg
 
     return [SBeatResponse.from_db_model(beat=beat) for beat in response]
 
@@ -214,7 +141,6 @@ async def release_beats(
     responses={
         status.HTTP_200_OK: {'model': SBeatResponse}
     }
-
 )
 async def update_beats(
         id: int,

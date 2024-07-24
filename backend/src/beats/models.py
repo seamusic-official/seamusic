@@ -25,4 +25,4 @@ class Beat(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User") 
-    view_count: Mapped[int] = mapped_column(Integer, default = 0)
+    view_count: Mapped[int] = mapped_column(default=0)

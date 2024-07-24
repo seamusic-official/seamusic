@@ -12,23 +12,10 @@ import os
 from typing import List
 
 
-
-
 class BaseComment(Base):
     __tablename__ = 'base_comment'
 
-    """
 
-    тут есть всё я сократил код место того что бы написать
-    несколько классов можно написить одну 
-    поля : Comment: сообшение, comment_author: создатель коментарие, comment_author_id: id создателя коментарие
-    beat_id: Id бита, beat_pack_id: id бит пека 
-    и так дал
-
-
-    """
-
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, index=True)
     comment: Mapped[str] = mapped_column(String, nullable=False)
     comment_creator_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'))
     comment_author: Mapped['User'] = relationship('User')

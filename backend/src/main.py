@@ -26,8 +26,8 @@ from src.albums.models import Album
 from src.tracks.router import tracks
 from src.tracks.models import Track
 
-from src.subscription.router import subscription
-from src.subscription.models import TelegramAccount
+from src.subscriptions.router import subscription
+from src.subscriptions.models import TelegramAccount
 
 from src.tags.router import tags
 from src.tags.models import Tag

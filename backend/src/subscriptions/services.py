@@ -1,4 +1,4 @@
-from src.subscription.models import TelegramAccount
+from src.subscriptions.models import TelegramAccount
 from src.services import SQLAlchemyRepository
 
 
