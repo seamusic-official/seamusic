@@ -5,9 +5,7 @@ from datetime import datetime
 
 
 class View(Base):
-    __tablename__ = 'view'
-
-    id: Mapped[int] = mapped_column(Integer, index = True, primary_key = True, autoincrement=True, nullable  = True)
+    __tablename__ = 'views'
 
     beats_id: Mapped[int] = mapped_column(Integer, ForeignKey('beats.id'), index=True)
     user_id: Mapped[int] = mapped_column(Integer, ForeignKey('users.id'), index=True, nullable=True)

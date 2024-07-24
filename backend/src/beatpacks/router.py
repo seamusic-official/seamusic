@@ -1,12 +1,12 @@
 from typing import List
 
 from src.beatpacks.services import BeatpacksRepository
-from src.beatpacks.schemas import SBeatpackBase, SBeatpackResponse, SBeatpackEditResponse, SBeatpackDeleteResponse
+from src.beatpacks.schemas import SBeatpackResponse, SBeatpackEditResponse, SBeatpackDeleteResponse
 from src.auth.schemas import SUser
 
 from src.auth.dependencies import get_current_user
 from sqlalchemy import select
-from .schemas import  BeatpackResponse, BeatpackCreate
+from .schemas import BeatpackCreate
 from .models import Beatpack
 from src.database import get_async_session
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -68,7 +68,7 @@ async def get_one(id: int):
     }
 )
 async def add_beatpack(
-        data: SBeatpackBase,
+        data: BeatpackCreate,
         user: SUser = Depends(get_current_user)
 ) -> SBeatpackResponse:
     data = {
@@ -90,7 +90,7 @@ async def add_beatpack(
     }
 
 )
-async def update_beatpacks(id: int, beatpacks_data: SBeatpackBase) -> SBeatpackEditResponse:
+async def update_beatpacks(id: int, beatpacks_data: BeatpackCreate) -> SBeatpackEditResponse:
     data = {
         "title": beatpacks_data.title,
         "description": beatpacks_data.description,

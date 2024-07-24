@@ -23,6 +23,8 @@ if config.config_file_name is not None:
 from src.albums.models import Album, album_track_association, artist_profile_album_association
 from src.auth.models import User, ProducerProfile, ArtistProfile, Role, user_to_roles_association
 from src.beats.models import Beat
+from src.tracks.models import Track
+from src.subscriptions.models import TelegramAccount, OnlyTelegramSubscribeMonth, OnlyTelegramSubscribeYear
 from src.beatpacks.models import Beatpack
 from src.tags.models import Tag
 from src.comments.models import BaseComment
@@ -30,10 +32,7 @@ from src.licenses.models import License
 from src.soundkits.models import Soundkit
 from src.database import Base
 
-
-target_metadata = [
-    Base.metadata, 
-]
+target_metadata = Base.metadata
 
 import sys
 import os
