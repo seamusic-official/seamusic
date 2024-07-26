@@ -18,4 +18,6 @@ backend-logs:
 backend-down:
 	${DC} -f ${BACKEND_FILE} down
 
-
+lint:
+	python -m flake8
+	python -m mypy -p src
