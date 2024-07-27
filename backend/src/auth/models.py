@@ -4,7 +4,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.database import Base
 from src.tags.models import Tag
 from src.albums.models import Album, artist_profile_album_association
-from src.views.models import View
 from src.tracks.models import Track, artist_profile_track_association
 from src.squads.models import Squad, squad_producer_profile_association, squad_artist_profile_association
 from src.tags.models import artist_tags_association, producer_tags_association, listener_tags_association
@@ -48,7 +47,6 @@ class User(Base):
     roles: Mapped[List["Role"]] = relationship(secondary=user_to_roles_association, back_populates="users")
     tags: Mapped[List["Tag"]] = relationship(secondary=listener_tags_association, back_populates="listener_profiles")
     squads: Mapped["Squad"] = relationship("Squad", overlaps="user")
-    views: Mapped["View"] = relationship("View", back_populates="user")
 
 class ArtistProfile(Base):
     __tablename__ = 'artist_profiles'

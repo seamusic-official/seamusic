@@ -45,6 +45,7 @@ class AuthSettings(BaseModel):
 
 
 class Settings(BaseSettings):
+    root_url: str = os.environ.get("ROOT_URL")
     api_v1_prefix: str = "/api/v1"
     db: DbSettings = DbSettings()
     auth: AuthSettings = AuthSettings()
@@ -53,5 +54,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-print(settings.db.url)
