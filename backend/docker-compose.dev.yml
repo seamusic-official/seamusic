@@ -8,27 +8,12 @@ services:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_PORT=${DB_PORT}
     ports:
       - ${DB_PORT}:5432
     restart: always
-    env_file:
-      - .env
-    healthcheck:
-      test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  db_test:
-    container_name: my_db_test
-    image: postgres
-    environment:
-      - POSTGRES_DB=${DB_NAME_TEST}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
-    ports:
-      - ${DB_PORT_TEST}:5432
-    restart: always
+    volumes:
+      - ./db:/var/lib/postgresql/data
     env_file:
       - .env
     healthcheck:
@@ -41,18 +26,17 @@ services:
     container_name: my_app
     build:
       context: .
+      dockerfile: Dockerfile
     depends_on:
       db:
         condition: service_healthy
-    command: ['sh', '/app/app.sh']
     ports:
-      - 8000:8000
+      - '8000:8000'
     restart: always
     env_file:
       - .env
-
     volumes:
-      - ../backend/:/app/
+      - ./:/backend/
 
   pgadmin:
     container_name: pgadmin_app
