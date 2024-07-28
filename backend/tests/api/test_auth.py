@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 import pytest
 from fastapi import UploadFile, Response
@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from httpx import Response
 
 from src.auth.schemas import SUserResponse, SRegisterUser, Role
-from src.tags.schemas import STag
+
 
 email = 'test_email2@example.com'
 password = 'test_password'
@@ -16,7 +16,7 @@ password = 'test_password'
     'roles,expected_status_code,username,email_',
     [
         ([Role.listener, Role.moder], 201, 'test_username2', email),
-        (['fake_role'], 400, 'test_username3'),
+        (['fake_role'], 400, 'test_username3', 'fake_test_email@example.com'),
         ([Role.listener], 403, 'test_username2', email)
     ]
 )
@@ -27,7 +27,7 @@ def test_register(client: TestClient, roles: List[Role], expected_status_code: i
         email=email_,
         roles=roles,
         birthday=None,
-        tags=[STag(name='supertrap'), STag(name='newjazz'), STag(name='rage'), STag(name='hyperpop')]
+        tags=['supertrap', 'newjazz', 'rage', 'hyperpop']
     )
     response: Response = client.post(url='/auth/register', json=user.model_dump())
     assert response.status_code == expected_status_code
@@ -48,7 +48,7 @@ def test_login(client: TestClient, password_: str, expected_status_code: int) ->
     assert response.status_code == expected_status_code
 
 
-def test_get_me(client: TestClient, user: Optional[SUserResponse], expected_status_code: int) -> None:
+def test_get_me(client: TestClient, expected_status_code: int) -> None:
     response: Response = client.get('/auth/users/me')
     assert response.status_code == expected_status_code
 
