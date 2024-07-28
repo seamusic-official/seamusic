@@ -1,7 +1,7 @@
-import { User } from './user';
+import { UserType } from './user';
 
 export type AuthResponseType = {
 	accessToken: string;
 	refreshToken: string;
-	user: User;
+	user: UserType;
 };

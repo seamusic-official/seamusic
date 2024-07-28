@@ -6,8 +6,9 @@ import { useRouter } from 'next/navigation';
 import { useAppDispatch, useAppSelector } from '@/shared/hooks/redux';
 import { Logout } from '@/features/logout';
 
-export function DropdownMenu(reference: any) {
-	const { isAuthenticated, user } = useAppSelector((state) => state.auth);
+export const DropdownMenu = () => {
+	const isAuthenticated = useAppSelector((state) => state.auth),
+		user = useAppSelector((state) => state.auth);
 	const [isOpen, setIsOpen] = useState(false);
 	const router = useRouter();
 
@@ -15,37 +16,37 @@ export function DropdownMenu(reference: any) {
 		setIsOpen(!isOpen);
 	};
 
-	const handleClickOutside = (event: { target: any }) => {
-		if (reference.current && !reference.current.contains(event.target)) {
-			setIsOpen(false);
-		}
-	};
+	// const handleClickOutside = (event: { target: any }) => {
+	// 	if (reference.current && !reference.current.contains(event.target)) {
+	// 		setIsOpen(false);
+	// 	}
+	// };
 
-	useEffect(() => {
-		document.addEventListener('click', handleClickOutside, true);
-		return () => {
-			document.removeEventListener('click', handleClickOutside, true);
-		};
-	}, []);
+	// useEffect(() => {
+	// 	document.addEventListener('click', handleClickOutside, true);
+	// 	return () => {
+	// 		document.removeEventListener('click', handleClickOutside, true);
+	// 	};
+	// }, []);
 
 	const redirectToLogin = () => {
 		return router.push('/auth/login');
 	};
 
 	return (
-		<div className="relative " ref={reference}>
+		<div className="relative ">
 			<button
 				type="button"
 				className="flex flex-row items-center text-white text-sm font-bold rounded-full p-2 flex items-center bg-opacity-5  bg-gray-200"
 				onClick={isAuthenticated ? toggleDropdown : redirectToLogin}>
 				<img
 					className="bg-gray-300 rounded-full border border-gray-700 w-6 h-6"
-					src={user.picture_url}
+					src={user.user.picture_url}
 					alt=""
 				/>
 
 				{isAuthenticated ? (
-					<span className="px-2">{user.username}</span>
+					<span className="px-2">{user.user.username}</span>
 				) : (
 					<span className="px-2">
 						<Link href="/auth/login">LOGIN</Link>
@@ -74,10 +75,10 @@ export function DropdownMenu(reference: any) {
 								d="M 256.274 60.84 L 84.324 166.237 L 84.324 443.063 L 193.27 443.063 L 193.27 293.73 L 320.228 293.73 L 320.228 443.063 L 428.222 443.063 L 428.222 165.476 L 256.274 60.84 Z M 256.274 35.95 L 448.452 149.145 L 448.452 464.395 L 300 464.395 L 300 315.062 L 213.499 315.062 L 213.499 464.395 L 64.095 464.395 L 64.095 150.161 L 256.274 35.95 Z"
 								fill="currentColor"></path>
 						</svg>
-						<Link href="/profile">
-							<a className="text-gray-200 text-sm font-bold hover:text-white capitalize">
-								PROFILE
-							</a>
+						<Link
+							href="/profile"
+							className="text-gray-200 text-sm font-bold hover:text-white capitalize">
+							PROFILE
 						</Link>
 					</button>
 					<button className="text-gray-200 hover:text-white flex items-center mt-4">
@@ -92,10 +93,10 @@ export function DropdownMenu(reference: any) {
 								fill="currentColor"
 								fillRule="evenodd"></path>
 						</svg>
-						<Link href="/search">
-							<a className="text-gray-200 text-sm font-bold hover:text-white capitalize">
-								SEARCH
-							</a>
+						<Link
+							href="/search"
+							className="text-gray-200 text-sm font-bold hover:text-white capitalize">
+							SEARCH
 						</Link>
 					</button>
 					<button className="text-gray-200 hover:text-white flex items-center mt-4">
@@ -109,10 +110,10 @@ export function DropdownMenu(reference: any) {
 								d="M291.301 81.778l166.349 373.587-19.301 8.635-166.349-373.587zM64 463.746v-384h21.334v384h-21.334zM192 463.746v-384h21.334v384h-21.334z"
 								fill="currentColor"></path>
 						</svg>
-						<Link href="/messages">
-							<a className="text-gray-200 text-sm font-bold hover:text-white capitalize">
-								MESSAGES
-							</a>
+						<Link
+							href="/messages"
+							className="text-gray-200 text-sm font-bold hover:text-white capitalize">
+							MESSAGES
 						</Link>
 					</button>
 					<button className="text-gray-200 hover:text-white flex items-center mt-4">
@@ -126,13 +127,13 @@ export function DropdownMenu(reference: any) {
 								d="M291.301 81.778l166.349 373.587-19.301 8.635-166.349-373.587zM64 463.746v-384h21.334v384h-21.334zM192 463.746v-384h21.334v384h-21.334z"
 								fill="currentColor"></path>
 						</svg>
-						<Link href="/dashboard">
-							<a className="text-gray-200 text-sm font-bold hover:text-white capitalize">
-								DASHBOARD
-							</a>
+						<Link
+							href="/dashboard"
+							className="text-gray-200 text-sm font-bold hover:text-white capitalize">
+							DASHBOARD
 						</Link>
 					</button>
-					{isAuthenticated ? (
+					{isAuthenticated && (
 						<button className="text-gray-200 hover:text-white flex items-center mt-4">
 							<svg
 								className="mr-4"
@@ -146,11 +147,9 @@ export function DropdownMenu(reference: any) {
 							</svg>
 							<Logout />
 						</button>
-					) : (
-						<></>
 					)}
 				</div>
 			)}
 		</div>
 	);
-}
+};

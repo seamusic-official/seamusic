@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
 import { MainLayout } from '@/shared/layouts';
 import { SpotifyService } from '@/services';
 import { useEffect, useState } from 'react';
@@ -9,7 +8,7 @@ import { SongLoading } from '@/shared/ui/loading-elements';
 
 export function AlbumDetail() {
 	const [data, setData] = useState([]);
-	const { id } = useParams();
+	const id = 1;
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
@@ -31,7 +30,7 @@ export function AlbumDetail() {
 			try {
 				const response = await SpotifyService.get_tracks_from_album(id);
 				const responseData = response.data;
-				setTracks(responseData);
+				setData(responseData);
 				console.log(responseData);
 				setLoading(false);
 			} catch (error) {
@@ -47,12 +46,12 @@ export function AlbumDetail() {
 			<div className="">
 				<div className="flex flex-col justify-center items-center md:hidden">
 					<img
-						src={data.image_url}
+						src={'data.image_url'}
 						alt="alan walker artist image"
 						className="w-40 h-40 rounded-lg"
 					/>
 					<h1 className="text-white capitalize font-semibold text-2xl mt-2 truncate">
-						{data.name}
+						{'data.name'}
 					</h1>
 					<p className="text-xs uppercase text-gray-100 mt-1">
 						1,308,405 likes
@@ -62,7 +61,7 @@ export function AlbumDetail() {
 					{!loading ? (
 						<img
 							id="playlist-thumbnail"
-							src={data.picture_url}
+							src={'data.picture_url'}
 							alt="alan walker artist"
 							className="w-56 h-56 ml-4 mr-6 rounded-lg"
 						/>
@@ -78,12 +77,12 @@ export function AlbumDetail() {
 								))}
 							</h2>
 							<span className="text-white text-6xl capitalize font-extrabold tracking-tighter">
-								<h1 id="playlist-title">{data.name} </h1>
+								<h1 id="playlist-title">{'data.name'} </h1>
 							</span>
 							<p
 								id="playlist-description"
 								className="text-white mt-6 text-sm font-normal leading-none opacity-70">
-								{info}
+								{'info'}
 							</p>
 							<div className="flex items-center mt-2">
 								<a className="text-white font-extrabold text-md hover:text-underline cursor-pointer">
@@ -100,7 +99,7 @@ export function AlbumDetail() {
 									.
 								</div>
 								<p className="text-white opacity-70 font-normal text-sm mr-1">
-									{data.total_tracks} songs,
+									{'data.total_tracks'} songs,
 								</p>
 								<p className="text-white opacity-70 font-normal text-sm">
 									2hr 36 min
@@ -112,7 +111,7 @@ export function AlbumDetail() {
 							<h2 className="rounded-md text-md w-56 h-4 animate-pulse bg-gray-300 bg-opacity-10 mr-2 mt-1"></h2>
 							<h1 className="rounded-md text-6xl text-sm w-full h-10 animate-pulse bg-gray-300 bg-opacity-10 mt-4"></h1>
 							<p className="rounded-md  w-12 h-4 animate-pulse bg-gray-300 bg-opacity-10 mt-4">
-								{data.description}
+								{'data.description'}
 							</p>
 							<div className="flex items-center mt-2">
 								<a className="text-white font-extrabold text-md hover:text-underline cursor-pointer">
@@ -201,13 +200,13 @@ export function AlbumDetail() {
 										<Song
 											id={song.id}
 											name={song.name}
-											date={data.release_date}
+											date={'data.release_date'}
 											duration={msToMin(song.duration_ms)}
 											src={song.preview_url}
 											author={song.artist}
 											type={song.type}
-											picture={data.image_url}
-											album={data.name}
+											picture={'data.image_url'}
+											album={'data.name'}
 											spotify_url={song.spotify_url}
 										/>
 									))

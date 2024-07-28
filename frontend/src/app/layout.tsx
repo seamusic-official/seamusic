@@ -1,8 +1,8 @@
 'use client';
 
 import { Inter } from 'next/font/google';
-import { Provider } from 'react-redux';
-import { store } from '@/store/store';
+import StoreProvider from './store-provider';
+import { HelloLayout } from '@/shared/layouts';
 import './globals.css';
 
 const inter = Inter({ subsets: ['latin'] });
@@ -15,7 +15,9 @@ const RootLayout = ({
 	return (
 		<html lang="ru">
 			<body>
-				<Provider store={store}>{children}</Provider>
+				<StoreProvider>
+					<HelloLayout>{children}</HelloLayout>
+				</StoreProvider>
 			</body>
 		</html>
 	);

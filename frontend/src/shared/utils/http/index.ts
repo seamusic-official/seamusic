@@ -1,7 +1,7 @@
 import axios from 'axios';
-import { AuthResponse } from '../models/response/AuthResponse.js';
-import { clearAuthData } from '@/store/reducers/authSlice.js';
-import { useAppDispatch } from '@/shared/hooks/redux.js';
+import { AuthResponseType } from '@/shared/types';
+import { clearAuthData } from '@/store/reducers/authSlice';
+import { useAppDispatch } from '@/shared/hooks/redux';
 
 export const API_URL = `http://localhost:8000/`;
 
@@ -30,7 +30,7 @@ $api.interceptors.response.use(
 		) {
 			originalRequest._isRetry = true;
 			try {
-				const response = await axios.post<AuthResponse>(
+				const response = await axios.post<AuthResponseType>(
 					`${API_URL}auth/refresh`,
 					{ withCredentials: true }
 				);

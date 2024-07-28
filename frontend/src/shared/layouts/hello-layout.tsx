@@ -7,11 +7,7 @@ import { DefaultButton } from '../ui/buttons';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
-type MyComponentProps = React.PropsWithChildren;
-
-export function HelloLayout({ children }: MyComponentProps) {
-	const dropdownRef = useRef(null);
-
+export const HelloLayout = ({ children }: { children: React.ReactNode }) => {
 	return (
 		<div className="p-4">
 			<div className="p-2 fixed top-0 right-0 left-0  backdrop-blur-md z-20 border-neutral-800 border-b">
@@ -54,7 +50,7 @@ export function HelloLayout({ children }: MyComponentProps) {
 						</li>
 					</ul>
 					<div className="flex justify-between items-center">
-						<DropdownMenu reference={dropdownRef} />
+						<DropdownMenu />
 					</div>
 				</div>
 			</div>
@@ -64,4 +60,4 @@ export function HelloLayout({ children }: MyComponentProps) {
 			</div>
 		</div>
 	);
-}
+};

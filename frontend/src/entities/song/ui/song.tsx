@@ -3,9 +3,9 @@ import Image from 'next/image';
 import { useAppDispatch } from '@/shared/hooks/redux';
 import { useRouter } from 'next/router';
 import { setSong, playSong } from '@/store/reducers/playerSlice';
-import default_picture from '../../assets/default-track-picture.png';
+import default_picture from '@/shared/assets/default-track-picture.png';
 import { DefaultButton } from '@/shared/ui/buttons';
-import BeatService from '../../services/BeatService';
+import { BeatService } from '@/services';
 import { useState, useEffect } from 'react';
 import { SongType } from './type';
 
