@@ -1,7 +1,9 @@
 import os
+
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
+
 
 load_dotenv()
 
@@ -26,12 +28,6 @@ class DbSettings(BaseModel):
     DB_USER: str = os.environ.get("DB_USER")
     DB_PASS: str = os.environ.get("DB_PASS")
 
-    DB_HOST_TEST: str = os.environ.get("DB_HOST_TEST")
-    DB_PORT_TEST: int = int(os.environ.get("DB_PORT_TEST"))
-    DB_USER_TEST: str = os.environ.get("DB_USER_TEST")
-    DB_NAME_TEST: str = os.environ.get("DB_NAME_TEST")
-    DB_PASS_TEST: str = os.environ.get("DB_PASS_TEST")
-
     @property
     def url(self):
         return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
@@ -53,5 +49,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-print(settings.db.url)
