@@ -1,28 +1,36 @@
+from typing import List, Optional
+
 import pytest
 from fastapi import UploadFile, Response
 from fastapi.testclient import TestClient
 from httpx import Response
 
-from src.auth.schemas import SUserResponse
+from src.auth.schemas import SUserResponse, SRegisterUser, Role
+from src.tags.schemas import STag
 
-
-email = 'test_email2@test.test'
+email = 'test_email2@example.com'
 password = 'test_password'
 
 
-def test_register(client: TestClient) -> None:
-    response: Response = client.post(
-        url='/auth/register',
-        json={
-            'username': 'test_username2',
-            'email': email,
-            'birthday': '2024-06-30',
-            'password': password,
-            'tags': ['supertrap, newjazz, rage, hyperpop'],
-            'role': ['listener']
-        }
+@pytest.mark.parametrize(
+    'roles,expected_status_code,username,email_',
+    [
+        ([Role.listener, Role.moder], 201, 'test_username2', email),
+        (['fake_role'], 400, 'test_username3'),
+        ([Role.listener], 403, 'test_username2', email)
+    ]
+)
+def test_register(client: TestClient, roles: List[Role], expected_status_code: int, username: str, email_: str) -> None:
+    user = SRegisterUser(
+        username=username,
+        password=password,
+        email=email_,
+        roles=roles,
+        birthday=None,
+        tags=[STag(name='supertrap'), STag(name='newjazz'), STag(name='rage'), STag(name='hyperpop')]
     )
-    assert response.status_code == 201
+    response: Response = client.post(url='/auth/register', json=user.model_dump())
+    assert response.status_code == expected_status_code
 
 
 @pytest.mark.parametrize(
@@ -40,9 +48,9 @@ def test_login(client: TestClient, password_: str, expected_status_code: int) ->
     assert response.status_code == expected_status_code
 
 
-def test_get_me(client: TestClient) -> None:
+def test_get_me(client: TestClient, user: Optional[SUserResponse], expected_status_code: int) -> None:
     response: Response = client.get('/auth/users/me')
-    assert response.status_code == 200
+    assert response.status_code == expected_status_code
 
 
 def test_get_users(client: TestClient) -> None:
