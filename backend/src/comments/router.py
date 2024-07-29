@@ -1,25 +1,24 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from typing import List
 
+from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import List
 from sqlalchemy.orm import joinedload
-from src.beatpacks.models import Beatpack
-from src.soundkits.models import Soundkit
 
-from src.auth.schemas import SUser
 from src.auth.dependencies import get_current_user
-from .models import BaseComment
-from .schemas import CommentCreate, CommentResponse, CommentUpdate, SCommentDeleteResponse, CommentUpdateResponse
-from src.database import get_async_session
+from src.auth.schemas import SUser
 from src.beats.models import Beat
+from src.comments.models import BaseComment
+from src.comments.schemas import CommentCreate, CommentResponse, CommentUpdate, SCommentDeleteResponse, \
+    CommentUpdateResponse
+from src.database import get_async_session
 
 
 comments = APIRouter(prefix="/comments", tags=["Comments"])
 
 
 @comments.post(
-    "/create-comment-for-beat/{beat_id}/",
+    path="/create-comment-for-beat/{beat_id}/",
     summary='create comment for beat'
 )
 async def create_comment_for_beat(
@@ -47,7 +46,7 @@ async def create_comment_for_beat(
 
 
 @comments.get(
-    "/get-comments-from-beats/{beat_id}/",
+    path="/get-comments-from-beats/{beat_id}/",
     response_model=List[CommentResponse],
     responses={
         status.HTTP_200_OK: {'model': List[CommentResponse]}
@@ -57,7 +56,6 @@ async def create_comment_for_beat(
 async def get_comments_from_beats(
     beat_id: int,
     session: AsyncSession = Depends(get_async_session),
-    current_user: SUser = Depends(get_current_user),
 ) -> List[CommentResponse] | None:
 
     beat_result = await session.execute(select(Beat).filter(Beat.id == beat_id))
@@ -81,7 +79,7 @@ async def get_comments_from_beats(
 
 
 @comments.delete(
-    "/delete-comment/{comment_id}/",
+    path="/delete-comment/{comment_id}/",
     summary='delete comment by id',
     response_model=SCommentDeleteResponse,
     responses={
@@ -110,7 +108,7 @@ async def delete(
 
 
 @comments.put(
-    "/update-comment/{comment_id}/",
+    path="/update-comment/{comment_id}/",
     response_model=CommentUpdateResponse,
     responses={
         status.HTTP_200_OK: {'model': CommentUpdateResponse}
@@ -133,13 +131,9 @@ async def update(
     if not comment_result:
         raise HTTPException(
             detail=f"Bro I am sorry but comment with id {comment_id} not found",
-            status_code = 404
+            status_code=404
         )
 
     comment_result.comment = request.comment
     await session.commit()
     return CommentUpdateResponse
-    
-
-
-

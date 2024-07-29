@@ -1,9 +1,10 @@
-from fastapi import FastAPI, File, UploadFile, HTTPException
 import os
 import shutil
 import uuid
+
 import aiofiles
 from fastapi import HTTPException
+from fastapi import UploadFile
 from mutagen.mp3 import MP3
 from mutagen.wavpack import WavPack
 
@@ -16,10 +17,11 @@ async def save_image(upload_folder: str, file: UploadFile):
 
         async with aiofiles.open(file_path, "wb") as buffer:
             await buffer.write(await file.read())
-        
+
         return file_path
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error uploading image: {str(e)}")
+
 
 async def save_audio(upload_folder: str, file: UploadFile) -> dict:
     try:
@@ -39,7 +41,7 @@ async def save_audio(upload_folder: str, file: UploadFile) -> dict:
             shutil.copyfileobj(file.file, buffer)
 
         # Get file info
-        file_info = {}
+        file_info = dict()
         file_info['file_path'] = unique_filename
 
         if file_extension == '.mp3':

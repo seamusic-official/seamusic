@@ -1,17 +1,20 @@
-from pydantic import BaseModel, Field
-from typing import List
 from datetime import datetime
+from typing import List
+
+from pydantic import BaseModel
 
 from src.beatpacks.models import Beatpack
-from src.beats.schemas import SBeat
+
 
 class BeatCreate(BaseModel):
     id: int
+
 
 class BeatpackCreate(BaseModel):
     title: str
     description: str
     beats: List[BeatCreate]
+
 
 class BeatResponse(BaseModel):
     id: int
@@ -20,12 +23,14 @@ class BeatResponse(BaseModel):
     class Config:
         orm_mode = True
 
+
 class SBeatpackEditResponse(BaseModel):
     response: str = "Beat pack edited"
 
 
 class SBeatpackDeleteResponse(BaseModel):
     response: str = "Beat pack deleted"
+
 
 class SBeatpackResponse(BaseModel):
     id: int

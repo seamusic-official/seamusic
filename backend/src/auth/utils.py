@@ -1,30 +1,30 @@
-from datetime import datetime, timedelta
-from jose import jwt
-from passlib.context import CryptContext
-from src.auth.services import UsersDAO
-from src.config import settings
-from pydantic import EmailStr
-from fastapi import UploadFile
 import os
 import uuid
-from fastapi import HTTPException
+from datetime import datetime, timedelta, UTC
+
+from fastapi import HTTPException, UploadFile
+from jose import jwt
+from passlib.context import CryptContext
+from pydantic import EmailStr
+
+from src.auth.services import UsersDAO
+from src.config import settings
 
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
-REFRESH_TOKEN_EXPIRE_MINUTES = (60 * 24 * 7) * 2 # 14 days
+REFRESH_TOKEN_EXPIRE_MINUTES = (60 * 24 * 7) * 2  # 14 days
 ALGORITHM = "HS256"
 JWT_SECRET_KEY = settings.auth.JWT_SECRET_KEY   # should be kept secret
 JWT_REFRESH_SECRET_KEY = settings.auth.JWT_REFRESH_SECRET_KEY   # should be kept secret
 
+
 async def unique_filename(file: UploadFile) -> str:
     try:
         file_name, file_extension = os.path.splitext(file.filename)
-        
-        unique_filename = f"user_picture-{file_name.replace(' ', '-')}_{uuid.uuid4()}{file_extension}"
-
-        return unique_filename
+        unique_filename_ = f"user_picture-{file_name.replace(' ', '-')}_{uuid.uuid4()}{file_extension}"
+        return unique_filename_
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Failed to process the audio file: {str(e)}")
@@ -40,7 +40,7 @@ def verify_password(password: str, real_hashed_pass: str) -> bool:
 
 def create_access_token(data: dict) -> str:
     to_encode = data.copy()
-    expires_delta = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    expires_delta = datetime.now(UTC) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expires_delta})
 
     encoded_jwt = jwt.encode(
@@ -53,7 +53,7 @@ def create_access_token(data: dict) -> str:
 
 def create_refresh_token(data: dict) -> str:
     to_encode = data.copy()
-    expires_delta = datetime.utcnow() + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
+    expires_delta = datetime.now(UTC) + timedelta(minutes=REFRESH_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expires_delta})
 
     encoded_jwt = jwt.encode(
@@ -71,7 +71,5 @@ async def authenticate_user(email: EmailStr, password: str):
         if not verify_password(password, user.password):
             print(verify_password(password, user.password))
             return None
-        
         return user
-    
     return None

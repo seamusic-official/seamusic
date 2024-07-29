@@ -1,19 +1,23 @@
-from src.config import settings
-import spotipy
 from abc import ABC
+
+import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
+
+from src.config import settings
+
 
 class AbstractRepository(ABC):
     pass
 
+
 class Spotify(AbstractRepository):
     sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(
-            client_id=settings.spotify.CLIENT_ID, 
+            client_id=settings.spotify.CLIENT_ID,
             client_secret=settings.spotify.CLIENT_SECRET
         ))
-    
+
     @staticmethod
-    def get_tracks(): #artist_id
+    def get_tracks():  # artist_id
         lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
         results = Spotify.sp.artist_top_tracks(lz_uri)
         tracks = []
@@ -51,12 +55,12 @@ class Spotify(AbstractRepository):
         return tracks
 
     @staticmethod
-    def track(id):
-        results = Spotify.sp.track(id)
+    def track(track_id: int):
+        results = Spotify.sp.track(track_id)
         return results['preview_url']
 
     @staticmethod
-    def get_albums(): #artist_id
+    def get_albums():  # artist_id
         lz_uri = 'spotify:artist:36QJpDe2go2KgaRleHCDTp'
         results = Spotify.sp.artist_albums(lz_uri)
         tracks = []
@@ -91,24 +95,9 @@ class Spotify(AbstractRepository):
 
         return album_detail
 
-
     @staticmethod
-    def get_artist(artist_id): 
-        results = Spotify.sp.artist(id)
-        artists = []
-
-        for artist in results['artist']['items']:
-            track_data = {
-                'name': artist['name'],
-            } 
-            
-            artists.append(track_data)
-            
-        return artists
-    
-    @staticmethod
-    def get_artist(id):
-        results = Spotify.sp.artist(id)
+    def get_artist(artist_id: int):
+        results = Spotify.sp.artist(artist_id)
         artists = []
 
         for artist in results['artist']['items']:

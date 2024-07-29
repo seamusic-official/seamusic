@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
 
 from src.albums.models import Album
 
@@ -25,6 +26,7 @@ class SAlbumEdit(BaseModel):
 
 class SAlbumCreate(SAlbumBase):
     pass
+
 
 class SAlbum(SAlbumBase):
     id: int

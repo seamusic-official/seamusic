@@ -1,27 +1,18 @@
 from typing import List
 
-from src.beatpacks.services import BeatpacksRepository
-from src.beatpacks.schemas import SBeatpackResponse, SBeatpackEditResponse, SBeatpackDeleteResponse
-from src.auth.schemas import SUser
-
-from src.auth.dependencies import get_current_user
-from sqlalchemy import select
-from .schemas import BeatpackCreate
-from .models import Beatpack
-from src.database import get_async_session
-from sqlalchemy.ext.asyncio import AsyncSession
-from src.beats.models import Beat
-
 from fastapi import APIRouter, Depends, status
 
+from src.auth.dependencies import get_current_user
+from src.auth.schemas import SUser
+from src.beatpacks.schemas import BeatpackCreate, SBeatpackResponse, SBeatpackEditResponse, SBeatpackDeleteResponse
+from src.beatpacks.services import BeatpacksRepository
 
-beatpacks = APIRouter(
-    prefix = "/beatpacks",
-    tags = ["Beatpacks"]
-)
+
+beatpacks = APIRouter(prefix="/beatpacks", tags=["Beatpacks"])
+
 
 @beatpacks.post(
-    "/my",
+    path="/my",
     summary="Get beat packs by current user",
     response_model=SBeatpackResponse,
     responses={
@@ -33,8 +24,9 @@ async def get_user_beatpacks(user: SUser = Depends(get_current_user)) -> SBeatpa
 
     return SBeatpackResponse.from_db_model(beatpack=response)
 
+
 @beatpacks.get(
-    "/all",
+    path="/all",
     summary="Get all beat packs",
     response_model=List[SBeatpackResponse],
     responses={
@@ -42,25 +34,27 @@ async def get_user_beatpacks(user: SUser = Depends(get_current_user)) -> SBeatpa
     }
 )
 async def all_beatpacks() -> List[SBeatpackResponse]:
-    response =  await BeatpacksRepository.find_all()
+    response = await BeatpacksRepository.find_all()
 
     return [SBeatpackResponse.from_db_model(beatpack=beatpack) for beatpack in response]
 
+
 @beatpacks.get(
-    "/{id}",
+    path="/{beatpack_id}",
     summary="Get one beat pack by id",
     response_model=SBeatpackResponse,
     responses={
         status.HTTP_200_OK: {'model': SBeatpackResponse}
     }
 )
-async def get_one(id: int):
-    response = await BeatpacksRepository.find_one_by_id(id)
+async def get_one(beatpack_id: int):
+    response = await BeatpacksRepository.find_one_by_id(beatpack_id)
 
     return SBeatpackResponse.from_db_model(beatpack=response)
 
+
 @beatpacks.post(
-    "/add",
+    path="/add",
     summary="Add a file for new beat",
     response_model=SBeatpackResponse,
     responses={
@@ -69,20 +63,20 @@ async def get_one(id: int):
 )
 async def add_beatpack(
         data: BeatpackCreate,
-        user: SUser = Depends(get_current_user)
 ) -> SBeatpackResponse:
     data = {
         "title": data.title,
         "description": data.description,
         "beats": data.beats
     }
-    
+
     response = await BeatpacksRepository.add_one(data)
 
     return SBeatpackResponse.from_db_model(beatpack=response)
 
+
 @beatpacks.put(
-    "/update/{id}",
+    path="/update/{beatpack_id}",
     summary="Edit beat pack",
     response_model=SBeatpackEditResponse,
     responses={
@@ -90,26 +84,26 @@ async def add_beatpack(
     }
 
 )
-async def update_beatpacks(id: int, beatpacks_data: BeatpackCreate) -> SBeatpackEditResponse:
+async def update_beatpacks(beatpack_id: int, beatpacks_data: BeatpackCreate) -> SBeatpackEditResponse:
     data = {
         "title": beatpacks_data.title,
         "description": beatpacks_data.description,
     }
-    
-    await BeatpacksRepository.edit_one(id, data)
+
+    await BeatpacksRepository.edit_one(beatpack_id, data)
 
     return SBeatpackEditResponse
 
+
 @beatpacks.delete(
-    "/delete/{id}",
+    path="/delete/{beatpack_id}",
     summary="Delete beat pack",
     response_model=SBeatpackDeleteResponse,
     responses={
         status.HTTP_200_OK: {'model': SBeatpackDeleteResponse}
     }
 )
-async def delete_beatpacks(id: int) -> SBeatpackDeleteResponse:
-    await BeatpacksRepository.delete(id=id)
+async def delete_beatpacks(beatpack_id: int) -> SBeatpackDeleteResponse:
+    await BeatpacksRepository.delete(id=beatpack_id)
 
     return SBeatpackDeleteResponse
-

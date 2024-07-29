@@ -4,4 +4,3 @@ from src.services import SQLAlchemyRepository
 
 class AlbumsRepository(SQLAlchemyRepository):
     model = Album
-    
