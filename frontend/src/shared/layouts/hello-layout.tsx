@@ -24,7 +24,7 @@ export const HelloLayout = ({ children }: { children: React.ReactNode }) => {
 							<a
 								href="#"
 								className="block px-5 text-white rounded hover:text-gray-100">
-								Home
+								<Link href="/">Home</Link>
 							</a>
 						</li>
 						<li>

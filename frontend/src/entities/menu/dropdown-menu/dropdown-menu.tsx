@@ -8,7 +8,7 @@ import { Logout } from '@/features/logout';
 
 export const DropdownMenu = () => {
 	const isAuthenticated = useAppSelector((state) => state.auth),
-		user = useAppSelector((state) => state.auth);
+	user = useAppSelector((state) => state.auth);
 	const [isOpen, setIsOpen] = useState(false);
 	const router = useRouter();
 

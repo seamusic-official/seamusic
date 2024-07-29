@@ -7,11 +7,6 @@ import { DecorText } from '@/shared/ui/decor-text';
 import { Input } from '@/shared/ui/input';
 import { useRouter } from 'next/navigation';
 
-interface CheckboxProps {
-	id: string;
-	value: string;
-	handleCheckboxChange: (value: string, checked: boolean) => void;
-}
 
 export function Register() {
 	const [username, setUsername] = useState('');

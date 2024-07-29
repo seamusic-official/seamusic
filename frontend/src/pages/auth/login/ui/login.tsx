@@ -12,10 +12,6 @@ export function Login() {
 	const [password, setPassword] = useState('');
 	const [email, setEmail] = useState('');
 	const [error, setError] = useState('');
-
-	const AUTH_URL = `https://accounts.spotify.com/authorize?client_id=${
-		import.meta.env.VITE_CLIENT_ID
-	}&response_type=code&redirect_uri=${import.meta.env.VITE_REDIRECT_URI}`;
 	const navigate = useRouter();
 	const dispatch = useAppDispatch();
 
@@ -66,7 +62,7 @@ export function Login() {
 											<span className="">SIGN IN THROUGH GOOGLE</span>
 										</button>
 										<button className="w-full m-1 p-2 transition duration-200 ease-in-out uppercase text-sm font-bold text-white bg-emerald-700  rounded-full tracking-widest hover:bg-emerald-800 transform hover:scale-105 focus:scale-100 focus:bg-emerald-600 outline-none">
-											<a className="no-underline " href={AUTH_URL}>
+											<a className="no-underline " href="">
 												SIGN IN THROUGH SPOTIFY
 											</a>
 										</button>
@@ -116,11 +112,11 @@ export function Login() {
 											</button>
 											<div className=" text-center text-sm my-6">
 												Don't you have an account?{' '}
-												<Link href="/auth/register">
 													<a className="text-emerald-700 underline">
-														Registration
+														<Link href="/auth/register">
+																Registration
+														</Link>
 													</a>
-												</Link>
 												.
 											</div>
 										</div>

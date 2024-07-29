@@ -155,7 +155,7 @@ export function Artist() {
 					<div>
 						<h1 className="flex items-center text-white font-extrabold text-2xl mt-6">
 							{user.username}'s kits{' '}
-							<AddButtonPlus link="/dashboard" onClick={} />
+							<AddButtonPlus link="/dashboard" onClick="" />
 						</h1>
 						<div className="flex overflow-auto justify-start items-center mb-4">
 							<div>

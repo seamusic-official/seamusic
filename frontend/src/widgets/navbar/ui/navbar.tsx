@@ -91,7 +91,7 @@ export function NavBar(reference: any) {
 						<DefaultButton title="Studio" onClick={toDash} />
 					</div>
 					<div className="ml-4  ">
-						<DropdownMenu reference={reference} />
+						<DropdownMenu />
 					</div>
 				</div>
 			</div>
