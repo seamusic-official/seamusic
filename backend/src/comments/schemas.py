@@ -51,11 +51,10 @@ class SBeatPack(SBeatPackBase):
 
 
 class SCommentDeleteResponse(BaseModel):
-    response: str = 'Comment deleted'
+    response: str = "Comment deleted"
 
 
 class CommentCreate(BaseModel):
-
     """
     Это схема нужна для того что бы создать коментарию
     """
@@ -68,7 +67,7 @@ class CommentUpdate(BaseModel):
 
 
 class CommentUpdateResponse(BaseModel):
-    response: str = 'Comment updated'
+    response: str = "Comment updated"
 
 
 class GetAuthor(BaseModel):

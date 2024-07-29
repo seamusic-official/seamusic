@@ -1,7 +1,12 @@
 from src.auth.models import (
-    User, ProducerProfile, ArtistProfile, Role,
-    user_to_roles_association, artist_tags_association, producer_tags_association,
-    listener_tags_association
+    User,
+    ProducerProfile,
+    ArtistProfile,
+    Role,
+    user_to_roles_association,
+    artist_tags_association,
+    producer_tags_association,
+    listener_tags_association,
 )
 
 from src.services import SQLAlchemyRepository

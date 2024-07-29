@@ -1,8 +1,7 @@
-from pydantic import BaseModel, Field
-from src.auth.schemas import SUser
-from pydantic import BaseModel
-from typing import Optional, List
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
 
 from src.tracks.models import Track
 
@@ -18,8 +17,10 @@ class STrackBase(BaseModel):
     user_id: int
     Track_pack_id: Optional[int]
 
+
 class STrackCreate(STrackBase):
     pass
+
 
 class STrack(STrackBase):
     id: int
@@ -28,6 +29,7 @@ class STrack(STrackBase):
 
     class Config:
         orm_mode = True
+
 
 class STrackResponse(BaseModel):
     id: int
@@ -44,7 +46,7 @@ class STrackResponse(BaseModel):
     updated_at: datetime
 
     @classmethod
-    def from_db_model(cls, track: Track) -> 'STrackResponse':
+    def from_db_model(cls, track: Track) -> "STrackResponse":
         return cls(
             id=track.id,
             name=track.name,
@@ -57,12 +59,13 @@ class STrackResponse(BaseModel):
             file_url=track.file_url,
             picture_url=track.picture_url,
             created_at=track.created_at,
-            updated_at=track.updated_at
+            updated_at=track.updated_at,
         )
 
 
 class STrackUpdateResponse(BaseModel):
-    response: str = 'Track updated'
+    response: str = "Track updated"
+
 
 class STrackDeleteResponse(BaseModel):
-    response: str = 'Track deleted'
+    response: str = "Track deleted"

@@ -1,25 +1,17 @@
-from sqlalchemy.orm import DeclarativeBase
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.ext.asyncio import create_async_engine
-from sqlalchemy.orm import sessionmaker
-
-from src.config import settings
-from sqlalchemy.orm import Mapped
-from sqlalchemy.orm import mapped_column
-
 from datetime import datetime
-from sqlalchemy import func
-from sqlalchemy.dialects.postgresql import TIMESTAMP
 from typing import AsyncGenerator
 
-engine = create_async_engine(
-    settings.db.url,
-    echo=True
-)
+from sqlalchemy import func
+from sqlalchemy.dialects.postgresql import TIMESTAMP
+from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
-async_session_maker = sessionmaker(
-    engine, class_=AsyncSession, expire_on_commit=False
-)
+from src.config import settings
+
+
+engine = create_async_engine(settings.db.url, echo=True)
+async_session_maker = async_sessionmaker(engine, expire_on_commit=False)
+
 
 class Base(DeclarativeBase):
     __abstract__ = True
@@ -33,6 +25,7 @@ class Base(DeclarativeBase):
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
     )
+
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with async_session_maker() as session:

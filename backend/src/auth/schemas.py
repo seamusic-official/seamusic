@@ -9,16 +9,16 @@ from src.tags.schemas import STag
 
 
 class Role(str, Enum):
-    superuser = 'superuser'
-    moder = 'moder'
-    artist = 'artist'
-    producer = 'producer'
-    listener = 'listener'
+    superuser = "superuser"
+    moder = "moder"
+    artist = "artist"
+    producer = "producer"
+    listener = "listener"
 
 
-'''
+"""
 User (Listener) schemas
-'''
+"""
 
 
 class SUserBase(BaseModel):
@@ -36,7 +36,7 @@ class SUser(SUserBase):
 
 
 class SUserEditImageResponse(BaseModel):
-    response: str = 'User image edited'
+    response: str = "User image edited"
 
 
 class SUserResponse(BaseModel):
@@ -47,7 +47,7 @@ class SUserResponse(BaseModel):
     birthday: Optional[date]
 
     @classmethod
-    def from_db_model(cls, user: User) -> 'SUserResponse':
+    def from_db_model(cls, user: User) -> "SUserResponse":
         return cls(
             id=user.id,
             username=user.username,
@@ -72,12 +72,12 @@ class SUserUpdateResponse(BaseModel):
 
 
 class SUserDeleteResponse(BaseModel):
-    response: str = 'User deleted'
+    response: str = "User deleted"
 
 
-'''
+"""
 Artist schemas
-'''
+"""
 
 
 class SArtistBase(BaseModel):
@@ -97,12 +97,12 @@ class SArtistUpdate(BaseModel):
 
 
 class SArtistDeleteResponse(BaseModel):
-    response: str = 'Artist deleted'
+    response: str = "Artist deleted"
 
 
-'''
+"""
 Producer schemas
-'''
+"""
 
 
 class SProducerBase(BaseModel):
@@ -118,16 +118,16 @@ class SProducer(SProducerBase):
 
 
 class SProducerDeleteResponse(BaseModel):
-    response: str = 'Producer deleted'
+    response: str = "Producer deleted"
 
 
 class SProducerUpdate(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
 
-'''
+"""
 Auth schemas
-'''
+"""
 
 
 class SRegisterUser(BaseModel):
@@ -140,7 +140,7 @@ class SRegisterUser(BaseModel):
 
 
 class SAuthUserRegisterResponse(BaseModel):
-    response: str = 'User created'
+    response: str = "User created"
 
 
 class SLoginUser(BaseModel):
@@ -155,15 +155,12 @@ class SUserLoginResponse(BaseModel):
 
     @classmethod
     def from_db_model(
-            cls,
-            user: User,
-            access_token: str,
-            refresh_token: str
-    ) -> 'SUserLoginResponse':
+        cls, user: User, access_token: str, refresh_token: str
+    ) -> "SUserLoginResponse":
         return cls(
             accessToken=access_token,
             refreshToken=refresh_token,
-            user=SUserResponse.from_db_model(user=user)
+            user=SUserResponse.from_db_model(user=user),
         )
 
 
@@ -177,7 +174,7 @@ class SSpotifyCallbackResponse(BaseModel):
         return cls(
             access_token=access_token,
             refresh_token=refresh_token,
-            user=SUserResponse.from_db_model(user=user)
+            user=SUserResponse.from_db_model(user=user),
         )
 
 

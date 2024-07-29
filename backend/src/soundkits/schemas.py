@@ -1,6 +1,7 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
 
 from src.soundkits.models import Soundkit
 
@@ -16,6 +17,7 @@ class SSoundkitBase(BaseModel):
     user_id: int
     beat_pack_id: Optional[int]
 
+
 class SSoundkitUpdate(BaseModel):
     title: Optional[str]
     picture: Optional[str]
@@ -23,8 +25,10 @@ class SSoundkitUpdate(BaseModel):
     co_prod: Optional[str]
     prod_by: Optional[str]
 
+
 class SSoundkitCreate(SSoundkitBase):
     pass
+
 
 class SSoundkit(SSoundkitBase):
     id: int
@@ -33,6 +37,7 @@ class SSoundkit(SSoundkitBase):
 
     class Config:
         orm_mode = True
+
 
 class SSoundkitResponse(BaseModel):
     id: int
@@ -47,7 +52,7 @@ class SSoundkitResponse(BaseModel):
     updated_at: datetime
 
     @classmethod
-    def from_db_model(cls, soundkit: Soundkit) -> 'SSoundkitResponse':
+    def from_db_model(cls, soundkit: Soundkit) -> "SSoundkitResponse":
         return cls(
             id=soundkit.id,
             name=soundkit.name,
@@ -57,7 +62,7 @@ class SSoundkitResponse(BaseModel):
             user_id=soundkit.user_id,
             is_available=soundkit.is_available,
             created_at=soundkit.created_at,
-            updated_at=soundkit.updated_at
+            updated_at=soundkit.updated_at,
         )
 
 

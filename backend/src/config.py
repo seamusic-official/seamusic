@@ -16,8 +16,12 @@ class YandexCloudSettings(BaseModel):
 
 
 class SpotifySettings(BaseModel):
-    CLIENT_SECRET: str = os.environ.get("SPOTIFY_CLIENT_SECRET", '79e9fa5641eb4f5c8d091aa0ed7f2037')
-    CLIENT_ID: str = os.environ.get("SPOTIFY_CLIENT_ID", '58f5791a8b624f0fbe804737ead263c0')
+    CLIENT_SECRET: str = os.environ.get(
+        "SPOTIFY_CLIENT_SECRET", "79e9fa5641eb4f5c8d091aa0ed7f2037"
+    )
+    CLIENT_ID: str = os.environ.get(
+        "SPOTIFY_CLIENT_ID", "58f5791a8b624f0fbe804737ead263c0"
+    )
     REDIRECT_URI: str = os.environ.get("REDIRECT_URI")
 
 

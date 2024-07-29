@@ -9,8 +9,13 @@ from src.auth.dependencies import get_current_user
 from src.auth.schemas import SUser
 from src.beats.models import Beat
 from src.comments.models import BaseComment
-from src.comments.schemas import CommentCreate, CommentResponse, CommentUpdate, SCommentDeleteResponse, \
-    CommentUpdateResponse
+from src.comments.schemas import (
+    CommentCreate,
+    CommentResponse,
+    CommentUpdate,
+    SCommentDeleteResponse,
+    CommentUpdateResponse,
+)
 from src.database import get_async_session
 
 
@@ -18,8 +23,7 @@ comments = APIRouter(prefix="/comments", tags=["Comments"])
 
 
 @comments.post(
-    path="/create-comment-for-beat/{beat_id}/",
-    summary='create comment for beat'
+    path="/create-comment-for-beat/{beat_id}/", summary="create comment for beat"
 )
 async def create_comment_for_beat(
     beat_id: int,
@@ -48,10 +52,7 @@ async def create_comment_for_beat(
 @comments.get(
     path="/get-comments-from-beats/{beat_id}/",
     response_model=List[CommentResponse],
-    responses={
-        status.HTTP_200_OK: {'model': List[CommentResponse]}
-    }
-
+    responses={status.HTTP_200_OK: {"model": List[CommentResponse]}},
 )
 async def get_comments_from_beats(
     beat_id: int,
@@ -80,11 +81,9 @@ async def get_comments_from_beats(
 
 @comments.delete(
     path="/delete-comment/{comment_id}/",
-    summary='delete comment by id',
+    summary="delete comment by id",
     response_model=SCommentDeleteResponse,
-    responses={
-        status.HTTP_200_OK: {'model': SCommentDeleteResponse}
-    }
+    responses={status.HTTP_200_OK: {"model": SCommentDeleteResponse}},
 )
 async def delete(
     commemnt_id: int,
@@ -110,9 +109,7 @@ async def delete(
 @comments.put(
     path="/update-comment/{comment_id}/",
     response_model=CommentUpdateResponse,
-    responses={
-        status.HTTP_200_OK: {'model': CommentUpdateResponse}
-    }
+    responses={status.HTTP_200_OK: {"model": CommentUpdateResponse}},
 )
 async def update(
     request: CommentUpdate,
@@ -131,7 +128,7 @@ async def update(
     if not comment_result:
         raise HTTPException(
             detail=f"Bro I am sorry but comment with id {comment_id} not found",
-            status_code=404
+            status_code=404,
         )
 
     comment_result.comment = request.comment

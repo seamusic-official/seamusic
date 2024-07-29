@@ -36,7 +36,7 @@ class SLicensesResponse(BaseModel):
     updated_at: datetime
 
     @classmethod
-    def from_db_model(cls, licenses: License) -> 'SLicensesResponse':
+    def from_db_model(cls, licenses: License) -> "SLicensesResponse":
         return cls(
             id=licenses.id,
             title=licenses.title,
@@ -45,7 +45,7 @@ class SLicensesResponse(BaseModel):
             picture_url=licenses.picture_url,
             is_available=licenses.is_available,
             created_at=licenses.created_at,
-            updated_at=licenses.updated_at
+            updated_at=licenses.updated_at,
         )
 
 

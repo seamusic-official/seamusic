@@ -62,7 +62,7 @@ class SBeatResponse(BaseModel):
     updated_at: datetime
 
     @classmethod
-    def from_db_model(cls, beat: Beat) -> 'SBeatResponse':
+    def from_db_model(cls, beat: Beat) -> "SBeatResponse":
         return cls(
             id=beat.id,
             title=beat.title,
@@ -73,9 +73,9 @@ class SBeatResponse(BaseModel):
             user_id=beat.user_id,
             is_available=beat.is_available,
             created_at=beat.created_at,
-            updated_at=beat.updated_at
+            updated_at=beat.updated_at,
         )
 
 
 class SBeatDeleteResponse(BaseModel):
-    response: str = 'Beat deleted'
+    response: str = "Beat deleted"

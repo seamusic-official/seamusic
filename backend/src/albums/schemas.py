@@ -46,7 +46,7 @@ class SAlbumResponse(BaseModel):
     user_id: int
 
     @classmethod
-    def from_db_model(cls, album: Album) -> 'SAlbumResponse':
+    def from_db_model(cls, album: Album) -> "SAlbumResponse":
         return cls(
             title=album.name,
             picture=album.picture_url,
@@ -58,4 +58,4 @@ class SAlbumResponse(BaseModel):
 
 
 class SAlbumDeleteResponse(BaseModel):
-    response: str = 'Album deleted.'
+    response: str = "Album deleted."

@@ -41,12 +41,12 @@ class SBeatpackResponse(BaseModel):
     updated_at: datetime
 
     @classmethod
-    def from_db_model(cls, beatpack: Beatpack) -> 'SBeatpackResponse':
+    def from_db_model(cls, beatpack: Beatpack) -> "SBeatpackResponse":
         return cls(
             id=beatpack.id,
             description=beatpack.description,
             is_available=beatpack.is_available,
             title=beatpack.title,
             created_at=beatpack.created_at,
-            updated_at=beatpack.updated_at
+            updated_at=beatpack.updated_at,
         )

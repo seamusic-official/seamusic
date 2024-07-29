@@ -1,7 +1,8 @@
-from pydantic import Field
-from pydantic import BaseModel
-from typing import Optional, List
 from datetime import datetime
+from typing import Optional, List
+
+from pydantic import BaseModel, Field
+
 
 class SBeatBase(BaseModel):
     title: str
@@ -14,8 +15,10 @@ class SBeatBase(BaseModel):
     user_id: int
     beat_pack_id: Optional[int]
 
+
 class SBeatCreate(SBeatBase):
     pass
+
 
 class SBeat(SBeatBase):
     id: int
@@ -25,14 +28,17 @@ class SBeat(SBeatBase):
     class Config:
         orm_mode = True
 
+
 class SBeatPackBase(BaseModel):
     title: str
     description: str
     owner_id: int
     beats: List[SBeat] = Field(...)
-    
+
+
 class SBeatPackCreate(SBeatPackBase):
     pass
+
 
 class SBeatPack(SBeatPackBase):
     id: int

@@ -7,17 +7,17 @@ from src.database import Base
 
 
 beats_to_beatpacks_association_table = Table(
-    'beats_to_beatpacks_association_table',
+    "beats_to_beatpacks_association_table",
     Base.metadata,
-    Column('beat_id', Integer, ForeignKey('beats.id')),
-    Column('beat_pack_id', Integer, ForeignKey('beatpacks.id'))
+    Column("beat_id", Integer, ForeignKey("beats.id")),
+    Column("beat_pack_id", Integer, ForeignKey("beatpacks.id")),
 )
 
 user_to_beatpacks_association_table = Table(
-    'user_to_beatpacks_association_table',
+    "user_to_beatpacks_association_table",
     Base.metadata,
-    Column('beatpack_id', Integer, ForeignKey('beatpacks.id')),
-    Column('user_id', Integer, ForeignKey('users.id'))
+    Column("beatpack_id", Integer, ForeignKey("beatpacks.id")),
+    Column("user_id", Integer, ForeignKey("users.id")),
 )
 
 
@@ -28,5 +28,9 @@ class Beatpack(Base):
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
 
-    user: Mapped[List["User"]] = relationship("User", secondary=user_to_beatpacks_association_table)
-    beats: Mapped[List["Beat"]] = relationship("Beat", secondary=beats_to_beatpacks_association_table)
+    user: Mapped[List["User"]] = relationship(
+        "User", secondary=user_to_beatpacks_association_table
+    )
+    beats: Mapped[List["Beat"]] = relationship(
+        "Beat", secondary=beats_to_beatpacks_association_table
+    )

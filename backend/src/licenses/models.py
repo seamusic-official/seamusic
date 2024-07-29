@@ -5,10 +5,10 @@ from src.database import Base
 
 
 user_to_licenses_association = Table(
-    'user_to_licenses_association',
+    "user_to_licenses_association",
     Base.metadata,
-    Column('user_id', Integer, ForeignKey('users.id')),
-    Column('license_id', Integer, ForeignKey('licenses.id')),
+    Column("user_id", Integer, ForeignKey("users.id")),
+    Column("license_id", Integer, ForeignKey("licenses.id")),
 )
 
 
