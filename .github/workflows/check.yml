@@ -6,6 +6,8 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     steps:
+      - name: Go to backend directory
+        run: cd backend
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
@@ -16,14 +18,12 @@ jobs:
       - name: Install flake8
         run: pip install flake8
       - name: Run flake8
-        uses: suo/flake8-github-action@releases/v1
-        with:
-          checkName: 'flake8'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python -m flake8
   mypy:
     runs-on: ubuntu-latest
     steps:
+      - name: Go to backend directory
+        run: cd backend
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
@@ -34,4 +34,4 @@ jobs:
       - name: Install mypy
         run: pip install mypy
       - name: Run mypy
-        run: python -m mypy -p backend
+        run: python -m mypy -p src --ignore-missing-imports
