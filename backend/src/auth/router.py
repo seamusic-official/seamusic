@@ -210,16 +210,16 @@ async def get_one_artist(artist_id: int) -> SArtist:
     if not user:
         raise NotFoundException()
 
-    user_dict = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "picture_url": user.picture_url,
-        "birthday": user.birthday,
-        "role": user.role,
-        "updated_at": user.updated_at,
-        "created_at": user.created_at,
-    }
+    # user_dict = {
+    #     "id": user.id,
+    #     "username": user.username,
+    #     "email": user.email,
+    #     "picture_url": user.picture_url,
+    #     "birthday": user.birthday,
+    #     "role": user.role,
+    #     "updated_at": user.updated_at,
+    #     "created_at": user.created_at,
+    # }
 
     return SUserResponse(user=user)
 
@@ -374,11 +374,12 @@ async def register(user: SRegisterUser) -> SAuthUserRegisterResponse:
     role_superuser = await RoleDAO.find_one_by_id(id_=1)
 
     if not role_superuser:
-        role_superuser = await RoleDAO.add_one({"name": "superuser"})
-        role_moder = await RoleDAO.add_one({"name": "moder"})
-        role_producer = await RoleDAO.add_one({"name": "producer"})
-        role_artist = await RoleDAO.add_one({"name": "artist"})
-        role_listener = await RoleDAO.add_one({"name": "listener"})
+        pass
+        # role_superuser = await RoleDAO.add_one({"name": "superuser"})
+        # role_moder = await RoleDAO.add_one({"name": "moder"})
+        # role_producer = await RoleDAO.add_one({"name": "producer"})
+        # role_artist = await RoleDAO.add_one({"name": "artist"})
+        # role_listener = await RoleDAO.add_one({"name": "listener"})
 
     user_roles = []
 
@@ -488,7 +489,7 @@ async def spotify_callback(code, response: Response) -> SSpotifyCallbackResponse
     auth_response_data = auth_response.json()
 
     access_token = auth_response_data.get("access_token")
-    refresh_token = auth_response_data.get("refresh_token")
+    # refresh_token = auth_response_data.get("refresh_token")
 
     if access_token:
         user_response = requests.get(

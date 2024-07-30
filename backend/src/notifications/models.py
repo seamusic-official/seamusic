@@ -1,10 +1,10 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
 
 from src.database import CreatedAtOnlyMixin
 
 
-Base = declarative_base()
+class Base(DeclarativeBase):
+    pass
 
 
 class Notification(Base, CreatedAtOnlyMixin):

@@ -30,71 +30,76 @@ from src.tags.router import tags
 from src.tracks.router import tracks
 
 
-@asynccontextmanager
-async def lifespan(application: FastAPI) -> None:
+class BeatsAdmin(ModelView, model=Beat):  # type: ignore
+    column_list = [Beat.id, Beat.title]
 
-    app.include_router(auth)
-    app.include_router(licenses)
-    app.include_router(beats)
-    app.include_router(beatpacks)
-    app.include_router(tracks)
-    app.include_router(albums)
-    app.include_router(soundkits)
-    app.include_router(messages)
-    app.include_router(music)
-    app.include_router(subscription)
-    app.include_router(tags)
-    app.include_router(squads)
-    app.include_router(comments)
+
+class UserAdmin(ModelView, model=User):  # type: ignore
+    column_list = [User.id, User.username]
+
+
+class SquadAdmin(ModelView, model=Squad):  # type: ignore
+    column_list = [Squad.id, Squad.name]
+
+
+class TagAdmin(ModelView, model=Tag):  # type: ignore
+    column_list = [Tag.id, Tag.name]
+
+
+class SoundkitAdmin(ModelView, model=Soundkit):  # type: ignore
+    column_list = [Tag.id, Soundkit.name]
+
+
+class ProducerProfileAdmin(ModelView, model=ProducerProfile):  # type: ignore
+    column_list = [ProducerProfile.id, ProducerProfile.user]
+
+
+class ArtistProfileAdmin(ModelView, model=ArtistProfile):  # type: ignore
+    column_list = [ArtistProfile.id, ArtistProfile.user]
+
+
+class BeatpackAdmin(ModelView, model=Beatpack):  # type: ignore
+    column_list = [Beatpack.id, Beatpack.title]
+
+
+@asynccontextmanager
+async def lifespan(application: FastAPI):
+
+    application.include_router(auth)
+    application.include_router(licenses)
+    application.include_router(beats)
+    application.include_router(beatpacks)
+    application.include_router(tracks)
+    application.include_router(albums)
+    application.include_router(soundkits)
+    application.include_router(messages)
+    application.include_router(music)
+    application.include_router(subscription)
+    application.include_router(tags)
+    application.include_router(squads)
+    application.include_router(comments)
+
+    admin.add_view(SoundkitAdmin)
+    admin.add_view(TagAdmin)
+    admin.add_view(SquadAdmin)
+    admin.add_view(BeatsAdmin)
+    admin.add_view(BeatpackAdmin)
+    admin.add_view(UserAdmin)
+    admin.add_view(ProducerProfileAdmin)
+    admin.add_view(ArtistProfileAdmin)
 
     # redis = aioredis.from_url("redis://localhost:6379", encoding="utf8")
     # FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
 
+    yield
 
-app = FastAPI(title="SeaMusic", description="High-perfomance musical application")
+
+app = FastAPI(
+    title="SeaMusic",
+    description="High-perfomance musical application",
+    lifespan=lifespan,
+)
 admin = Admin(app, engine)
-
-
-class BeatsAdmin(ModelView, model=Beat):
-    column_list = [Beat.id, Beat.title]
-
-
-class UserAdmin(ModelView, model=User):
-    column_list = [User.id, User.username]
-
-
-class SquadAdmin(ModelView, model=Squad):
-    column_list = [Squad.id, Squad.name]
-
-
-class TagAdmin(ModelView, model=Tag):
-    column_list = [Tag.id, Tag.name]
-
-
-class SoundkitAdmin(ModelView, model=Soundkit):
-    column_list = [Tag.id, Soundkit.name]
-
-
-class ProducerProfileAdmin(ModelView, model=ProducerProfile):
-    column_list = [ProducerProfile.id, ProducerProfile.user]
-
-
-class ArtistProfileAdmin(ModelView, model=ArtistProfile):
-    column_list = [ArtistProfile.id, ArtistProfile.user]
-
-
-class BeatpackAdmin(ModelView, model=Beatpack):
-    column_list = [Beatpack.id, Beatpack.title]
-
-
-admin.add_view(SoundkitAdmin)
-admin.add_view(TagAdmin)
-admin.add_view(SquadAdmin)
-admin.add_view(BeatsAdmin)
-admin.add_view(BeatpackAdmin)
-admin.add_view(UserAdmin)
-admin.add_view(ProducerProfileAdmin)
-admin.add_view(ArtistProfileAdmin)
 
 origins = ["http://127.0.0.1:5173", "http://localhost:5173"]
 

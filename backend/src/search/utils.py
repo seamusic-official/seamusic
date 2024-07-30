@@ -42,7 +42,7 @@ async def save_audio(upload_folder: str, file: UploadFile) -> dict:
             shutil.copyfileobj(file.file, buffer)
 
         # Get file info
-        file_info = {}
+        file_info = dict()
         file_info["file_path"] = unique_filename
 
         if file_extension == ".mp3":

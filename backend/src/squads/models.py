@@ -3,6 +3,7 @@ from typing import List
 from sqlalchemy import Column, Table, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.auth.models import ArtistProfile, ProducerProfile, User
 from src.database import Base
 
 

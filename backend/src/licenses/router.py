@@ -26,7 +26,7 @@ async def get_user_licenses(
     user: SUser = Depends(get_current_user),
 ) -> List[SLicensesResponse]:
     response = await LicensesRepository.find_all(owner=user)
-    return [SLicensesResponse.from_db_model(licenses=license) for license in response]
+    return [SLicensesResponse.from_db_model(licenses=license_) for license_ in response]
 
 
 @licenses.get(

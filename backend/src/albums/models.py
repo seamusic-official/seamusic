@@ -1,8 +1,9 @@
 from sqlalchemy import Column, Table, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.auth.models import ArtistProfile, User
 from src.database import Base
-
+from src.tracks.models import Track
 
 artist_profile_album_association = Table(
     "artist_profile_album_association",

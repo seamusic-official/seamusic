@@ -45,7 +45,6 @@ class SSoundkitResponse(BaseModel):
     description: str
     picture_url: str
     file_url: str
-    picture_url: str
     user_id: int
     is_available: bool
     created_at: datetime

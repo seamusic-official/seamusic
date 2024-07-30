@@ -1,7 +1,8 @@
 from sqlalchemy import Column, ForeignKey, Integer, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.albums.models import album_track_association
+from src.albums.models import album_track_association, Album
+from src.auth.models import ArtistProfile, User
 from src.database import Base
 
 
@@ -31,4 +32,4 @@ class Track(Base):
     albums: Mapped["Album"] = relationship(
         secondary=album_track_association, back_populates="tracks"
     )
-    user: Mapped["User"] = relationship("User")  # Указываем связь с таблицей User
+    user: Mapped["User"] = relationship("User")

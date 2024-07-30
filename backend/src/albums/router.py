@@ -4,6 +4,7 @@ from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.albums.schemas import SAlbumBase, SAlbumResponse, SAlbumDeleteResponse
 from src.albums.services import AlbumsRepository
+from src.albums.utils import unique_album_filename
 from src.auth.dependencies import get_current_user
 from src.auth.schemas import SUser
 from src.services import MediaRepository
