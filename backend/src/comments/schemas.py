@@ -1,9 +1,9 @@
 from datetime import datetime
 from typing import Optional, List
 
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
-
+from src.beats.schemas import SBeatBase
 
 
 class SBeatCreate(SBeatBase):
@@ -15,22 +15,6 @@ class SBeat(SBeatBase):
     username: str
     picture_url: str
     email: EmailStr
-
-
-class CommentResponse(BaseModel):
-    id: int
-    comment: str
-    comment_creator_id: int
-    beat_id: Optional[int] = None
-    beat_pack_id: Optional[int] = None
-    soundkit_id: Optional[int] = None
-    created_at: datetime
-    updated_at: datetime
-    is_available: bool
-    comment_author: GetAuthor
-
-    class Config:
-        orm_mode = True
 
 
 class SBeatPackBase(BaseModel):
@@ -50,8 +34,7 @@ class SBeatPack(SBeatPackBase):
     is_available: bool
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SCommentDeleteResponse(BaseModel):
@@ -93,5 +76,4 @@ class CommentResponse(BaseModel):
     is_available: bool
     comment_author: GetAuthor
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)

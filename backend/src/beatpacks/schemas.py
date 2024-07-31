@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import List
 
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 from src.beatpacks.models import Beatpack
 
@@ -20,8 +20,7 @@ class BeatResponse(BaseModel):
     id: int
     name: str
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SBeatpackEditResponse(BaseModel):

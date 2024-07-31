@@ -1,10 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
-
-from src.tracks.models import Track
-
+from pydantic import BaseModel, ConfigDict
 
 from src.tracks.models import Track
 
@@ -30,8 +27,7 @@ class STrack(STrackBase):
     is_available: bool
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class STrackResponse(BaseModel):

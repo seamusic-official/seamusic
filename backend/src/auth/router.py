@@ -470,10 +470,6 @@ async def refresh(user: SUser = Depends(get_current_user)) -> SRefreshTokenRespo
 
     return SRefreshTokenResponse(accessToken=access_token, refreshToken=refresh_token)
 
-    return SRefreshTokenResponse(
-        accessToken=access_token,
-        refreshToken=refresh_token
-    )
 
 @auth.post(path="/callback", response_model=SSpotifyCallbackResponse)
 async def spotify_callback(code, response: Response) -> SSpotifyCallbackResponse:
@@ -486,7 +482,7 @@ async def spotify_callback(code, response: Response) -> SSpotifyCallbackResponse
     }
 
     auth_response = requests.post(
-        "https://accounts.spotify.com/api/token",
+        url="https://accounts.spotify.com/api/token",
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         data=payload,
     )

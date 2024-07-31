@@ -1,9 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
-
-from src.beats.models import Beat
+from pydantic import BaseModel, ConfigDict
 
 from src.beats.models import Beat
 
@@ -47,8 +45,7 @@ class SBeat(SBeatBase):
     is_available: bool
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SBeatResponse(BaseModel):

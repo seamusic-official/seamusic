@@ -1,10 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel
-
-from src.albums.models import Album
-
+from pydantic import BaseModel, ConfigDict
 
 from src.albums.models import Album
 
@@ -36,8 +33,7 @@ class SAlbum(SAlbumBase):
     is_available: bool
     created_at: datetime
 
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class SAlbumResponse(BaseModel):

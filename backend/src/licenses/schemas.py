@@ -5,8 +5,6 @@ from pydantic import BaseModel
 
 from src.licenses.models import License
 
-from src.licenses.models import License
-
 
 class SLicenseBase(BaseModel):
     title: str

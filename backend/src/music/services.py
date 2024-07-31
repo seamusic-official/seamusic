@@ -57,8 +57,8 @@ class Spotify(AbstractRepository):
         return tracks
 
     @staticmethod
-    def track(id):
-        results = Spotify.sp.track(id)
+    def track(track_id):
+        results = Spotify.sp.track(track_id)
         return results["preview_url"]
 
     @staticmethod

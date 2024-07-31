@@ -1,12 +1,10 @@
+import os
+
 import httplib2
-import os
-import random
-import time
-from apiclient.errors import HttpError
-from apiclient.http import MediaFileUpload
-from src.config import settings
-import os
 from google_auth_oauthlib.flow import Flow
+
+from src.config import settings
+
 
 httplib2.RETRIES = 1
 MAX_RETRIES = 10

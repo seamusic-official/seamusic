@@ -50,7 +50,7 @@ async def create_comment_for_beat(
 
 
 @comments.get(
-    path="/get-comments-from-beats/{beat_id}/",
+    path="/get-comments_-from-beats/{beat_id}/",
     response_model=List[CommentResponse],
     responses={status.HTTP_200_OK: {"model": List[CommentResponse]}},
 )
@@ -65,14 +65,14 @@ async def get_comments_from_beats(
     if not beat:
         raise HTTPException(detail="Not found", status_code=404)
 
-    comments = await session.execute(
+    comments_ = await session.execute(
         select(BaseComment)
         .filter(BaseComment.beat_id == beat_id)
         .order_by(BaseComment.created_at.desc())
         .options(joinedload(BaseComment.comment_author))
     )
 
-    comment_result = comments.scalars().all()
+    comment_result = comments_.scalars().all()
     if not comment_result:
         raise HTTPException(detail="Not Found", status_code=404)
 
