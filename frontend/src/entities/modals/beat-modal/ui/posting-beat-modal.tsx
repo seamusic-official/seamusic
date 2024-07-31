@@ -3,13 +3,10 @@ import { ChangeEvent, MouseEvent, FormEvent } from 'react';
 import { Input } from '@/shared/ui/input';
 import { SubmitButton } from '@/shared/ui/buttons';
 import { Song } from '../../songs/Song';
-import $api from '../../../http';
-import { useAppSelector } from '@/shared/hooks/redux';
 import { useRouter } from 'next/navigation';
-import axios from 'axios';
-import BeatService from '../../../services/BeatService';
+import { BeatService } from '@/services/beat-service';
 
-export function PostingBeatModal({ isOpen, onClose }) {
+export const PostingBeatModal: React.FC = ({ isOpen, onClose }) => {
 	const [file, setFile] = useState(null);
 	const [picture, setPicture] = useState(null);
 	const [title, setTitle] = useState('');

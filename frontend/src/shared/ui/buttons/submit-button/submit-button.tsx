@@ -1,7 +1,7 @@
 import React from 'react';
-import { DefaultButtonProps } from '../default-button/type';
+import { SubmitButtonType } from '../submit-button/type';
 
-export function SubmitButton({ title, onClick }: DefaultButtonProps) {
+export function SubmitButton({ title }: SubmitButtonType) {
 	return (
 		<div>
 			<button
