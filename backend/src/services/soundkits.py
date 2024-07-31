@@ -1,4 +1,4 @@
-from src.services import SQLAlchemyRepository
+from src.core.cruds import SQLAlchemyRepository
 from src.models.soundkits import Soundkit
 
 

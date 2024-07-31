@@ -2,7 +2,6 @@ from typing import List
 
 from fastapi import APIRouter, Depends, status
 
-from src.utils.dependencies import get_current_user
 from src.schemas.auth import SUser
 from src.schemas.beatpacks import (
     BeatpackCreate,
@@ -11,6 +10,7 @@ from src.schemas.beatpacks import (
     SBeatpackDeleteResponse,
 )
 from src.services.beatpacks import BeatpacksRepository
+from src.utils.auth import get_current_user
 
 
 beatpacks = APIRouter(prefix="/beatpacks", tags=["Beatpacks"])

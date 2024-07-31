@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
-from src.utils.dependencies import get_current_user
+from src.core.cruds import MediaRepository
 from src.schemas.auth import SUser
 from src.schemas.beats import (
     SBeatUpdate,
@@ -12,8 +12,7 @@ from src.schemas.beats import (
 )
 from src.services.beats import BeatsRepository
 from src.utils.beats import unique_filename
-from src.services import MediaRepository
-
+from src.utils.auth import get_current_user
 
 beats = APIRouter(prefix="/beats", tags=["Beats"])
 

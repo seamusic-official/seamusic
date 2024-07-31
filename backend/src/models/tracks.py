@@ -1,8 +1,7 @@
 from sqlalchemy import Column, ForeignKey, Integer, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.albums import album_track_association, Album
-from src.models.auth import ArtistProfile, User
+from src.models.albums import album_track_association
 from src.core.database import Base
 
 

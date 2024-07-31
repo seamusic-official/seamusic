@@ -2,14 +2,14 @@ import os
 import uuid
 from datetime import datetime, timedelta, UTC
 
-from fastapi import HTTPException, UploadFile
-from jose import jwt
+from fastapi import Depends, Request, HTTPException, UploadFile
+from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import EmailStr
 
-from src.services.auth import UsersDAO
 from src.core.config import settings
-
+from src.schemas.auth import SUser
+from src.services.auth import UsersDAO
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -69,3 +69,30 @@ async def authenticate_user(email: EmailStr, password: str):
             return None
         return user
     return None
+
+
+async def get_refresh_token(request: Request):
+    token = request.cookies.get("refreshToken")
+    if not token:
+        raise HTTPException(status_code=401)
+    return token
+
+
+async def get_current_user(token: str = Depends(get_refresh_token)) -> SUser:
+    try:
+        payload = jwt.decode(token, JWT_REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
+    except JWTError:
+        raise HTTPException(status_code=401)
+
+    expire: str = payload.get("exp")
+
+    if (not expire) or (int(expire) < datetime.now(UTC).timestamp()):
+        raise HTTPException(status_code=401)
+    user_id: str = payload.get("sub")
+    if not user_id:
+        raise HTTPException(status_code=401)
+    user = await UsersDAO.find_one_by_id(int(user_id))
+    if not user:
+        raise HTTPException(status_code=401)
+
+    return user

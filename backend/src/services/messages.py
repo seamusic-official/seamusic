@@ -1,5 +1,5 @@
 from src.models.messages import Message
-from src.services import SQLAlchemyRepository
+from src.core.cruds import SQLAlchemyRepository
 
 
 class MessagesRepository(SQLAlchemyRepository):

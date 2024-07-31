@@ -5,7 +5,7 @@ from fastapi import UploadFile, Response
 from fastapi.testclient import TestClient
 from httpx import Response
 
-from src.auth.schemas import SUserResponse, SRegisterUser, Role
+from src.schemas.auth import SUserResponse, SRegisterUser, Role
 
 
 email = 'test_email2@example.com'

@@ -11,7 +11,9 @@ from fastapi import (
     status,
 )
 
-from src.utils.dependencies import get_current_user
+from src.core.config import settings
+from src.core.cruds import MediaRepository
+from src.core.exceptions import NotFoundException, NoRightsException
 from src.schemas.auth import (
     SUser,
     SArtist,
@@ -32,18 +34,15 @@ from src.schemas.auth import (
     SSpotifyCallbackResponse,
 )
 from src.services.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
+from src.services.tags import ListenerTagsDAO, TagsDAO
 from src.utils.auth import (
     authenticate_user,
     create_access_token,
     create_refresh_token,
     get_hashed_password,
+    get_current_user
 )
 from src.utils.beats import unique_filename
-from src.core.config import settings
-from src.core.exceptions import NotFoundException, NoRightsException
-from src.services import MediaRepository
-from src.services.tags import ListenerTagsDAO, TagsDAO
-
 
 auth = APIRouter(prefix="/auth", tags=["Auth & Users"])
 

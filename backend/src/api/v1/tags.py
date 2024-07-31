@@ -2,12 +2,12 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 
-from src.utils.dependencies import get_current_user
-from src.schemas.auth import SUser
-from src.services.auth import ProducerDAO, ArtistDAO
 from src.core.exceptions import CustomException
+from src.schemas.auth import SUser
 from src.schemas.tags import STag
+from src.services.auth import ProducerDAO, ArtistDAO
 from src.services.tags import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
+from src.utils.auth import get_current_user
 
 
 tags = APIRouter(prefix="/tags", tags=["All tags"])

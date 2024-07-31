@@ -99,7 +99,7 @@ class Spotify(AbstractRepository):
 
     @staticmethod
     def get_artist(artist_id):
-        results = Spotify.sp.artist(id)
+        results = Spotify.sp.artist(artist_id)
         artists = []
 
         for artist in results["artist"]["items"]:

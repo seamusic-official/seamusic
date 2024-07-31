@@ -18,7 +18,7 @@ class YandexCloudSettings(BaseModel):
 class SpotifySettings(BaseModel):
     CLIENT_SECRET: str = os.environ["SPOTIFY_CLIENT_SECRET"]
     CLIENT_ID: str = os.environ["SPOTIFY_CLIENT_ID"]
-    REDIRECT_URI: str = os.environ["REDIRECT_URI"]
+    # REDIRECT_URI: str = os.environ["REDIRECT_URI"]
 
 
 class DbSettings(BaseModel):
@@ -41,8 +41,7 @@ class AuthSettings(BaseModel):
 
 
 class Settings(BaseSettings):
-    root_url: str = os.environ.get("ROOT_URL")
-    api_v1_prefix: str = "/api/v1"
+    root_url: str = os.environ["ROOT_URL"]
     db: DbSettings = DbSettings()
     auth: AuthSettings = AuthSettings()
     spotify: SpotifySettings = SpotifySettings()

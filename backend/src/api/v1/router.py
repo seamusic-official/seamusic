@@ -18,21 +18,21 @@ from src.api.v1.tracks import tracks
 
 
 @asynccontextmanager
-async def lifespan(application: APIRouter):
-    application.include_router(auth)
-    application.include_router(licenses)
-    application.include_router(beats)
-    application.include_router(beatpacks)
-    application.include_router(tracks)
-    application.include_router(albums)
-    application.include_router(soundkits)
-    application.include_router(messages)
-    application.include_router(music)
-    application.include_router(subscription)
-    application.include_router(tags)
-    application.include_router(squads)
-    application.include_router(comments)
+async def lifespan(application: APIRouter):  # noqa
+    router.include_router(auth)
+    router.include_router(licenses)
+    router.include_router(beats)
+    router.include_router(beatpacks)
+    router.include_router(tracks)
+    router.include_router(albums)
+    router.include_router(soundkits)
+    router.include_router(messages)
+    router.include_router(music)
+    router.include_router(subscription)
+    router.include_router(tags)
+    router.include_router(squads)
+    router.include_router(comments)
     yield
 
 
-v1 = APIRouter(prefix='/v1', lifespan=lifespan)
+router = APIRouter(prefix='/v1', lifespan=lifespan)

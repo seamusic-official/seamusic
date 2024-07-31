@@ -3,10 +3,10 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from src.auth.schemas import SRegisterUser, Role, SLoginUser, SUserLoginResponse
-from src.config import settings
-from src.database import Base
-from src.main import app
+from src.schemas.auth import SRegisterUser, Role, SLoginUser, SUserLoginResponse
+from src.core.config import settings
+from src.core.database import Base
+from src.api.app import app
 
 
 engine_test = create_async_engine(settings.db.url, echo=True)

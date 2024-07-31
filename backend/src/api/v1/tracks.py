@@ -2,9 +2,8 @@ from typing import List
 
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
-from src.utils.dependencies import get_current_user
+from src.core.cruds import MediaRepository
 from src.schemas.auth import SUser
-from src.services import MediaRepository
 from src.schemas.tracks import (
     STrackBase,
     STrackResponse,
@@ -12,6 +11,7 @@ from src.schemas.tracks import (
     STrackDeleteResponse,
 )
 from src.services.tracks import TracksRepository
+from src.utils.auth import get_current_user
 from src.utils.tracks import unique_track_filename
 
 

@@ -2,12 +2,12 @@ from typing import List
 
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
+from src.core.cruds import MediaRepository
 from src.schemas.albums import SAlbumBase, SAlbumResponse, SAlbumDeleteResponse
+from src.schemas.auth import SUser
 from src.services.albums import AlbumsRepository
 from src.utils.albums import unique_album_filename
-from src.utils.dependencies import get_current_user
-from src.schemas.auth import SUser
-from src.services import MediaRepository
+from src.utils.auth import get_current_user
 
 
 albums = APIRouter(prefix="/albums", tags=["Albums"])

@@ -9,7 +9,7 @@ from src.models.auth import (
     listener_tags_association,
 )
 
-from src.services import SQLAlchemyRepository
+from src.core.cruds import SQLAlchemyRepository
 
 
 class UsersDAO(SQLAlchemyRepository):

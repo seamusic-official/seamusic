@@ -5,10 +5,10 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.orm import joinedload
 
-from src.utils.dependencies import get_current_user
-from src.schemas.auth import SUser
+from src.core.database import get_async_session
 from src.models.beats import Beat
 from src.models.comments import BaseComment
+from src.schemas.auth import SUser
 from src.schemas.comments import (
     CommentCreate,
     CommentResponse,
@@ -16,8 +16,7 @@ from src.schemas.comments import (
     SCommentDeleteResponse,
     CommentUpdateResponse,
 )
-from src.core.database import get_async_session
-
+from src.utils.auth import get_current_user
 
 comments = APIRouter(prefix="/comments", tags=["Comments"])
 

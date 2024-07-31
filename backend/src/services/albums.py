@@ -1,5 +1,5 @@
 from src.models.albums import Album
-from src.services import SQLAlchemyRepository
+from src.core.cruds import SQLAlchemyRepository
 
 
 class AlbumsRepository(SQLAlchemyRepository):

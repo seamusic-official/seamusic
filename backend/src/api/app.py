@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 # from fastapi_cache.backends.redis import RedisBackend
 from sqladmin import Admin, ModelView
 
-from src.api.v1.router import v1
+from src.api.v1 import v1
 from src.core.database import engine
 from src.models.auth import User, ProducerProfile, ArtistProfile
 from src.models.beatpacks import Beatpack
@@ -44,12 +44,12 @@ class ArtistProfileAdmin(ModelView, model=ArtistProfile):
     column_list = [ArtistProfile.id, ArtistProfile.user]
 
 
-class BeatpackAdmin(ModelView, model=Beatpack):  # type: ignore
+class BeatpackAdmin(ModelView, model=Beatpack):
     column_list = [Beatpack.id, Beatpack.title]
 
 
 @asynccontextmanager
-async def lifespan(application: FastAPI):
+async def lifespan(application: FastAPI):  # noqa
     admin.add_view(SoundkitAdmin)
     admin.add_view(TagAdmin)
     admin.add_view(SquadAdmin)
@@ -59,10 +59,10 @@ async def lifespan(application: FastAPI):
     admin.add_view(ProducerProfileAdmin)
     admin.add_view(ArtistProfileAdmin)
 
-    application.include_router(v1)
+    app.include_router(v1)
 
     # redis = Redis(host='localhost', port=6379, decode_responses=True, encoding='utf8')
-    # FastAPICache.init(RedisBackend(redis), prefix="fastapi-cache")
+    # FastAPIC  ache.init(RedisBackend(redis), prefix="fastapi-cache")
 
     yield
 
