@@ -1,24 +1,77 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional, List
 from datetime import datetime
+from typing import Optional, List
+
+from pydantic import BaseModel, EmailStr, Field
+
+
+
+
+class SBeatCreate(SBeatBase):
+    pass
+
+
+class SBeat(SBeatBase):
+    id: int
+    username: str
+    picture_url: str
+    email: EmailStr
+
+
+class CommentResponse(BaseModel):
+    id: int
+    comment: str
+    comment_creator_id: int
+    beat_id: Optional[int] = None
+    beat_pack_id: Optional[int] = None
+    soundkit_id: Optional[int] = None
+    created_at: datetime
+    updated_at: datetime
+    is_available: bool
+    comment_author: GetAuthor
+
+    class Config:
+        orm_mode = True
+
+
+class SBeatPackBase(BaseModel):
+    title: str
+    description: str
+    owner_id: int
+    beats: List[SBeat] = Field(...)
+
+
+class SBeatPackCreate(SBeatPackBase):
+    pass
+
+
+class SBeatPack(SBeatPackBase):
+    id: int
+    liked: bool
+    is_available: bool
+    created_at: datetime
+
+    class Config:
+        orm_mode = True
 
 
 class SCommentDeleteResponse(BaseModel):
-    response: str = 'Comment deleted'
+    response: str = "Comment deleted"
 
 
 class CommentCreate(BaseModel):
     """
-    Это схема нужно для того что бы создать коментарию
+    Это схема нужна для того что бы создать коментарию
     """
+
     comment: str
 
 
 class CommentUpdate(BaseModel):
     comment: str
-    
+
+
 class CommentUpdateResponse(BaseModel):
-    response: str = 'Comment updated'
+    response: str = "Comment updated"
 
 
 class GetAuthor(BaseModel):
@@ -42,4 +95,3 @@ class CommentResponse(BaseModel):
 
     class Config:
         orm_mode = True
-

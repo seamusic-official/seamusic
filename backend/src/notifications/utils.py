@@ -1,6 +1,7 @@
 import smtplib
-from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+
 
 def send_message(message, to_whom):
     sender = "seamusic.official@yandex.com"
@@ -15,12 +16,12 @@ def send_message(message, to_whom):
         server.login(sender, password)
 
         msg = MIMEMultipart()
-        msg['From'] = sender
-        msg['To'] = to_whom
-        msg['Subject'] = "Subject of your email"
+        msg["From"] = sender
+        msg["To"] = to_whom
+        msg["Subject"] = "Subject of your email"
 
         body = message
-        msg.attach(MIMEText(body, 'plain'))
+        msg.attach(MIMEText(body, "plain"))
 
         server.sendmail(sender, to_whom, msg.as_string())
         return "The message was sent successfully!"

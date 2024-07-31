@@ -1,36 +1,32 @@
 import os
+
 from dotenv import load_dotenv
 from pydantic import BaseModel
 from pydantic_settings import BaseSettings
+
 
 load_dotenv()
 
 
 class YandexCloudSettings(BaseModel):
-    YANDEX_CLOUD_OAUTH_TOKEN: str = os.environ.get("YANDEX_CLOUD_OAUTH_TOKEN")
-    YANDEX_CLOUD_ID: str = os.environ.get("YANDEX_CLOUD_ID")
-    AWS_ACCESS_KEY_ID: str = os.environ.get("AWS_ACCESS_KEY_ID")
-    AWS_SECRET_ACCESS_KEY: str = os.environ.get("AWS_SECRET_ACCESS_KEY")
+    YANDEX_CLOUD_OAUTH_TOKEN: str = os.environ["YANDEX_CLOUD_OAUTH_TOKEN"]
+    YANDEX_CLOUD_ID: str = os.environ["YANDEX_CLOUD_ID"]
+    AWS_ACCESS_KEY_ID: str = os.environ["AWS_ACCESS_KEY_ID"]
+    AWS_SECRET_ACCESS_KEY: str = os.environ["AWS_SECRET_ACCESS_KEY"]
 
 
 class SpotifySettings(BaseModel):
-    CLIENT_SECRET: str = os.environ.get("SPOTIFY_CLIENT_SECRET", '79e9fa5641eb4f5c8d091aa0ed7f2037')
-    CLIENT_ID: str = os.environ.get("SPOTIFY_CLIENT_ID", '58f5791a8b624f0fbe804737ead263c0')
-    REDIRECT_URI: str = os.environ.get("REDIRECT_URI")
+    CLIENT_SECRET: str = os.environ["SPOTIFY_CLIENT_SECRET"]
+    CLIENT_ID: str = os.environ["SPOTIFY_CLIENT_ID"]
+    REDIRECT_URI: str = os.environ["REDIRECT_URI"]
 
 
 class DbSettings(BaseModel):
-    DB_HOST: str = os.environ.get("DB_HOST")
-    DB_PORT: int = int(os.environ.get("DB_PORT"))
-    DB_NAME: str = os.environ.get("DB_NAME")
-    DB_USER: str = os.environ.get("DB_USER")
-    DB_PASS: str = os.environ.get("DB_PASS")
-
-    DB_HOST_TEST: str = os.environ.get("DB_HOST_TEST")
-    DB_PORT_TEST: int = int(os.environ.get("DB_PORT_TEST"))
-    DB_USER_TEST: str = os.environ.get("DB_USER_TEST")
-    DB_NAME_TEST: str = os.environ.get("DB_NAME_TEST")
-    DB_PASS_TEST: str = os.environ.get("DB_PASS_TEST")
+    DB_HOST: str = os.environ["DB_HOST"]
+    DB_PORT: int = int(os.environ["DB_PORT"])
+    DB_NAME: str = os.environ["DB_NAME"]
+    DB_USER: str = os.environ["DB_USER"]
+    DB_PASS: str = os.environ["DB_PASS"]
 
     @property
     def url(self):
@@ -40,8 +36,8 @@ class DbSettings(BaseModel):
 
 
 class AuthSettings(BaseModel):
-    JWT_SECRET_KEY: str = os.environ.get("JWT_SECRET_KEY")
-    JWT_REFRESH_SECRET_KEY: str = os.environ.get("JWT_REFRESH_SECRET_KEY")
+    JWT_SECRET_KEY: str = os.environ["JWT_SECRET_KEY"]
+    JWT_REFRESH_SECRET_KEY: str = os.environ["JWT_REFRESH_SECRET_KEY"]
 
 
 class Settings(BaseSettings):

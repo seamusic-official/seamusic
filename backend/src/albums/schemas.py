@@ -1,6 +1,10 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
+
+from src.albums.models import Album
+
 
 from src.albums.models import Album
 
@@ -26,6 +30,7 @@ class SAlbumEdit(BaseModel):
 class SAlbumCreate(SAlbumBase):
     pass
 
+
 class SAlbum(SAlbumBase):
     id: int
     is_available: bool
@@ -44,7 +49,7 @@ class SAlbumResponse(BaseModel):
     user_id: int
 
     @classmethod
-    def from_db_model(cls, album: Album) -> 'SAlbumResponse':
+    def from_db_model(cls, album: Album) -> "SAlbumResponse":
         return cls(
             title=album.name,
             picture=album.picture_url,
@@ -56,4 +61,4 @@ class SAlbumResponse(BaseModel):
 
 
 class SAlbumDeleteResponse(BaseModel):
-    response: str = 'Album deleted.'
+    response: str = "Album deleted."

@@ -1,10 +1,12 @@
-from enum import Enum
-from pydantic import BaseModel, EmailStr, Field
 from datetime import date, datetime
+from enum import Enum
 from typing import Optional, List
+
+from pydantic import BaseModel, EmailStr, Field
 
 from src.auth.models import User
 from src.tags.schemas import STag
+
 
 class Role(str, Enum):
     superuser = "superuser"
@@ -13,15 +15,19 @@ class Role(str, Enum):
     producer = "producer"
     listener = "listener"
 
+
 """
 User (Listener) schemas
 """
+
+
 class SUserBase(BaseModel):
     username: str = Field(min_length=5, max_length=25)
     email: EmailStr
     picture_url: Optional[str]
     birthday: Optional[date]
     roles: Optional[List[Role]] = None
+
 
 class SUser(SUserBase):
     id: int
@@ -30,7 +36,8 @@ class SUser(SUserBase):
 
 
 class SUserEditImageResponse(BaseModel):
-    response: str = 'User image edited'
+    response: str = "User image edited"
+
 
 class SUserResponse(BaseModel):
     id: int
@@ -40,7 +47,7 @@ class SUserResponse(BaseModel):
     birthday: Optional[date]
 
     @classmethod
-    def from_db_model(cls, user: User) -> 'SUserResponse':
+    def from_db_model(cls, user: User) -> "SUserResponse":
         return cls(
             id=user.id,
             username=user.username,
@@ -49,6 +56,7 @@ class SUserResponse(BaseModel):
             birthday=user.birthday,
         )
 
+
 class SUserUpdate(BaseModel):
     username: Optional[str] = Field(min_length=5, max_length=25)
     email: Optional[EmailStr]
@@ -56,41 +64,53 @@ class SUserUpdate(BaseModel):
     tags: Optional[List[STag]]
     roles: Optional[List[Role]]
 
+
 class SUserUpdateResponse(BaseModel):
     username: str
     email: EmailStr
     picture_url: str
 
+
 class SUserDeleteResponse(BaseModel):
-    response: str = 'User deleted'
+    response: str = "User deleted"
+
 
 """
 Artist schemas
 """
+
+
 class SArtistBase(BaseModel):
     user: SUser
     description: Optional[str]
     tags: Optional[List[STag]]
+
 
 class SArtist(SArtistBase):
     id: int
     created_at: datetime
     updated_at: datetime
 
+
 class SArtistUpdate(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
+
 class SArtistDeleteResponse(BaseModel):
-    response: str = 'Artist deleted'
+    response: str = "Artist deleted"
+
 
 """
 Producer schemas
 """
+
+
 class SProducerBase(BaseModel):
     user: SUser
     description: Optional[str]
     tags: Optional[List[STag]]
-    
+
+
 class SProducer(SProducerBase):
     id: int
     created_at: datetime
@@ -98,29 +118,35 @@ class SProducer(SProducerBase):
 
 
 class SProducerDeleteResponse(BaseModel):
-    response: str = 'Producer deleted'
+    response: str = "Producer deleted"
+
 
 class SProducerUpdate(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
+
 """
 Auth schemas
 """
+
+
 class SRegisterUser(BaseModel):
     username: str = Field(min_length=3, max_length=25)
     password: str = Field(min_length=5)
     email: EmailStr
     roles: List[Role]
     birthday: Optional[date]
-    tags: Optional[List[STag]]
+    tags: Optional[List[str]]
 
 
 class SAuthUserRegisterResponse(BaseModel):
-    response: str = 'User created'
-    
+    response: str = "User created"
+
+
 class SLoginUser(BaseModel):
     email: EmailStr
     password: str
+
 
 class SUserLoginResponse(BaseModel):
     accessToken: str
@@ -129,15 +155,12 @@ class SUserLoginResponse(BaseModel):
 
     @classmethod
     def from_db_model(
-            cls,
-            user: User,
-            access_token: str,
-            refresh_token: str
-    ) -> 'SUserLoginResponse':
+        cls, user: User, access_token: str, refresh_token: str
+    ) -> "SUserLoginResponse":
         return cls(
             accessToken=access_token,
             refreshToken=refresh_token,
-            user=SUserResponse.from_db_model(user=user)
+            user=SUserResponse.from_db_model(user=user),
         )
 
 
@@ -151,8 +174,9 @@ class SSpotifyCallbackResponse(BaseModel):
         return cls(
             access_token=access_token,
             refresh_token=refresh_token,
-            user=SUserResponse.from_db_model(user=user)
+            user=SUserResponse.from_db_model(user=user),
         )
+
 
 class SRefreshTokenResponse(BaseModel):
     accessToken: str

@@ -1,6 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
+
+from src.licenses.models import License
 
 from src.licenses.models import License
 
@@ -16,6 +19,7 @@ class SLicenseBase(BaseModel):
     user_id: int
     beat_pack_id: Optional[int]
     price: str
+
 
 class SLicense(SLicenseBase):
     id: int
@@ -34,7 +38,7 @@ class SLicensesResponse(BaseModel):
     updated_at: datetime
 
     @classmethod
-    def from_db_model(cls, licenses: License) -> 'SLicensesResponse':
+    def from_db_model(cls, licenses: License) -> "SLicensesResponse":
         return cls(
             id=licenses.id,
             title=licenses.title,
@@ -43,8 +47,9 @@ class SLicensesResponse(BaseModel):
             picture_url=licenses.picture_url,
             is_available=licenses.is_available,
             created_at=licenses.created_at,
-            updated_at=licenses.updated_at
+            updated_at=licenses.updated_at,
         )
+
 
 class SLicensesEditResponse(BaseModel):
     response: str = "License edited"

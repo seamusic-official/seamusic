@@ -1,6 +1,9 @@
-from pydantic import BaseModel
-from typing import Optional
 from datetime import datetime
+from typing import Optional
+
+from pydantic import BaseModel
+
+from src.beats.models import Beat
 
 from src.beats.models import Beat
 
@@ -14,10 +17,11 @@ class SBeatBase(BaseModel):
     co_prod: Optional[str]
     prod_by: Optional[str]
     view_count: Optional[int] = None
-    
+
     playlist_id: Optional[int] = None
     user_id: int
     beat_pack_id: Optional[int] = None
+
 
 class SBeatUpdate(BaseModel):
     title: Optional[str]
@@ -26,14 +30,17 @@ class SBeatUpdate(BaseModel):
     co_prod: Optional[str]
     prod_by: Optional[str]
 
+
 class SBeatRelease(BaseModel):
     title: Optional[str]
     description: Optional[str]
     co_prod: Optional[str]
     prod_by: Optional[str]
 
+
 class SBeatCreate(SBeatBase):
     pass
+
 
 class SBeat(SBeatBase):
     id: int
@@ -57,7 +64,7 @@ class SBeatResponse(BaseModel):
     updated_at: datetime
 
     @classmethod
-    def from_db_model(cls, beat: Beat) -> 'SBeatResponse':
+    def from_db_model(cls, beat: Beat) -> "SBeatResponse":
         return cls(
             id=beat.id,
             title=beat.title,
@@ -68,8 +75,9 @@ class SBeatResponse(BaseModel):
             user_id=beat.user_id,
             is_available=beat.is_available,
             created_at=beat.created_at,
-            updated_at=beat.updated_at
+            updated_at=beat.updated_at,
         )
 
+
 class SBeatDeleteResponse(BaseModel):
-    response: str = 'Beat deleted'
+    response: str = "Beat deleted"
