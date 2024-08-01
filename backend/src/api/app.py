@@ -59,8 +59,6 @@ async def lifespan(application: FastAPI):  # noqa
     admin.add_view(ProducerProfileAdmin)
     admin.add_view(ArtistProfileAdmin)
 
-    app.include_router(v1)
-
     # redis = Redis(host='localhost', port=6379, decode_responses=True, encoding='utf8')
     # FastAPIC  ache.init(RedisBackend(redis), prefix="fastapi-cache")
 
@@ -78,6 +76,7 @@ admin = Admin(app, engine)
 
 origins = ["http://127.0.0.1:5173", "http://localhost:5173"]
 
+app.include_router(v1)
 app.add_middleware(
     CORSMiddleware,  # type: ignore
     allow_credentials=True,
