@@ -13,21 +13,6 @@ from src.api.v1.squads import squads
 from src.api.v1.subscriptions import subscription
 from src.api.v1.tags import tags
 from src.api.v1.tracks import tracks
-from fastapi import APIRouter
-
-from src.api.v1.albums import albums
-from src.api.v1.auth import auth
-from src.api.v1.beatpacks import beatpacks
-from src.api.v1.beats import beats
-from src.api.v1.comments import comments
-from src.api.v1.licenses import licenses
-from src.api.v1.messages import messages
-from src.api.v1.music import music
-from src.api.v1.soundkits import soundkits
-from src.api.v1.squads import squads
-from src.api.v1.subscriptions import subscription
-from src.api.v1.tags import tags
-from src.api.v1.tracks import tracks
 
 
 router = APIRouter(prefix='/v1')
