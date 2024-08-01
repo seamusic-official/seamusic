@@ -1,4 +1,4 @@
-FROM python:slim
+FROM python:3.11.9
 
 WORKDIR /backend
 
@@ -12,4 +12,4 @@ RUN pip install --upgrade pip
 RUN pip install -r requirements/dev.txt
 RUN alembic upgrade head
 
-CMD ["python", "-m", "uvicorn", "src.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["python", "-m", "uvicorn", "src.api.app:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]

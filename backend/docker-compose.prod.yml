@@ -2,17 +2,19 @@ version: '3.8'
 
 services:
   db:
-    container_name: my_db
     image: postgres
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_PORT: ${DB_PORT}
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT}:${DB_PORT}
     restart: always
     volumes:
       - ./db:/var/lib/postgresql/data
+    networks:
+      - backend
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
       interval: 10s
@@ -29,8 +31,14 @@ services:
         condition: service_healthy
     ports:
       - '8000:8000'
+    volumes:
+      - ./:/backend/
+    networks:
+      - backend
     restart: always
     env_file:
       - .env
-    volumes:
-      - ./:/backend/
+
+networks:
+  backend:
+    driver: "bridge"
