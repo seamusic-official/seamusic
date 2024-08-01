@@ -1,8 +1,7 @@
 version: '3.8'
 
 services:
-  db_test:
-    container_name: my_db_test
+  db:
     image: postgres
     environment:
       - POSTGRES_DB=${DB_NAME}

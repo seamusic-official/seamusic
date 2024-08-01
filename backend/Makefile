@@ -1,22 +1,27 @@
-DC = docker compose
-EXEC = docker exec -it
-LOGS = docker logs
-ENV = --env-file .env
-BACKEND_FILE = docker-compose.yml
-BACKEND_CONTAINER = my_app
+install:
+	pip install -r requirements/dev.txt
 
+build:
+	docker-compose -f docker-compose.$(for).yml build
 
-.PHONY: backend
-backend:
-	${DC} -f ${BACKEND_FILE} ${ENV} up --build -d
+start:
+	docker-compose -f docker-compose.$(for).yml up --force-recreate --remove-orphans
 
-.PHONY: backend-logs
-backend-logs:
-	${LOGS} ${BACKEND_CONTAINER} -f
+up:
+	docker-compose -f docker-compose.$(for).yml up --force-recreate --remove-orphans -d
 
-.PHONY: backend-down
-backend-down:
-	${DC} -f ${BACKEND_FILE} down
+stop:
+	docker-compose stop
+
+rm:
+	docker-compose rm
+	rm -rf db/
+
+test:
+	docker-compose -f docker-compose.test.yml up --force-recreate -remove-orphans -d
+	python -m alembic upgrade head
+	python -m pytest
+	docker-compose stop
 
 lint:
 	python -m flake8
