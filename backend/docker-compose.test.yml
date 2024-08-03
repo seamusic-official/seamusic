@@ -2,13 +2,14 @@ version: '3.8'
 
 services:
   db:
+    container_name: my_db
     image: postgres
     environment:
-      - POSTGRES_DB=${DB_NAME}
-      - POSTGRES_USER=${DB_USER}
-      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAME_TEST}
+      - POSTGRES_USER=${DB_USER_TEST}
+      - POSTGRES_PASSWORD=${DB_PASS_TEST}
     ports:
-      - ${DB_PORT}:5432
+      - ${DB_PORT_TEST}:5432
     restart: always
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
