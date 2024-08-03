@@ -11,8 +11,8 @@ export function Hello() {
 					<DecorText font="extrabold">producers</DecorText>. <br />{' '}
 					Self-expression for <DecorText font="extrabold">everyone</DecorText>
 				</h1>
-				<p className="text-2xl my-2 text-center">
 					<Link href="/auth/register">
+				<p className="text-2xl my-2 text-center">
 						<span className="flex items-center justify-center">
 							<div>
 								Let's get to <DecorText font="font-semibold">work</DecorText>
@@ -31,8 +31,8 @@ export function Hello() {
 								/>
 							</svg>
 						</span>
-					</Link>
 				</p>
+					</Link>
 			</div>
 		</div>
 	);

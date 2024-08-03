@@ -23,8 +23,8 @@ export function Search() {
 	const { query } = useAppSelector((state) => state.search);
 
 	const [data, setData] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [status, setStatus] = useState(false);
+	const [loading, setLoading] = useState<boolean>(true);
+	const [status, setStatus] = useState<boolean>(false);
 
 	const handleInputChange: ChangeEventHandler<HTMLInputElement> = (event) => {
 		dispatch(setSearchQuery(event.target.value));
@@ -49,7 +49,7 @@ export function Search() {
 	}, [query]);
 
 	return (
-		<MainLayout>
+		<div>
 			<form>
 				<Input
 					type="text"
@@ -173,6 +173,6 @@ export function Search() {
 					</h2>
 				)}
 			</div>
-		</MainLayout>
+		</div>
 	);
 }

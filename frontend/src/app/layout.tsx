@@ -18,9 +18,9 @@ const RootLayout = ({
 			<Head>
 				<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet" />
 			</Head>
-			<body>
+			<body style={{fontFamily: "Montserrat"}}>
 				<StoreProvider>
-					<HelloLayout>{children}</HelloLayout>
+					{children}
 				</StoreProvider>
 			</body>
 		</html>

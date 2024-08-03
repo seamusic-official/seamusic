@@ -16,7 +16,6 @@ export function Song({
 	date,
 	author,
 	album,
-	duration,
 	src,
 	type,
 	isAction,
@@ -106,7 +105,7 @@ export function Song({
 					{album}
 				</td>
 			</Link>
-			<td className="text-sm items-center font-semibold text-center">{date}</td>
+			<td className="text-sm items-center font-semibold text-center">{date.toString()}</td>
 			<td className="text-sm items-center font-semibold text-center">1:49</td>
 			{isAction ? (
 				<td className="flex justify-center">

@@ -8,11 +8,13 @@ import { SongLoading } from '@/shared/ui/loading-elements';
 import { KitLinkLoading } from '@/shared/ui/loading-elements';
 import { DecorText } from '@/shared/ui/decor-text';
 import { useAppSelector } from '@/shared/hooks/redux';
+import { BeatResponseType } from '@/shared/types/beat-response';
+import { SongType } from '@/shared/types';
 
 export function Studio() {
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [beats, setBeats] = useState([]);
-	const [loading, setLoading] = useState(true);
+	const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+	const [beats, setBeats] = useState<BeatResponseType[]>();
+	const [loading, setLoading] = useState<boolean>(true);
 	const { user } = useAppSelector((state) => state.auth);
 
 	const openModal = () => {
@@ -41,7 +43,6 @@ export function Studio() {
 	}, []);
 
 	return (
-		<MainLayout>
 			<div className="p-2">
 				<div className="flex mb-4 ">
 					<div className="mr-2 ">
@@ -120,7 +121,7 @@ export function Studio() {
 					</thead>
 					<tbody>
 						{!loading ? (
-							beats.map((beat) => (
+							beats?.map((beat) => (
 								<Song
 									id={beat.id}
 									name={beat.title}
@@ -129,8 +130,8 @@ export function Studio() {
 									src={beat.file_url}
 									album="Каждый из дизайнеров"
 									date={beat.created_at}
-									type={beat.type}
 									isAction={true}
+									type="beat"
 								/>
 							))
 						) : (
@@ -145,6 +146,5 @@ export function Studio() {
 					</tbody>
 				</table>
 			</div>
-		</MainLayout>
 	);
 }

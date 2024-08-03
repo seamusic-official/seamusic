@@ -10,9 +10,10 @@ import { SongLinkLoading } from '@/shared/ui/loading-elements';
 import { ArtistLink } from '@/shared/ui/links';
 import { ArtistLinkLoading } from '@/shared/ui/loading-elements';
 import useAuth from '@/shared/hooks/useAuth';
+import { PictureLinkType } from '@/shared/ui/links/picture-link/type';
 
 export function Home() {
-	const [albums, setAlbums] = useState([]);
+	const [albums, setAlbums] = useState<PictureLinkType[]>([]);
 	const [beatpacks, setBeatpacks] = useState([]);
 	const [loading, setLoading] = useState(true);
 	// const [beats, setBeats] = useState([]);
@@ -20,9 +21,9 @@ export function Home() {
 	// const [artists, setArtists] = useState([]);
 	const [producers, setProducers] = useState([]);
 
-	const searchParams = new URLSearchParams(window.location.search);
-	const code = searchParams.get('code');
-	useAuth(code);
+	// const searchParams = new URLSearchParams(window.location.search);
+	// const code = searchParams.get('code');
+	// useAuth(code);
 
 	// const user = useAppSelector((state) => state.auth.user);
 
@@ -89,7 +90,7 @@ export function Home() {
 	}, []);
 
 	return (
-		<MainLayout>
+		<div>
 			<div className="mb-4 ml-2 mt-4">
 				<a
 					className="p-2 m-1 border-emerald-600 border hover:border-emerald-800 font-semibold rounded-xl from-zinc-200 backdrop-blur-2xl border-neutral-900 bg-zinc-800/30 from-inherit"
@@ -117,7 +118,7 @@ export function Home() {
 				{!loading ? (
 					albums ? (
 						<div className="flex overflow-hidden justify-start items-center">
-							{albums.map((item) => (
+							{albums.map((item: PictureLinkType) => (
 								<div>
 									<PictureLink
 										link={`/albums/${item.id}`}
@@ -254,6 +255,6 @@ export function Home() {
 					<PictureLinkLoading />
 				</div>
 			)}
-		</MainLayout>
+		</div>
 	);
 }
