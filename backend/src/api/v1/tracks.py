@@ -12,7 +12,7 @@ from src.schemas.tracks import (
 )
 from src.services.tracks import TracksRepository
 from src.utils.auth import get_current_user
-from src.utils.tracks import unique_track_filename
+from src.utils.files import unique_filename
 
 
 tracks = APIRouter(prefix="/tracks", tags=["Tracks"])
@@ -62,7 +62,7 @@ async def get_one_track(track_id: int) -> STrackResponse:
 async def add_tracks(
     file: UploadFile = File(...), user: SUser = Depends(get_current_user)
 ) -> STrackResponse:
-    file_info = await unique_track_filename(file) if file else None
+    file_info = await unique_filename(file) if file else None
 
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
 
@@ -89,7 +89,7 @@ async def update_pic_tracks(
     file: UploadFile = File(...),
     user: SUser = Depends(get_current_user),
 ) -> STrackResponse:
-    file_info = await unique_track_filename(file) if file else None
+    file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
 
     data = {"picture_url": file_url}

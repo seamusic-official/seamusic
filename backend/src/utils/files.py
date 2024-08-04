@@ -3,16 +3,33 @@ import shutil
 import uuid
 
 import aiofiles
-from fastapi import HTTPException, UploadFile
+from fastapi import HTTPException
+from fastapi import UploadFile
 from mutagen.mp3 import MP3
 from mutagen.wavpack import WavPack
+
+
+async def unique_filename(file: UploadFile) -> str:
+    try:
+        file_name, file_extension = os.path.splitext(file.filename)
+
+        unique_filename_ = (
+            f'track-{file_name.replace(" ", "-")}_{uuid.uuid4()}{file_extension}'
+        )
+
+        return unique_filename_
+
+    except Exception as e:
+        raise HTTPException(
+            status_code=500, detail=f"Failed to process the audio file: {str(e)}"
+        )
 
 
 async def save_image(upload_folder: str, file: UploadFile):
     try:
         file_name, file_extension = os.path.splitext(file.filename)
-        unique_filename = f"{file_name}-{uuid.uuid4()}{file_extension}"
-        file_path = os.path.join(upload_folder, unique_filename)
+        unique_filename_ = f"{file_name}-{uuid.uuid4()}{file_extension}"
+        file_path = os.path.join(upload_folder, unique_filename_)
 
         async with aiofiles.open(file_path, "wb") as buffer:
             await buffer.write(await file.read())
@@ -35,15 +52,15 @@ async def save_audio(upload_folder: str, file: UploadFile) -> dict:
                 status_code=400, detail="Only MP3 and WAV files are allowed."
             )
 
-        unique_filename = f"{file_name}-{uuid.uuid4()}{file_extension}"
-        file_path = os.path.join(upload_folder, unique_filename)
+        unique_filename_ = f"{file_name}-{uuid.uuid4()}{file_extension}"
+        file_path = os.path.join(upload_folder, unique_filename_)
 
         with open(file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
         # Get file info
         file_info = dict()
-        file_info["file_path"] = unique_filename
+        file_info["file_path"] = unique_filename_
 
         if file_extension == ".mp3":
             audio = MP3(file_path)

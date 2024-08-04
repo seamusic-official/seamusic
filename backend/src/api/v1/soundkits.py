@@ -11,7 +11,7 @@ from src.schemas.soundkits import (
 )
 from src.services.soundkits import SoundkitRepository
 from src.utils.auth import get_current_user
-from src.utils.soundkits import unique_filename
+from src.utils.files import unique_filename
 
 
 soundkits = APIRouter(prefix="/soundkits", tags=["Sound-kits"])

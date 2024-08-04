@@ -2,7 +2,6 @@ from typing import List
 
 from fastapi import APIRouter, Depends, status
 
-from src.utils.auth import get_current_user
 from src.schemas.auth import SUser
 from src.schemas.licenses import (
     SLicenseBase,
@@ -11,6 +10,7 @@ from src.schemas.licenses import (
     SLicensesDeleteResponse,
 )
 from src.services.licenses import LicensesRepository
+from src.utils.auth import get_current_user
 
 
 licenses = APIRouter(prefix="/licenses", tags=["Licenses"])

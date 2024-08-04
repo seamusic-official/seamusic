@@ -42,7 +42,8 @@ from src.utils.auth import (
     get_hashed_password,
     get_current_user
 )
-from src.utils.beats import unique_filename
+from src.utils.files import unique_filename
+
 
 auth = APIRouter(prefix="/auth", tags=["Auth & Users"])
 

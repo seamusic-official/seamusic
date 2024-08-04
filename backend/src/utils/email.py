@@ -3,7 +3,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
 
-def send_message(message, to_whom):
+def send_email(message, to_whom):
     sender = "seamusic.official@yandex.com"
     password = "unsp777."
 
