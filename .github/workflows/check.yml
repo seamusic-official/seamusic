@@ -6,8 +6,6 @@ jobs:
   flake8:
     runs-on: ubuntu-latest
     steps:
-      - name: Go to backend directory
-        run: cd backend
       - name: Setup Python
         uses: actions/setup-python@v1
         with:
