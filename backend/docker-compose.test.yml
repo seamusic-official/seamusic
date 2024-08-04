@@ -3,7 +3,7 @@ version: '3.8'
 services:
   db:
     container_name: my_db
-    image: postgres
+    image: postgres:16.2
     environment:
       - POSTGRES_DB=${DB_NAME_TEST}
       - POSTGRES_USER=${DB_USER_TEST}

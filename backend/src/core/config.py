@@ -22,6 +22,7 @@ class SpotifySettings(BaseModel):
 
 
 class DbSettings(BaseModel):
+
     DB_HOST: str = os.environ["DB_HOST"]
     DB_PORT: int = int(os.environ["DB_PORT"])
     DB_NAME: str = os.environ["DB_NAME"]
@@ -41,7 +42,6 @@ class DbSettings(BaseModel):
     @property
     def url_test(self):
         return f"postgresql+asyncpg://{self.DB_USER_TEST}:{self.DB_PASS_TEST}@{self.DB_HOST_TEST}:{self.DB_PORT_TEST}/{self.DB_NAME_TEST}"
-
 
     echo: bool = True
 

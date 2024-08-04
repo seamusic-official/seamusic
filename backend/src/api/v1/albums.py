@@ -6,7 +6,7 @@ from src.core.cruds import MediaRepository
 from src.schemas.albums import SAlbumBase, SAlbumResponse, SAlbumDeleteResponse
 from src.schemas.auth import SUser
 from src.services.albums import AlbumsRepository
-from src.utils.albums import unique_album_filename
+from src.utils.files import unique_filename
 from src.utils.auth import get_current_user
 
 
@@ -58,7 +58,7 @@ async def get_one_album(album_id: int) -> SAlbumResponse:
 async def add_albums(
     file: UploadFile = File(...), user: SUser = Depends(get_current_user)
 ) -> SAlbumResponse:
-    file_info = await unique_album_filename(file) if file else None
+    file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
 
     data = {
@@ -83,7 +83,7 @@ async def update_pic_albums(
     albums_id: int,
     file: UploadFile = File(...),
 ) -> SAlbumResponse:
-    file_info = await unique_album_filename(file) if file else None
+    file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
 
     data = {"picture_url": file_url}

@@ -31,7 +31,7 @@ https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
                                    CLIENT_SECRETS_FILE))
 
 flow = Flow.from_client_secrets_file(
-        CLIENT_SECRETS_FILE,
-        scopes=[YOUTUBE_UPLOAD_SCOPE],
-        redirect_uri=f'{settings.root_url}/subscription/callback'
+    CLIENT_SECRETS_FILE,
+    scopes=[YOUTUBE_UPLOAD_SCOPE],
+    redirect_uri=f'{settings.root_url}/subscription/callback'
 )

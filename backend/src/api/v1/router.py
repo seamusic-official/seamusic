@@ -15,7 +15,7 @@ from src.api.v1.tags import tags
 from src.api.v1.tracks import tracks
 
 
-router = APIRouter(prefix='/v1')
+router = APIRouter(prefix='/v1', tags=['v1'])
 
 router.include_router(auth)
 router.include_router(licenses)

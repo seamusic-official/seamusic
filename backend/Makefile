@@ -22,8 +22,7 @@ rm:
 	rm -rf db/
 
 test:
-	docker-compose -f docker-compose.test.yml up --force-recreate -remove-orphans -d
-	python -m alembic upgrade head
+	docker-compose -f docker-compose.test.yml up --force-recreate --remove-orphans -d
 	python -m pytest
 	docker-compose stop
 

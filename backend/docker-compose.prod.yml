@@ -2,16 +2,19 @@ version: '3.8'
 
 services:
   db:
+    image: postgres:16.2
     container_name: my_db
-    image: postgres
+    restart: always
     environment:
       - POSTGRES_DB=${DB_NAME}
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASS}
     ports:
       - ${DB_PORT}:5432
-    restart: always
-
+    volumes:
+      - ./db/postgres:/var/lib/postgresql/data
+    networks:
+      - backend
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
       interval: 10s
@@ -19,10 +22,10 @@ services:
       retries: 5
 
   app:
-    container_name: my_app
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: my_app
     depends_on:
       db:
         condition: service_healthy
@@ -32,4 +35,10 @@ services:
     env_file:
       - .env
     volumes:
-      - ../backend/:/app/
+      - ./:/backend/
+    networks:
+      - backend
+
+networks:
+  backend:
+    driver: "bridge"

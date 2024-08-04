@@ -1,8 +1,6 @@
-import os
-import uuid
 from datetime import datetime, timedelta, UTC
 
-from fastapi import Depends, Request, HTTPException, UploadFile
+from fastapi import Depends, Request, HTTPException
 from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import EmailStr
@@ -11,6 +9,7 @@ from src.core.config import settings
 from src.schemas.auth import SUser
 from src.services.auth import UsersDAO
 
+
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
@@ -18,20 +17,6 @@ REFRESH_TOKEN_EXPIRE_MINUTES = (60 * 24 * 7) * 2  # 14 days
 ALGORITHM = "HS256"
 JWT_SECRET_KEY = settings.auth.JWT_SECRET_KEY  # should be kept secret
 JWT_REFRESH_SECRET_KEY = settings.auth.JWT_REFRESH_SECRET_KEY  # should be kept secret
-
-
-async def unique_filename(file: UploadFile) -> str:
-    try:
-        file_name, file_extension = os.path.splitext(file.filename)
-        unique_filename_ = (
-            f"user_picture-{file_name.replace(' ', '-')}_{uuid.uuid4()}{file_extension}"
-        )
-        return unique_filename_
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to process the audio file: {str(e)}"
-        )
 
 
 def get_hashed_password(password: str) -> str:
