@@ -26,7 +26,7 @@ async def get_user_licenses(
     user: SUser = Depends(get_current_user),
 ) -> List[SLicensesResponse]:
     response = await LicensesRepository.find_all(owner=user)
-    return [SLicensesResponse.from_db_model(licenses=license_) for license_ in response]
+    return [SLicensesResponse.from_db_model(model=license_) for license_ in response]
 
 
 @licenses.get(
@@ -37,7 +37,7 @@ async def get_user_licenses(
 )
 async def all_licenses() -> List[SLicensesResponse]:
     response = await LicensesRepository.find_all()
-    return [SLicensesResponse.from_db_model(licenses=_license) for _license in response]
+    return [SLicensesResponse.from_db_model(model=_license) for _license in response]
 
 
 @licenses.get(
@@ -48,7 +48,7 @@ async def all_licenses() -> List[SLicensesResponse]:
 )
 async def get_one(license_id: int) -> SLicensesResponse:
     response = await LicensesRepository.find_one_by_id(int(license_id))
-    return SLicensesResponse.from_db_model(licenses=response)
+    return SLicensesResponse.from_db_model(model=response)
 
 
 @licenses.post(
@@ -61,7 +61,7 @@ async def add_licenses(data: SLicenseBase, user: SUser = Depends(get_current_use
     data = {"title": data.title, "description": data.description, "price": data.price}
 
     response = await LicensesRepository.add_one(data)
-    return SLicensesResponse.from_db_model(licenses=response)
+    return SLicensesResponse.from_db_model(model=response)
 
 
 @licenses.put(

@@ -28,7 +28,7 @@ async def get_user_tracks(
     user: SUser = Depends(get_current_user),
 ) -> List[STrackResponse]:
     response = await TracksRepository.find_all(user=user)
-    return [STrackResponse.from_db_model(track=track) for track in response]
+    return [STrackResponse.from_db_model(model=track) for track in response]
 
 
 @tracks.get(
@@ -39,7 +39,7 @@ async def get_user_tracks(
 )
 async def all_tracks() -> List[STrackResponse]:
     response = await TracksRepository.find_all()
-    return [STrackResponse.from_db_model(track=track) for track in response]
+    return [STrackResponse.from_db_model(model=track) for track in response]
 
 
 @tracks.get(
@@ -50,7 +50,7 @@ async def all_tracks() -> List[STrackResponse]:
 )
 async def get_one_track(track_id: int) -> STrackResponse:
     response = await TracksRepository.find_one_by_id(track_id)
-    return STrackResponse.from_db_model(track=response)
+    return STrackResponse.from_db_model(model=response)
 
 
 @tracks.post(
@@ -75,7 +75,7 @@ async def add_tracks(
     }
 
     response = await TracksRepository.add_one(data)
-    return STrackResponse.from_db_model(track=response)
+    return STrackResponse.from_db_model(model=response)
 
 
 @tracks.post(
@@ -95,7 +95,7 @@ async def update_pic_tracks(
     data = {"picture_url": file_url}
 
     response = await TracksRepository.edit_one(tracks_id, data)
-    return STrackResponse.from_db_model(track=response)
+    return STrackResponse.from_db_model(model=response)
 
 
 @tracks.post(
@@ -114,7 +114,7 @@ async def release_tracks(
     }
 
     response = await TracksRepository.edit_one(track_id, data)
-    return STrackResponse.from_db_model(track=response)
+    return STrackResponse.from_db_model(model=response)
 
 
 @tracks.put(

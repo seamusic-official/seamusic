@@ -27,7 +27,7 @@ async def get_user_beatpacks(
 ) -> SBeatpackResponse:
     response = await BeatpacksRepository.find_all(owner=user)
 
-    return SBeatpackResponse.from_db_model(beatpack=response)
+    return SBeatpackResponse.from_db_model(model=response)
 
 
 @beatpacks.get(
@@ -39,7 +39,7 @@ async def get_user_beatpacks(
 async def all_beatpacks() -> List[SBeatpackResponse]:
     response = await BeatpacksRepository.find_all()
 
-    return [SBeatpackResponse.from_db_model(beatpack=beatpack) for beatpack in response]
+    return [SBeatpackResponse.from_db_model(model=beatpack) for beatpack in response]
 
 
 @beatpacks.get(
@@ -51,7 +51,7 @@ async def all_beatpacks() -> List[SBeatpackResponse]:
 async def get_one(beatpack_id: int):
     response = await BeatpacksRepository.find_one_by_id(beatpack_id)
 
-    return SBeatpackResponse.from_db_model(beatpack=response)
+    return SBeatpackResponse.from_db_model(model=response)
 
 
 @beatpacks.post(
@@ -67,7 +67,7 @@ async def add_beatpack(
 
     response = await BeatpacksRepository.add_one(data)
 
-    return SBeatpackResponse.from_db_model(beatpack=response)
+    return SBeatpackResponse.from_db_model(model=response)
 
 
 @beatpacks.put(

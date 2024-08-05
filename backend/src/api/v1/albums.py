@@ -46,7 +46,7 @@ async def all_albums() -> List[SAlbumResponse]:
 )
 async def get_one_album(album_id: int) -> SAlbumResponse:
     response = await AlbumsRepository.find_one_by_id(album_id)
-    return SAlbumResponse.from_db_model(album=response)
+    return SAlbumResponse.from_db_model(model=response)
 
 
 @albums.post(
@@ -70,7 +70,7 @@ async def add_albums(
     }
 
     response = await AlbumsRepository.add_one(data)
-    return SAlbumResponse.from_db_model(album=response)
+    return SAlbumResponse.from_db_model(model=response)
 
 
 @albums.post(
@@ -89,7 +89,7 @@ async def update_pic_albums(
     data = {"picture_url": file_url}
 
     response = await AlbumsRepository.edit_one(albums_id, data)
-    return SAlbumResponse.from_db_model(album=response)
+    return SAlbumResponse.from_db_model(model=response)
 
 
 @albums.post(
@@ -109,7 +109,7 @@ async def release_albums(
     }
 
     response = await AlbumsRepository.edit_one(album_id, data)
-    return SAlbumResponse.from_db_model(album=response)
+    return SAlbumResponse.from_db_model(model=response)
 
 
 @albums.put(
@@ -130,7 +130,7 @@ async def update_albums(
 
     response = await AlbumsRepository.edit_one(album_id, data)
 
-    return SAlbumResponse.from_db_model(album=response)
+    return SAlbumResponse.from_db_model(model=response)
 
 
 @albums.delete(

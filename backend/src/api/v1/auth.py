@@ -80,7 +80,7 @@ async def get_me(user: SUser = Depends(get_current_user)) -> SUserResponse:
 async def get_users() -> List[SUserResponse]:
     response = await UsersDAO.find_all()
 
-    return [SUserResponse.from_db_model(user=user) for user in response]
+    return [SUserResponse.from_db_model(model=user) for user in response]
 
 
 @auth.get(
@@ -96,7 +96,7 @@ async def get_one(user_id: int) -> SUserResponse:
     if not user:
         raise NotFoundException()
 
-    return SUserResponse.from_db_model(user=user)
+    return SUserResponse.from_db_model(model=user)
 
 
 @auth.put(
@@ -446,12 +446,10 @@ async def login(user: SLoginUser, response: Response) -> SUserLoginResponse:
     refresh_token = create_refresh_token({"sub": str(auth_user.id)})
 
     response.set_cookie(
-        key="refreshToken", value=refresh_token, httponly=True, samesite="Strict"
+        key="refreshToken", value=refresh_token, httponly=True, samesite="strict"
     )
 
-    return SUserLoginResponse.from_db_model(
-        user=auth_user, access_token=access_token, refresh_token=refresh_token
-    )
+    return SUserLoginResponse(user=auth_user, accessToken=access_token, refreshToken=refresh_token)
 
 
 @auth.post(

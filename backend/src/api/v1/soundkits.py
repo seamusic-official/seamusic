@@ -28,7 +28,7 @@ async def get_user_soundkits(
 ) -> List[SSoundkitResponse]:
     response = await SoundkitRepository.find_all(user=user)
 
-    return [SSoundkitResponse.from_db_model(soundkit=soundkit) for soundkit in response]
+    return [SSoundkitResponse.from_db_model(model=soundkit) for soundkit in response]
 
 
 @soundkits.get(
@@ -39,7 +39,7 @@ async def get_user_soundkits(
 )
 async def all_soundkits() -> List[SSoundkitResponse]:
     response = await SoundkitRepository.find_all()
-    return [SSoundkitResponse.from_db_model(soundkit=soundkit) for soundkit in response]
+    return [SSoundkitResponse.from_db_model(model=soundkit) for soundkit in response]
 
 
 @soundkits.get(
@@ -50,7 +50,7 @@ async def all_soundkits() -> List[SSoundkitResponse]:
 )
 async def get_one_soundkit(soundkit_id: int) -> SSoundkitResponse:
     response = await SoundkitRepository.find_one_by_id(soundkit_id)
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.post(
@@ -73,7 +73,7 @@ async def add_soundkits(
     }
 
     response = await SoundkitRepository.add_one(data)
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.post(
@@ -93,7 +93,7 @@ async def update_pic_soundkits(
     data = {"picture_url": file_url}
 
     response = await SoundkitRepository.edit_one(soundkits_id, data)
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.post(
@@ -118,7 +118,7 @@ async def release_soundkits(
 
     response = await SoundkitRepository.edit_one(soundkit_id, update_data)
 
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.put(
@@ -144,7 +144,7 @@ async def update_soundkits(
         update_data["prod_by"] = data.prod_by
 
     response = await SoundkitRepository.edit_one(soundkit_id, update_data)
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.delete(

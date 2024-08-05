@@ -29,7 +29,7 @@ async def get_user_beats(
 ) -> List[SBeatResponse]:
     response = await BeatsRepository.find_all(user=user)
 
-    return [SBeatResponse.from_db_model(beat=beat) for beat in response]
+    return [SBeatResponse.from_db_model(model=beat) for beat in response]
 
 
 @beats.get(
@@ -40,7 +40,7 @@ async def get_user_beats(
 )
 async def all_beats() -> List[SBeatResponse]:
     response = await BeatsRepository.find_all()
-    return [SBeatResponse.from_db_model(beat=beat) for beat in response]
+    return [SBeatResponse.from_db_model(model=beat) for beat in response]
 
 
 @beats.get(
@@ -51,7 +51,7 @@ async def all_beats() -> List[SBeatResponse]:
 )
 async def get_one_beat(beat_id: int) -> SBeatResponse:
     response = await BeatsRepository.find_one_by_id(beat_id)
-    return SBeatResponse.from_db_model(beat=response)
+    return SBeatResponse.from_db_model(model=response)
 
 
 @beats.post(
@@ -76,7 +76,7 @@ async def add_beats(
 
     response = await BeatsRepository.add_one(data)
 
-    return SBeatResponse.from_db_model(beat=response)
+    return SBeatResponse.from_db_model(model=response)
 
 
 @beats.post(
@@ -95,7 +95,7 @@ async def update_pic_beats(
 
     response = await BeatsRepository.edit_one(beats_id, data)
 
-    return SBeatResponse.from_db_model(beat=response)
+    return SBeatResponse.from_db_model(model=response)
 
 
 @beats.post(
@@ -120,7 +120,7 @@ async def release_beats(
 
     response = await BeatsRepository.edit_one(beat_id, update_data)
 
-    return SBeatResponse.from_db_model(beat=response)
+    return SBeatResponse.from_db_model(model=response)
 
 
 @beats.put(
@@ -147,7 +147,7 @@ async def update_beats(
 
     response = await BeatsRepository.edit_one(beat_id, update_data)
 
-    return SBeatResponse.from_db_model(beat=response)
+    return SBeatResponse.from_db_model(model=response)
 
 
 @beats.delete(
