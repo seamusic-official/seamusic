@@ -1,8 +1,10 @@
-from typing import Type
+from datetime import datetime
+from typing import Type, Optional
 
 from pydantic import BaseModel, ConfigDict
-from datetime import datetime
+
 from src.core.database import Base
+
 
 class BaseSchema(BaseModel):
     id: int
@@ -10,12 +12,15 @@ class BaseSchema(BaseModel):
     created_at: datetime
     updated_at: datetime
 
+
 class BaseResponse(BaseModel):
-    model_config = ConfigDict(extra='ignore')
     _model_type: Type[Base]
+    message: Optional[str] = None
+
+    model_config = ConfigDict(extra='ignore')
 
     @classmethod
-    def from_db_model(cls, model: Base) -> "BaseResponse":
+    def from_db_model(cls, model: Base) -> "cls":  # noqa: F821
         if not isinstance(model, cls._model_type):
             raise TypeError(f'`model` is not an instance of class {cls._model_type}')
 

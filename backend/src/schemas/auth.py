@@ -6,7 +6,7 @@ from pydantic import BaseModel, EmailStr, Field
 
 from src.models.auth import User
 from src.schemas.base import BaseResponse, BaseSchema
-from src.schemas.tags import STag
+from src.schemas.tags import Tag
 
 class Role(str, Enum):
     superuser = "superuser"
@@ -50,7 +50,7 @@ class SUserUpdate(BaseModel):
     username: Optional[str] = Field(min_length=5, max_length=25)
     email: Optional[EmailStr]
     picture_url: Optional[str]
-    tags: Optional[List[STag]]
+    tags: Optional[List[Tag]]
     roles: Optional[List[Role]]
 
 
@@ -70,7 +70,7 @@ Artist schemas
 class SArtistBase(BaseModel):
     user: SUser
     description: Optional[str]
-    tags: Optional[List[STag]]
+    tags: Optional[List[Tag]]
 
 
 class SArtistResponse(SArtistBase):
@@ -95,7 +95,7 @@ Producer schemas
 class SProducerBase(BaseModel):
     user: SUser
     description: Optional[str]
-    tags: Optional[List[STag]]
+    tags: Optional[List[Tag]]
 
 
 class SProducer(SProducerBase):

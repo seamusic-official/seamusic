@@ -1,25 +1,25 @@
 import datetime
-from typing import List
+from typing import List, Dict, Union
 
 from pydantic import BaseModel
 
-from src.schemas.base import BaseResponse
+from src.enums.spotify import SpotifyAlbumType, SpotifyTrackType
 
 
 class SpotifyTrack(BaseModel):
     id: str
-    type: str
+    type: SpotifyTrackType
     name: str
     preview_url: str
     image_url: str
     spotify_url: str
 
 
-class SSpotifyTracksResponse(BaseResponse):
+class SSpotifyTracksResponse(BaseModel):
     tracks: List[SpotifyTrack]
 
 
-class SSpotifyTrackResponse(BaseResponse):
+class SSpotifyTrackResponse(BaseModel):
     preview_url: str
 
 
@@ -30,94 +30,48 @@ class SpotifyAlbum(BaseModel):
     spotify_url: str
 
 
-class SSpotifyAlbumsResponse(BaseResponse):
+class SSpotifyAlbumsResponse(BaseModel):
     albums: List[SpotifyAlbum]
 
 
-class Artist(BaseModel):
+class SpotifyArtist(BaseModel):
     id: int
     type: str
     name: str
     image_url: str
-    popularity: 
+    popularity: int
 
 
-class SSpotifyAlbumResponse(BaseResponse):
+class SSpotifyAlbumResponse(BaseModel):
     id: int
     name: str
     image_url: str
     spotify_url: str
     release_date: datetime.date
-    artists: List[Artist]
-    external_urls: List[str]
+    artists: List[SpotifyArtist]
+    external_urls: Dict[str, str]
     uri: str
-    album_type:
-    total_tracks:
+    album_type: SpotifyAlbumType
+    total_tracks: int
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-class SMusic(BaseModel):
-    title: str
-    description: str
-    # author_id: int
-
-
-# class SMusic(BaseModel):
-#     id: str
-#     title: str
-#     description: str
-#     picture: -
-#     author_id: int
-#     album_id: int
-
-
-class SAlbum(BaseModel):
-    id: str
-    title: str
-    description: str
-    parental_advisory: bool
-    author_id: int
-
-
-class SpotifyMusic(BaseModel):
-    id: str
-    type: str
+class SpotifyAlbumTrack(BaseModel):
+    id: int
+    type: SpotifyTrackType
     name: str
+    artists: List[SpotifyArtist]
     preview_url: str
-    image_url: str
     spotify_url: str
+    duration_ms: int
 
 
-class SSpotifyMusicResponse(BaseResponse):
-    # _model_type =
-    ...
+class SSpotifyAlbumTracksResponse(BaseModel):
+    tracks: List[SpotifyAlbumTrack]
 
 
-
-
-
-class SSpotifySearchResponse(BaseResponse):
-    id: str
-    type: str
+class SSpotifyArtistResponse(BaseModel):
     name: str
-    image_url: str
-    popularity: int
+
+
+class SSpotifySearchResponse(BaseModel):
+    results: List[Union[SpotifyArtist, SpotifyTrack, SpotifyAlbum]]
