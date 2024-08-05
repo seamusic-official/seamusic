@@ -7,7 +7,7 @@ from src.api.v1.beats import beats
 from src.api.v1.comments import comments
 from src.api.v1.licenses import licenses
 from src.api.v1.messages import messages
-from src.api.v1.music import music
+from src.api.v1.spotify import music
 from src.api.v1.soundkits import soundkits
 from src.api.v1.squads import squads
 from src.api.v1.subscriptions import subscription
