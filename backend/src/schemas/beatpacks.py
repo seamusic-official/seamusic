@@ -4,6 +4,7 @@ from typing import List
 from pydantic import BaseModel, ConfigDict
 
 from src.models.beatpacks import Beatpack
+from src.schemas.base import BaseResponse
 
 
 class BeatCreate(BaseModel):
@@ -31,7 +32,7 @@ class SBeatpackDeleteResponse(BaseModel):
     response: str = "Beat pack deleted"
 
 
-class SBeatpackResponse(BaseModel):
+class SBeatpackResponse(BaseResponse):
     id: int
     description: str
     is_available: bool
@@ -39,13 +40,4 @@ class SBeatpackResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    @classmethod
-    def from_db_model(cls, beatpack: Beatpack) -> "SBeatpackResponse":
-        return cls(
-            id=beatpack.id,
-            description=beatpack.description,
-            is_available=beatpack.is_available,
-            title=beatpack.title,
-            created_at=beatpack.created_at,
-            updated_at=beatpack.updated_at,
-        )
+    model_type = Beatpack

@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 
+from src.schemas.base import BaseResponse
+
 
 class SMusic(BaseModel):
     title: str
@@ -40,7 +42,7 @@ class SSpotifyAlbumResponse(BaseModel):
     spotify_url: str
 
 
-class SSpotifySearchResponse(BaseModel):
+class SSpotifySearchResponse(BaseResponse):
     id: str
     type: str
     name: str

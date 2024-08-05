@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from src.models.tracks import Track
+from src.schemas.base import BaseResponse
 
 
 class STrackBase(BaseModel):
@@ -30,7 +31,7 @@ class STrack(STrackBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class STrackResponse(BaseModel):
+class STrackResponse(BaseResponse):
     id: int
     name: str
     prod_by: str
@@ -44,22 +45,7 @@ class STrackResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    @classmethod
-    def from_db_model(cls, track: Track) -> "STrackResponse":
-        return cls(
-            id=track.id,
-            name=track.name,
-            prod_by=track.prod_by,
-            description=track.description,
-            co_prod=track.co_prod,
-            type=track.type,
-            user_id=track.user_id,
-            is_available=track.is_available,
-            file_url=track.file_url,
-            picture_url=track.picture_url,
-            created_at=track.created_at,
-            updated_at=track.updated_at,
-        )
+    model_type = Track
 
 
 class STrackUpdateResponse(BaseModel):

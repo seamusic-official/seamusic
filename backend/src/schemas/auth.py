@@ -5,6 +5,7 @@ from typing import Optional, List
 from pydantic import BaseModel, EmailStr, Field
 
 from src.models.auth import User
+from src.schemas.base import BaseResponse
 from src.schemas.tags import STag
 
 
@@ -39,22 +40,14 @@ class SUserEditImageResponse(BaseModel):
     response: str = "User image edited"
 
 
-class SUserResponse(BaseModel):
+class SUserResponse(BaseResponse):
     id: int
     username: str
     email: EmailStr
     picture_url: str
     birthday: Optional[date]
 
-    @classmethod
-    def from_db_model(cls, user: User) -> "SUserResponse":
-        return cls(
-            id=user.id,
-            username=user.username,
-            email=user.email,
-            picture_url=user.picture_url,
-            birthday=user.birthday,
-        )
+    model_type = User
 
 
 class SUserUpdate(BaseModel):
@@ -148,34 +141,16 @@ class SLoginUser(BaseModel):
     password: str
 
 
-class SUserLoginResponse(BaseModel):
+class SUserLoginResponse(BaseResponse):
     accessToken: str
     refreshToken: str
     user: SUserResponse
 
-    @classmethod
-    def from_db_model(
-        cls, user: User, access_token: str, refresh_token: str
-    ) -> "SUserLoginResponse":
-        return cls(
-            accessToken=access_token,
-            refreshToken=refresh_token,
-            user=SUserResponse.from_db_model(user=user),
-        )
 
-
-class SSpotifyCallbackResponse(BaseModel):
+class SSpotifyCallbackResponse(BaseResponse):
     access_token: str
     refresh_token: str
     user: SUserResponse
-
-    @classmethod
-    def from_db_model(cls, user: User, refresh_token: str, access_token: str):
-        return cls(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            user=SUserResponse.from_db_model(user=user),
-        )
 
 
 class SRefreshTokenResponse(BaseModel):

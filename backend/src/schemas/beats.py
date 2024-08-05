@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from src.models.beats import Beat
+from src.schemas.base import BaseResponse
 
 
 class SBeatBase(BaseModel):
@@ -48,7 +49,7 @@ class SBeat(SBeatBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class SBeatResponse(BaseModel):
+class SBeatResponse(BaseResponse):
     id: int
     title: str
     description: str
@@ -60,20 +61,7 @@ class SBeatResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    @classmethod
-    def from_db_model(cls, beat: Beat) -> "SBeatResponse":
-        return cls(
-            id=beat.id,
-            title=beat.title,
-            description=beat.description,
-            picture_url=beat.picture_url,
-            type=beat.type,
-            file_url=beat.file_url,
-            user_id=beat.user_id,
-            is_available=beat.is_available,
-            created_at=beat.created_at,
-            updated_at=beat.updated_at,
-        )
+    model_type = Beat
 
 
 class SBeatDeleteResponse(BaseModel):

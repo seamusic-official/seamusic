@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from src.models.albums import Album
+from src.schemas.base import BaseResponse
 
 
 class SAlbumBase(BaseModel):
@@ -36,7 +37,7 @@ class SAlbum(SAlbumBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class SAlbumResponse(BaseModel):
+class SAlbumResponse(BaseResponse):
     title: str
     picture: Optional[str]
     description: Optional[str]
@@ -44,16 +45,7 @@ class SAlbumResponse(BaseModel):
     prod_by: Optional[str]
     user_id: int
 
-    @classmethod
-    def from_db_model(cls, album: Album) -> "SAlbumResponse":
-        return cls(
-            title=album.name,
-            picture=album.picture_url,
-            description=album.description,
-            co_prod=album.co_prod,
-            prod_by=album.prod_by,
-            user_id=album.user_id,
-        )
+    model_type = Album
 
 
 class SAlbumDeleteResponse(BaseModel):

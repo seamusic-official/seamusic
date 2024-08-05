@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from src.models.licenses import License
+from src.schemas.base import BaseResponse
 
 
 class SLicenseBase(BaseModel):
@@ -25,7 +26,7 @@ class SLicense(SLicenseBase):
     updated_at: datetime
 
 
-class SLicensesResponse(BaseModel):
+class SLicensesResponse(BaseResponse):
     id: int
     title: str
     price: str
@@ -35,18 +36,7 @@ class SLicensesResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    @classmethod
-    def from_db_model(cls, licenses: License) -> "SLicensesResponse":
-        return cls(
-            id=licenses.id,
-            title=licenses.title,
-            price=licenses.price,
-            description=licenses.description,
-            picture_url=licenses.picture_url,
-            is_available=licenses.is_available,
-            created_at=licenses.created_at,
-            updated_at=licenses.updated_at,
-        )
+    model_type = License
 
 
 class SLicensesEditResponse(BaseModel):
