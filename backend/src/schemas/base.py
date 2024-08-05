@@ -1,9 +1,14 @@
 from typing import Type
 
 from pydantic import BaseModel, ConfigDict
-
+from datetime import datetime
 from src.core.database import Base
 
+class BaseSchema(BaseModel):
+    id: int
+    is_available: bool
+    created_at: datetime
+    updated_at: datetime
 
 class BaseResponse(BaseModel):
     model_config = ConfigDict(extra='ignore')

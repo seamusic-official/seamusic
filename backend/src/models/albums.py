@@ -25,6 +25,7 @@ class Album(Base):
     picture_url: Mapped[str] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(nullable=True)
     co_prod: Mapped[str] = mapped_column(nullable=True)
+    
     type: Mapped[str] = mapped_column(nullable=True)
 
     artist_profiles: Mapped["ArtistProfile"] = relationship(
@@ -33,6 +34,5 @@ class Album(Base):
     tracks: Mapped["Track"] = relationship(
         secondary=album_track_association, back_populates="albums"
     )
-
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User")
