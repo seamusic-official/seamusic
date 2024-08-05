@@ -45,7 +45,7 @@ class SAlbumResponse(BaseResponse):
     prod_by: Optional[str]
     user_id: int
 
-    model_type = Album
+    _model_type = Album
 
 
 class SAlbumDeleteResponse(BaseModel):

@@ -40,4 +40,4 @@ class SBeatpackResponse(BaseResponse):
     created_at: datetime
     updated_at: datetime
 
-    model_type = Beatpack
+    _model_type = Beatpack

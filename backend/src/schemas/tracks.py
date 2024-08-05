@@ -45,7 +45,7 @@ class STrackResponse(BaseResponse):
     created_at: datetime
     updated_at: datetime
 
-    model_type = Track
+    _model_type = Track
 
 
 class STrackUpdateResponse(BaseModel):

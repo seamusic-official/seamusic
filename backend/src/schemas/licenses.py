@@ -36,7 +36,7 @@ class SLicensesResponse(BaseResponse):
     created_at: datetime
     updated_at: datetime
 
-    model_type = License
+    _model_type = License
 
 
 class SLicensesEditResponse(BaseModel):

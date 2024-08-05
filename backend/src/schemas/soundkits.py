@@ -50,7 +50,7 @@ class SSoundkitResponse(BaseResponse):
     created_at: datetime
     updated_at: datetime
 
-    model_type = Soundkit
+    _model_type = Soundkit
 
 
 class SSoundkitDeleteResponse(BaseModel):

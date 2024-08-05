@@ -61,7 +61,7 @@ class SBeatResponse(BaseResponse):
     created_at: datetime
     updated_at: datetime
 
-    model_type = Beat
+    _model_type = Beat
 
 
 class SBeatDeleteResponse(BaseModel):

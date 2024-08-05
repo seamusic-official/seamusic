@@ -47,7 +47,7 @@ class SUserResponse(BaseResponse):
     picture_url: str
     birthday: Optional[date]
 
-    model_type = User
+    _model_type = User
 
 
 class SUserUpdate(BaseModel):
