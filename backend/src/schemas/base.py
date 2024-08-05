@@ -9,8 +9,9 @@ class BaseResponse(BaseModel):
     model_config = ConfigDict(extra='ignore')
     model_type: Type[Base]
 
-    def from_db_model(self, model: Base) -> "BaseResponse":
-        if not isinstance(model, self.model_type):
-            raise TypeError(f'`model` is not an instance of class {self.model_type}')
+    @classmethod
+    def from_db_model(cls, model: Base) -> "BaseResponse":
+        if not isinstance(model, cls.model_type):
+            raise TypeError(f'`model` is not an instance of class {cls.model_type}')
 
-        return self.model_validate(**model.__dict__)
+        return cls.model_validate(**model.__dict__)
