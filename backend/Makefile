@@ -2,16 +2,8 @@ install:
 	pip install -r requirements/dev.txt
 
 run:
-ifeq ($(for),prod)
+	python -m alembic upgrade head
 	python -m uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir . --log-config=log_config.ini --log-level=debug
-else ifeq ($(for),dev)
-	python -m fastapi dev src.api.app:app
-else
-	@echo "Undefined value for 'for' argument. Use 'prod' or 'dev'"
-	exit 1
-endif
-
-
 
 build:
 	docker-compose -f docker-compose.$(for).yml build

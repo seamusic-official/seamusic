@@ -26,7 +26,6 @@ async def get_user_albums(
     response = await AlbumsRepository.find_all(user=user)
     return [SAlbumResponse.from_db_model(album) for album in response]
 
-
 @albums.get(
     path="/all",
     summary="Get all albums",
