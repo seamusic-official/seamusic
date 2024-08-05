@@ -25,7 +25,6 @@ class Album(Base):
     picture_url: Mapped[str] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(nullable=True)
     co_prod: Mapped[str] = mapped_column(nullable=True)
-    prod_by: Mapped[str] = mapped_column(nullable=True)
     type: Mapped[str] = mapped_column(nullable=True)
 
     artist_profiles: Mapped["ArtistProfile"] = relationship(

@@ -5,9 +5,8 @@ from typing import Optional, List
 from pydantic import BaseModel, EmailStr, Field
 
 from src.models.auth import User
-from src.schemas.base import BaseResponse
+from src.schemas.base import BaseResponse, BaseSchema
 from src.schemas.tags import STag
-
 
 class Role(str, Enum):
     superuser = "superuser"
@@ -16,13 +15,10 @@ class Role(str, Enum):
     producer = "producer"
     listener = "listener"
 
-
 """
 User (Listener) schemas
 """
-
-
-class SUserBase(BaseModel):
+class SUserBase(BaseSchema):
     username: str = Field(min_length=5, max_length=25)
     email: EmailStr
     picture_url: Optional[str]
@@ -71,15 +67,13 @@ class SUserDeleteResponse(BaseModel):
 """
 Artist schemas
 """
-
-
 class SArtistBase(BaseModel):
     user: SUser
     description: Optional[str]
     tags: Optional[List[STag]]
 
 
-class SArtist(SArtistBase):
+class SArtistResponse(SArtistBase):
     id: int
     created_at: datetime
     updated_at: datetime
