@@ -4,10 +4,10 @@ from typing import List
 from pydantic import BaseModel, ConfigDict
 
 from src.models.beatpacks import Beatpack
-from src.schemas.base import BaseResponse
+from src.schemas.base import BaseResponse, SBaseSchema
 
 
-class BeatCreate(BaseModel):
+class Beat(SBaseSchema):
     id: int
 
 

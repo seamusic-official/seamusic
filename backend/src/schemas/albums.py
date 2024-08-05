@@ -1,52 +1,53 @@
 from datetime import datetime
-from typing import Optional
+from typing import List, Optional
 
 from pydantic import BaseModel, ConfigDict
 
-from src.models.albums import Album
-from src.schemas.base import BaseResponse
+from src.schemas.base import BaseResponse, SBaseSchema
 
 
-class SAlbumBase(BaseModel):
-    title: str
-    picture: Optional[str]
-    description: Optional[str]
-    file_path: str
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-    playlist_id: Optional[int]
-    user_id: int
-    Track_pack_id: Optional[int]
-
-
-class SAlbumEdit(BaseModel):
+class Album(SBaseSchema):
     name: str
-    description: Optional[str]
-    prod_by: Optional[str]
+    picture_url: str
+    description: str
+    co_prod: str
+    type: str = "album"
 
 
-class SAlbumCreate(SAlbumBase):
-    pass
+class SAlbumRequest(BaseModel):
+    name: str
+    picture_url: str
+    description: str
+    co_prod: str
+    type: str = "album"
 
 
-class SAlbum(SAlbumBase):
-    id: int
-    is_available: bool
-    created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
+class SAlbumResponse(SBaseSchema):
+    albums: List[Album]
 
 
-class SAlbumResponse(BaseResponse):
-    title: str
-    picture: Optional[str]
+class SAlbumDetail(SBaseSchema):
+    name: str
+    picture_url: str
+    description: str
+    co_prod: str
+    type: str
+
+
+class SAlbumCreate(BaseModel):
+    name: str
+    picture_url: str
+    description: str
+    co_prod: str
+    type: str = "album"
+
+
+class SAlbumUpdate(SBaseSchema):
+    name: Optional[str]
+    picture_url: Optional[str]
     description: Optional[str]
     co_prod: Optional[str]
-    prod_by: Optional[str]
-    user_id: int
-
-    _model_type = Album
 
 
-class SAlbumDeleteResponse(BaseModel):
-    response: str = "Album deleted."
+class SAlbumDelete(BaseModel):
+    response: str = "Album was deleted."
