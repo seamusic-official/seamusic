@@ -5,8 +5,8 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 from pydantic import EmailStr
 
+from src.schemas.auth import SUserResponse
 from src.core.config import settings
-from src.schemas.auth import SUser
 from src.services.auth import UsersDAO
 
 
@@ -63,7 +63,7 @@ async def get_refresh_token(request: Request):
     return token
 
 
-async def get_current_user(token: str = Depends(get_refresh_token)) -> SUser:
+async def get_current_user(token: str = Depends(get_refresh_token)) -> SUserResponse:
     try:
         payload = jwt.decode(token, JWT_REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:

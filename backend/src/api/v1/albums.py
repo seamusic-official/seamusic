@@ -3,11 +3,11 @@ from typing import List
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.core.cruds import MediaRepository
-from src.schemas.albums import SAlbumBase, SAlbumResponse, SAlbumDeleteResponse
-from src.schemas.auth import SUser
+from src.schemas.albums import SAlbumResponse, SAlbumRequest, SAlbumDelete
 from src.services.albums import AlbumsRepository
 from src.utils.files import unique_filename
 from src.utils.auth import get_current_user
+from src.schemas.auth import SUserResponse
 
 
 albums = APIRouter(prefix="/albums", tags=["Albums"])
@@ -21,7 +21,7 @@ albums = APIRouter(prefix="/albums", tags=["Albums"])
     responses={status.HTTP_200_OK: {"model": List[SAlbumResponse]}},
 )
 async def get_user_albums(
-    user: SUser = Depends(get_current_user),
+    user: SUserResponse = Depends(get_current_user),
 ) -> List[SAlbumResponse]:
     response = await AlbumsRepository.find_all(user=user)
     return [SAlbumResponse.from_db_model(album) for album in response]
@@ -55,7 +55,7 @@ async def get_one_album(album_id: int) -> SAlbumResponse:
     responses={status.HTTP_200_OK: {"model": SAlbumResponse}},
 )
 async def add_albums(
-    file: UploadFile = File(...), user: SUser = Depends(get_current_user)
+    file: UploadFile = File(...), user: SUserResponse = Depends(get_current_user)
 ) -> SAlbumResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
@@ -99,7 +99,7 @@ async def update_pic_albums(
 )
 async def release_albums(
     album_id: int,
-    albums_data: SAlbumBase,
+    albums_data: SAlbumRequest,
 ) -> SAlbumResponse:
     data = {
         "name": albums_data.title,
@@ -119,7 +119,7 @@ async def release_albums(
 )
 async def update_albums(
     album_id: int,
-    albums_data: SAlbumBase,
+    albums_data: SAlbumRequest,
 ) -> SAlbumResponse:
     data = {
         "name": albums_data.title,
@@ -135,10 +135,10 @@ async def update_albums(
 @albums.delete(
     path="/delete/{album_id}",
     summary="Delete album by id",
-    response_model=SAlbumDeleteResponse,
-    responses={status.HTTP_200_OK: {"model": SAlbumDeleteResponse}},
+    response_model=SAlbumDelete,
+    responses={status.HTTP_200_OK: {"model": SAlbumDelete}},
 )
-async def delete_albums(album_id: int) -> SAlbumDeleteResponse:
+async def delete_albums(album_id: int) -> SAlbumDelete:
     await AlbumsRepository.delete(id_=album_id)
 
-    return SAlbumDeleteResponse
+    return SAlbumDelete

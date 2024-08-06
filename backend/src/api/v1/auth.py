@@ -15,23 +15,23 @@ from src.core.config import settings
 from src.core.cruds import MediaRepository
 from src.core.exceptions import NotFoundException, NoRightsException
 from src.schemas.auth import (
-    SUser,
-    SArtist,
-    SProducer,
     SRegisterUser,
     SLoginUser,
     SUserUpdate,
     SArtistUpdate,
     SRefreshTokenResponse,
-    SUserUpdateResponse,
     SUserResponse,
-    SUserEditImageResponse,
-    SUserDeleteResponse,
-    SArtistDeleteResponse,
-    SProducerDeleteResponse,
-    SAuthUserRegisterResponse,
     SUserLoginResponse,
     SSpotifyCallbackResponse,
+    SUserRequest,
+    SUserDelete,
+    SArtistResponse,
+    SArtistDelete,
+    SArtistDetail,
+    SProducerDelete,
+    SProducerDetail,
+    SProducerResponse,
+    SProducerUpdate
 )
 from src.services.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
 from src.services.tags import ListenerTagsDAO, TagsDAO
@@ -60,7 +60,7 @@ Users routes
     status_code=status.HTTP_200_OK,
     responses={status.HTTP_200_OK: {"model": SUserResponse}},
 )
-async def get_me(user: SUser = Depends(get_current_user)) -> SUserResponse:
+async def get_me(user: SUserResponse = Depends(get_current_user)) -> SUserResponse:
     return SUserResponse(
         id=user.id,
         username=user.username,
@@ -102,12 +102,12 @@ async def get_one(user_id: int) -> SUserResponse:
 @auth.put(
     path="/users/picture/{user_id}",
     summary="Update image info by id",
-    response_model=SUserEditImageResponse,
-    responses={status.HTTP_200_OK: {"model": SUserEditImageResponse}},
+    response_model=SUserUpdate,
+    responses={status.HTTP_200_OK: {"model": SUserResponse}},
 )
 async def update_user_picture(
-    user_id: int, file: UploadFile = File(...), user: SUser = Depends(get_current_user)
-) -> SUserEditImageResponse:
+    user_id: int, file: UploadFile = File(...), user: SUserResponse = Depends(get_current_user)
+) -> SUserResponse:
     if user.id != user_id:
         raise NoRightsException()
 
@@ -116,18 +116,18 @@ async def update_user_picture(
 
     update_data = {"picture_url": picture_url}
     await UsersDAO.edit_one(user_id, update_data)
-    return SUserEditImageResponse
+    return SUserResponse
 
 
 @auth.put(
     path="/users/{user_id}",
     summary="Update user info by id",
-    response_model=SUserUpdateResponse,
-    responses={status.HTTP_200_OK: {"model": SUserUpdateResponse}},
+    response_model=SUserResponse,
+    responses={status.HTTP_200_OK: {"model": SUserResponse}},
 )
 async def update_user(
-    user_id: int, data: SUserUpdate, user: SUser = Depends(get_current_user)
-) -> SUserUpdateResponse:
+    user_id: int, data: SUserUpdate, user: SUserResponse = Depends(get_current_user)
+) -> SUserResponse:
     if not user:
         raise NotFoundException()
 
@@ -145,7 +145,7 @@ async def update_user(
 
     await UsersDAO.edit_one(user_id, update_data)
 
-    return SUserUpdateResponse(
+    return SUserResponse(
         username=data.username, email=data.email, picture_url=data.picture_url
     )
 
@@ -153,12 +153,12 @@ async def update_user(
 @auth.delete(
     path="/users/{user_id}",
     summary="Delete user by id",
-    response_model=SUserDeleteResponse,
-    responses={status.HTTP_200_OK: {"model": SUserDeleteResponse}},
+    response_model=SUserDelete,
+    responses={status.HTTP_200_OK: {"model": SUserDelete}},
 )
 async def delete_users(
-    user_id: int, user: SUser = Depends(get_current_user)
-) -> SUserDeleteResponse:
+    user_id: int, user: SUserResponse = Depends(get_current_user)
+) -> SUserDelete:
     if not user:
         raise NotFoundException()
 
@@ -166,7 +166,7 @@ async def delete_users(
         raise NoRightsException()
 
     await UsersDAO.delete(user_id)
-    return SUserDeleteResponse
+    return SUserDelete
 
 
 """
@@ -176,64 +176,52 @@ Artists routes
 
 @auth.get(
     path="/users/artists/me",
-    response_model=SArtist,
+    response_model=SArtistResponse,
     summary="Get my artist profile",
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SArtist}},
+    responses={status.HTTP_200_OK: {"model": SArtistResponse}},
 )
-async def get_me_as_artist(user: SUser = Depends(get_current_user)) -> SArtist:
+async def get_me_as_artist(user: SUserResponse = Depends(get_current_user)) -> SArtistResponse:
     artist_profile = await ArtistDAO.find_one_or_none(user=user)
     return artist_profile
 
 
 @auth.get(
     path="/users/artists",
-    response_model=List[SArtist],
+    response_model=List[SArtistResponse],
     summary="Get all artists",
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": List[SArtist]}},
+    responses={status.HTTP_200_OK: {"model": List[SArtistResponse]}},
 )
-async def get_artists() -> List[SArtist]:
+async def get_artists() -> List[SArtistResponse]:
     response = await ArtistDAO.find_all()
     return response
 
 
 @auth.get(
     path="/users/artists/{artist_id}",
-    response_model=SArtist,
+    response_model=SArtistResponse,
     summary="Get one artists by id",
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SArtist}},
+    responses={status.HTTP_200_OK: {"model": SArtistResponse}},
 )
-async def get_one_artist(artist_id: int) -> SArtist:
+async def get_one_artist(artist_id: int) -> SArtistResponse:
     user = await ArtistDAO.find_one_by_id(artist_id)
     if not user:
         raise NotFoundException()
-
-    # user_dict = {
-    #     "id": user.id,
-    #     "username": user.username,
-    #     "email": user.email,
-    #     "picture_url": user.picture_url,
-    #     "birthday": user.birthday,
-    #     "role": user.role,
-    #     "updated_at": user.updated_at,
-    #     "created_at": user.created_at,
-    # }
-
     return SUserResponse(user=user)
 
 
 @auth.put(
     path="/users/artists/{artist_id}",
-    response_model=SUser,
+    response_model=List[SArtistResponse],
     summary="Update artist by id",
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SUser}},
+    responses={status.HTTP_200_OK: {"model": List[SArtistResponse]}},
 )
 async def update_artists(
-    artist_id: int, data: SArtistUpdate, user: SUser = Depends(get_current_user)
-) -> SUser:
+    artist_id: int, data: SArtistUpdate, user: SUserResponse = Depends(get_current_user)
+) -> List[SArtistResponse]:
     if not user:
         raise NotFoundException()
 
@@ -246,16 +234,16 @@ async def update_artists(
         update_data["description"] = data.username
 
     await UsersDAO.edit_one(artist_id, update_data)
-    return SUser(**update_data)
+    return SArtistResponse(**update_data)
 
 
 @auth.delete(
     path="/users/artists/{artist_id}",
     summary="Deactivate artist profile by id",
-    response_model=SArtistDeleteResponse,
-    responses={status.HTTP_200_OK: {"model": SArtistDeleteResponse}},
+    response_model=SArtistDelete,
+    responses={status.HTTP_200_OK: {"model": SArtistDelete}},
 )
-async def deactivate_artists(artist_id: int, user: SUser = Depends(get_current_user)):
+async def deactivate_artists(artist_id: int, user: SUserResponse = Depends(get_current_user)):
     if not user:
         raise NotFoundException()
 
@@ -263,7 +251,7 @@ async def deactivate_artists(artist_id: int, user: SUser = Depends(get_current_u
         raise NoRightsException()
 
     await ArtistDAO.delete(artist_id)
-    return SArtistDeleteResponse
+    return SArtistDelete
 
 
 """
@@ -273,12 +261,12 @@ Producers routes
 
 @auth.get(
     path="/users/producers/me",
-    response_model=SProducer,
+    response_model=SProducerResponse,
     summary="Get my producer profile",
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SProducer}},
+    responses={status.HTTP_200_OK: {"model": SProducerResponse}},
 )
-async def get_me_as_producer(user: SUser = Depends(get_current_user)):
+async def get_me_as_producer(user: SProducerResponse = Depends(get_current_user)):
     producer_profile = await ProducerDAO.find_one_or_none(user=user)
     # lazy load error
     return producer_profile
@@ -286,12 +274,12 @@ async def get_me_as_producer(user: SUser = Depends(get_current_user)):
 
 @auth.get(
     path="/users/producers",
-    response_model=List[SProducer],
+    response_model=List[SProducerResponse],
     summary="Get all producers",
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": List[SProducer]}},
+    responses={status.HTTP_200_OK: {"model": List[SProducerResponse]}},
 )
-async def get_all_producers() -> List[SProducer]:
+async def get_all_producers() -> List[SProducerResponse]:
     response = await ProducerDAO.find_all()
     # lazy load error
     return response
@@ -299,12 +287,12 @@ async def get_all_producers() -> List[SProducer]:
 
 @auth.get(
     path="/users/producers/{producer_id}",
-    response_model=SProducer,
+    response_model=SProducerResponse,
     summary="Get one producer by id",
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SProducer}},
+    responses={status.HTTP_200_OK: {"model": SProducerResponse}},
 )
-async def get_one_producer(producer_id: int) -> SProducer:
+async def get_one_producer(producer_id: int) -> SProducerResponse:
     response = await ProducerDAO.find_one_by_id(id_=producer_id)
     # lazy load error
     return response
@@ -312,14 +300,14 @@ async def get_one_producer(producer_id: int) -> SProducer:
 
 @auth.put(
     path="/users/producers/{producer_id}",
-    response_model=SUser,
+    response_model=SProducerResponse,
     summary="Update producer by id",
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SUser}},
+    responses={status.HTTP_200_OK: {"model": SProducerResponse}},
 )
 async def update_one_producer(
-    producer_id: int, data: SArtistUpdate, user: SUser = Depends(get_current_user)
-) -> SUser:
+    producer_id: int, data: SProducerUpdate, user: SUserResponse = Depends(get_current_user)
+) -> SProducerResponse:
     if not user:
         raise NotFoundException()
 
@@ -333,18 +321,18 @@ async def update_one_producer(
 
     await UsersDAO.edit_one(producer_id, update_data)
     # lazy load error
-    return SUser(**update_data)
+    return SProducerResponse(**update_data)
 
 
 @auth.post(
     path="/users/producers/{producer_id}",
     summary="Deactivate artist profile by id",
-    response_model=SProducerDeleteResponse,
-    responses={status.HTTP_200_OK: {"model": SProducerDeleteResponse}},
+    response_model=SProducerDelete,
+    responses={status.HTTP_200_OK: {"model": SProducerDelete}},
 )
 async def deactivate_one_producer(
-    producer_id: int, user: SUser = Depends(get_current_user)
-) -> SProducerDeleteResponse:
+    producer_id: int, user: SUserResponse = Depends(get_current_user)
+) -> SProducerDelete:
     if not user:
         raise NotFoundException()
 
@@ -352,7 +340,7 @@ async def deactivate_one_producer(
         raise NoRightsException()
 
     await ArtistDAO.edit_one(producer_id, {"is_available": False})
-    return SProducerDeleteResponse
+    return SProducerDelete
 
 
 """
