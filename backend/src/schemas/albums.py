@@ -1,12 +1,17 @@
+import datetime
 from typing import List
 
 from pydantic import BaseModel
 
 from src.models.albums import Album as _Album
-from src.schemas.base import BaseSchema, BaseResponse, FromDBModelMixin
+from src.schemas.base import BaseResponse, FromDBModelMixin
 
 
-class Album(BaseSchema, FromDBModelMixin):
+class Album(BaseModel, FromDBModelMixin):
+    id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    is_available: bool
     title: str
     picture_url: str
     description: str
@@ -24,11 +29,11 @@ class SAllAlbumsResponse(BaseModel):
     albums: List[Album]
 
 
-class SAlbumResponse(BaseResponse, Album, BaseSchema):
+class SAlbumResponse(BaseResponse, Album, BaseModel):
     pass
 
 
-class SAddAlbumResponse(BaseResponse, Album, BaseSchema):
+class SAddAlbumResponse(BaseResponse, Album, BaseModel):
     pass
 
 
@@ -45,7 +50,7 @@ class SReleaseAlbumsRequest(BaseModel):
     type: str = "album"
 
 
-class SReleaseAlbumsResponse(BaseResponse, BaseSchema, Album):
+class SReleaseAlbumsResponse(BaseResponse, BaseModel, Album):
     pass
 
 
@@ -58,7 +63,7 @@ class SUpdateAlbumRequest(BaseModel):
     type: str = "album"
 
 
-class SUpdateAlbumResponse(BaseResponse, BaseSchema, Album):
+class SUpdateAlbumResponse(BaseResponse, BaseModel, Album):
     pass
 
 
