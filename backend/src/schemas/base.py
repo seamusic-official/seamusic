@@ -6,17 +6,8 @@ from pydantic import BaseModel, ConfigDict
 from src.core.database import Base
 
 
-class SBaseSchema(BaseModel):
-    id: int
-    is_available: bool
-    created_at: datetime
-    updated_at: datetime
-
-
-class BaseResponse(BaseModel):
+class FromDBModelMixin(BaseModel):
     _model_type: Type[Base]
-    message: Optional[str] = None
-
     model_config = ConfigDict(extra='ignore')
 
     @classmethod
@@ -25,3 +16,11 @@ class BaseResponse(BaseModel):
             raise TypeError(f'`model` is not an instance of class {cls._model_type}')
 
         return cls.model_validate(**model.__dict__)
+
+
+class MessageMixin:
+    message: Optional[str] = None
+
+
+class BaseResponse(BaseModel, MessageMixin, FromDBModelMixin):
+    pass
