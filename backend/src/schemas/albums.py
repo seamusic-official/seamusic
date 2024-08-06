@@ -1,39 +1,43 @@
-from typing import List, Optional
+from typing import List
 
 from pydantic import BaseModel
 
-from src.schemas.base import SBaseSchema
+from src.models.albums import Album as _Album
+from src.schemas.base import BaseSchema, BaseResponse, FromDBModelMixin
 
 
-class Album(SBaseSchema):
-    name: str
+class Album(BaseSchema, FromDBModelMixin):
+    title: str
     picture_url: str
     description: str
     co_prod: str
     type: str = "album"
 
-
-class SAlbumRequest(BaseModel):
-    name: str
-    picture_url: str
-    description: str
-    co_prod: str
-    type: str = "album"
+    _model_type = _Album
 
 
-class SAlbumResponse(SBaseSchema):
+class SMyAlbumsResponse(BaseModel):
     albums: List[Album]
 
 
-class SAlbumDetail(SBaseSchema):
-    name: str
-    picture_url: str
-    description: str
-    co_prod: str
-    type: str
+class SAllAlbumsResponse(BaseModel):
+    albums: List[Album]
 
 
-class SAlbumCreate(BaseModel):
+class SAlbumResponse(BaseResponse, Album, BaseSchema):
+    pass
+
+
+class SAddAlbumResponse(BaseResponse, Album, BaseSchema):
+    pass
+
+
+class SUpdateAlbumPictureResponse(BaseResponse, Album):
+    pass
+
+
+class SReleaseAlbumsRequest(BaseModel):
+    title: str
     name: str
     picture_url: str
     description: str
@@ -41,12 +45,22 @@ class SAlbumCreate(BaseModel):
     type: str = "album"
 
 
-class SAlbumUpdate(SBaseSchema):
-    name: Optional[str]
-    picture_url: Optional[str]
-    description: Optional[str]
-    co_prod: Optional[str]
+class SReleaseAlbumsResponse(BaseResponse, BaseSchema, Album):
+    pass
 
 
-class SAlbumDelete(BaseModel):
-    response: str = "Album was deleted."
+class SUpdateAlbumRequest(BaseModel):
+    title: str
+    picture_url: str
+    description: str
+    co_prod: str
+    prod_by: str
+    type: str = "album"
+
+
+class SUpdateAlbumResponse(BaseResponse, BaseSchema, Album):
+    pass
+
+
+class SDeleteAlbumResponse(BaseResponse):
+    message = "Album was deleted."
