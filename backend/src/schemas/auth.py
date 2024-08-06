@@ -1,19 +1,11 @@
 from datetime import date, datetime
-from enum import Enum
 from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, Field
 
+from src.enums.auth import Role
 from src.schemas.base import BaseResponse, SBaseSchema
 from src.schemas.tags import Tag
-
-
-class Role(str, Enum):
-    superuser = "superuser"
-    moder = "moder"
-    artist = "artist"
-    producer = "producer"
-    listener = "listener"
 
 
 class User(SBaseSchema):
@@ -53,11 +45,11 @@ class SUserUpdate(SBaseSchema):
     co_prod: Optional[str]
 
 
-class SUserDelete(BaseModel):
-    response: str = "User was deactivated."
+class SUserDeleteResponse(BaseResponse):
+    message = "User was deactivated."
 
 
-class SRegisterUser(BaseModel):
+class SRegisterUserRequest(BaseModel):
     username: str = Field(min_length=3, max_length=25)
     password: str = Field(min_length=5)
     email: EmailStr
@@ -66,11 +58,11 @@ class SRegisterUser(BaseModel):
     tags: Optional[List[str]]
 
 
-class SRegisterUser(BaseModel):
+class SRegisterUserResponse(BaseModel):
     response: str = "User created"
 
 
-class SLoginUser(BaseModel):
+class SLoginUserRequest(BaseModel):
     email: EmailStr
     password: str
 
@@ -79,6 +71,7 @@ class SSpotifyCallbackResponse(BaseResponse):
     access_token: str
     refresh_token: str
     user: SUserResponse
+
 
 class SRefreshTokenResponse(BaseModel):
     accessToken: str
@@ -127,12 +120,9 @@ class SProducerResponse(SBaseSchema):
     artist_profiles: List[Artist]
 
 
-class SProducerUpdate(BaseModel):
+class SProducerUpdateRequest(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
 
-class SProducerDelete(BaseModel):
-    response: str = "Producer deleted"
-
-
-
+class SProducerDeleteResponse(BaseResponse):
+    message = "Producer deleted"
