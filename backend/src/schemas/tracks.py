@@ -4,10 +4,10 @@ from typing import Optional, List
 from pydantic import BaseModel
 
 from src.models.tracks import Track
-from src.schemas.base import BaseResponse
+from src.schemas.base import DetailMixin
 
 
-class STrack(BaseResponse):
+class STrack(BaseModel):
     id: int
     name: str
     prod_by: str
@@ -24,15 +24,15 @@ class STrack(BaseResponse):
     _model_type = Track
 
 
-class SMyTracksResponse(BaseResponse):
+class SMyTracksResponse(BaseModel):
     tracks: List[STrack]
 
 
-class SAllTracksResponse(BaseResponse):
+class SAllTracksResponse(BaseModel):
     tracks: List[STrack]
 
 
-class STrackResponse(BaseResponse):
+class STrackResponse(BaseModel):
     id: int
     name: str
     prod_by: str
@@ -49,7 +49,7 @@ class STrackResponse(BaseResponse):
     _model_type = Track
 
 
-class SAddTracksResponse(BaseResponse):
+class SAddTracksResponse(BaseModel):
     title: str
     file_url: str
     prod_by: str
@@ -91,9 +91,9 @@ class SUpdateTrackRequest(BaseModel):
     Track_pack_id: Optional[int]
 
 
-class SUpdateTrackResponse(BaseResponse):
-    message: str = "Track updated"
+class SUpdateTrackResponse(BaseModel, DetailMixin):
+    detail: str = "Track updated"
 
 
-class SDeleteTrackResponse(BaseResponse):
-    message: str = "Track deleted"
+class SDeleteTrackResponse(BaseModel, DetailMixin):
+    detail: str = "Track deleted"

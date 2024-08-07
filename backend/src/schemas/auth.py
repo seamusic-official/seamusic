@@ -6,10 +6,9 @@ from pydantic import BaseModel, EmailStr, Field
 from src.enums.auth import Role
 from src.models.auth import User as _User
 from src.schemas.base import FromDBModelMixin, DetailMixin
-from src.schemas.tags import Tag
 
 
-class User(BaseModel, FromDBModelMixin):
+class User(FromDBModelMixin):
     id: int
     username: str
     email: str
@@ -33,7 +32,7 @@ class SUsersResponse(BaseModel):
 
 
 class SUpdateUserPictureResponse(BaseModel, DetailMixin):
-    detail = 'User picture updated.'
+    detail: str = 'User picture updated.'
 
 
 class SUpdateUserRequest(BaseModel):
@@ -51,10 +50,10 @@ class SUpdateUserResponse(BaseModel):
 
 
 class SDeleteUserResponse(BaseModel, DetailMixin):
-    detail = 'User deleted.'
+    detail: str = 'User deleted.'
 
 
-class Artist(BaseModel, FromDBModelMixin):
+class Artist(FromDBModelMixin):
     user: User
     description: Optional[str] = "Description not found"
 
@@ -80,10 +79,10 @@ class SUpdateArtistResponse(BaseModel):
 
 
 class SDeleteArtistResponse(BaseModel, DetailMixin):
-    detail = 'Artist deleted.'
+    detail: str = 'Artist deleted.'
 
 
-class Producer(BaseModel, FromDBModelMixin):
+class Producer(FromDBModelMixin):
     user: User
     description: Optional[str] = "Description not found"
 
@@ -109,7 +108,7 @@ class SUpdateProducerResponse(BaseModel):
 
 
 class SDeleteProducerResponse(BaseModel, DetailMixin):
-    detail = 'Producer deleted.'
+    detail: str = 'Producer deleted.'
 
 
 class SRegisterUserRequest(BaseModel):
@@ -122,7 +121,7 @@ class SRegisterUserRequest(BaseModel):
 
 
 class SRegisterUserResponse(BaseModel, DetailMixin):
-    detail = 'User created.'
+    detail: str = 'User created.'
 
 
 class SLoginRequest(BaseModel):

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
+from src.api.exceptions import NoRightsException
 from src.models.auth import User
 from src.schemas.licenses import (
     SLicensesResponse,
@@ -70,8 +71,14 @@ async def add_license(
 )
 async def update_license(
     license_id: int,
-    licenses_data: SEditLicenseRequest
+    licenses_data: SEditLicenseRequest,
+    user: User = Depends(get_current_user)
 ) -> SEditLicensesResponse:
+    license = await LicensesRepository.find_one_by_id(id_=license_id)
+
+    if license.user.id != user.id:
+        raise NoRightsException()
+
     data = {
         "title": licenses_data.title,
         "description": licenses_data.description,
@@ -87,7 +94,15 @@ async def update_license(
     response_model=SLicensesDeleteResponse,
     responses={status.HTTP_200_OK: {"model": SLicensesDeleteResponse}},
 )
-async def delete_licenses(license_id: int) -> SLicensesDeleteResponse:
+async def delete_licenses(
+        license_id: int,
+        user: User = Depends(get_current_user)
+) -> SLicensesDeleteResponse:
+    license = await LicensesRepository.find_one_by_id(id_=license_id)
+
+    if license.user.id != user.id:
+        raise NoRightsException()
+
     await LicensesRepository.delete(id_=license_id)
 
     return SLicensesDeleteResponse()

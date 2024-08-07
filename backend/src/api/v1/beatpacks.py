@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
+from src.api.exceptions import NoRightsException
 from src.schemas.auth import User
 from src.schemas.beatpacks import (
     SBeatpackResponse,
@@ -73,10 +74,19 @@ async def add_beatpack(data: SCreateBeatpackRequest) -> SCreateBeatpackResponse:
 )
 async def update_beatpacks(
     beatpack_id: int,
-    beatpacks_data: SEditBeatpackRequest
+    beatpacks_data: SEditBeatpackRequest,
+    user: User = Depends(get_current_user)
 ) -> SEditBeatpackResponse:
-    await BeatpacksRepository.edit_one(beatpack_id, beatpacks_data.model_dump())
-    return SEditBeatpackResponse()
+    beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
+
+    for user in beat_pack.users:
+        if user.id == user.id:
+            await BeatpacksRepository.edit_one(beatpack_id, beatpacks_data.model_dump())
+            return SEditBeatpackResponse()
+
+    raise NoRightsException()
+
+
 
 
 @beatpacks.delete(
@@ -85,6 +95,12 @@ async def update_beatpacks(
     response_model=SDeleteBeatpackResponse,
     responses={status.HTTP_200_OK: {"model": SDeleteBeatpackResponse}},
 )
-async def delete_beatpacks(beatpack_id: int) -> SDeleteBeatpackResponse:
-    await BeatpacksRepository.delete(id_=beatpack_id)
-    return SDeleteBeatpackResponse()
+async def delete_beatpacks(beatpack_id: int, user: User = Depends(get_current_user)) -> SDeleteBeatpackResponse:
+    beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
+
+    for user in beat_pack.users:
+        if user.id == user.id:
+            await BeatpacksRepository.delete(id_=beatpack_id)
+            return SDeleteBeatpackResponse()
+
+    raise NoRightsException()

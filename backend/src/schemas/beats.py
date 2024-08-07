@@ -7,7 +7,7 @@ from src.models.beats import Beat as _Beat
 from src.schemas.base import FromDBModelMixin, DetailMixin
 
 
-class Beat(BaseModel, FromDBModelMixin):
+class Beat(FromDBModelMixin):
     id: int
     title: str
     description: Optional[str] = None
@@ -43,7 +43,7 @@ class SUpdateBeatPictureResponse(Beat):
     pass
 
 
-class SBeatReleaseRequest(BaseModel, FromDBModelMixin):
+class SBeatReleaseRequest(FromDBModelMixin):
     title: Optional[str]
     description: Optional[str]
     co_prod: Optional[str]
@@ -69,4 +69,4 @@ class SBeatUpdateResponse(Beat):
 
 
 class SDeleteBeatResponse(BaseModel, DetailMixin):
-    response: str = "Beat deleted"
+    detail: str = "Beat deleted"

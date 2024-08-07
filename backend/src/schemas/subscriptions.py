@@ -2,8 +2,6 @@ from typing import Optional, List
 
 from pydantic import BaseModel
 
-from src.schemas.base import BaseResponse
-
 
 class TelegramAccount(BaseModel):
     telegram_id: Optional[int] = None
@@ -22,12 +20,12 @@ class OnlyTelegramSubscribeYear(BaseModel):
     telegram_account: TelegramAccount
 
 
-class SCreateTelegramAccountResponse(BaseResponse):
+class STelegramAccountResponse(BaseModel):
     telegram_id: Optional[int] = None
     subscribe: Optional[bool] = None
     only_telegram_subscribe_year: OnlyTelegramSubscribeYear
     only_telegram_subscribe_month: OnlyTelegramSubscribeMonth
 
 
-class STelegramAccountsIDResponse(BaseResponse):
+class STelegramAccountsIDResponse(BaseModel):
     ids: List[int]

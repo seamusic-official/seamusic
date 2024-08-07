@@ -4,7 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from src.models.soundkits import Soundkit
-from src.schemas.base import BaseResponse
+from src.schemas.base import DetailMixin
 
 
 class SSoundkitBase(BaseModel):
@@ -39,7 +39,7 @@ class SSoundkit(SSoundkitBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class SSoundkitResponse(BaseResponse):
+class SSoundkitResponse(BaseModel):
     id: int
     name: str
     description: str
@@ -53,5 +53,5 @@ class SSoundkitResponse(BaseResponse):
     _model_type = Soundkit
 
 
-class SSoundkitDeleteResponse(BaseModel):
-    response: str = "Soundkit deleted"
+class SSoundkitDeleteResponse(BaseModel, DetailMixin):
+    detail: str = "Soundkit deleted"

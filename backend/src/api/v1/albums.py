@@ -1,5 +1,6 @@
-from fastapi import UploadFile, File, APIRouter, Depends, status
+from fastapi import UploadFile, File, APIRouter, Depends, status, HTTPException
 
+from src.api.exceptions import NoRightsException
 from src.core.cruds import MediaRepository
 from src.schemas.albums import (
     Album,
@@ -14,7 +15,7 @@ from src.schemas.albums import (
     SUpdateAlbumRequest,
     SUpdateAlbumResponse,
 )
-from src.schemas.auth import SAllUserResponse
+from src.schemas.auth import User
 from src.services.albums import AlbumsRepository
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename
@@ -30,7 +31,7 @@ albums = APIRouter(prefix="/albums", tags=["Albums"])
     responses={status.HTTP_200_OK: {"model": SMyAlbumsResponse}},
 )
 async def get_my_albums(
-    user: SAllUserResponse = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> SMyAlbumsResponse:
     response = await AlbumsRepository.find_all(user=user)
     return SMyAlbumsResponse(albums=[Album.from_db_model(album) for album in response])
@@ -65,7 +66,7 @@ async def get_one_album(album_id: int) -> SAlbumResponse:
     responses={status.HTTP_200_OK: {"model": SAddAlbumResponse}},
 )
 async def add_albums(
-    file: UploadFile = File(...), user: SAllUserResponse = Depends(get_current_user)
+    file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SAddAlbumResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
@@ -89,15 +90,21 @@ async def add_albums(
     responses={status.HTTP_200_OK: {"model": SUpdateAlbumPictureResponse}},
 )
 async def update_pic_albums(
-    albums_id: int,
+    album_id: int,
     file: UploadFile = File(...),
+    user: User = Depends(get_current_user)
 ) -> SUpdateAlbumPictureResponse:
+    album = await AlbumsRepository.find_one_by_id(id_=album_id)
+
+    if album.user.id != user.id:
+        raise NoRightsException()
+
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
 
     data = {"picture_url": file_url}
 
-    response = await AlbumsRepository.edit_one(albums_id, data)
+    response = await AlbumsRepository.edit_one(album_id, data)
     return SUpdateAlbumPictureResponse.from_db_model(model=response)
 
 
@@ -110,7 +117,13 @@ async def update_pic_albums(
 async def release_albums(
     album_id: int,
     albums_data: SReleaseAlbumsRequest,
+    user: User = Depends(get_current_user)
 ) -> SReleaseAlbumsResponse:
+    album = await AlbumsRepository.find_one_by_id(id_=album_id)
+
+    if album.user.id != user.id:
+        raise NoRightsException()
+
     data = {
         "name": albums_data.title,
         "description": albums_data.description,
@@ -130,7 +143,13 @@ async def release_albums(
 async def update_album(
     album_id: int,
     albums_data: SUpdateAlbumRequest,
+    user: User = Depends(get_current_user)
 ) -> SUpdateAlbumResponse:
+    album = await AlbumsRepository.find_one_by_id(id_=album_id)
+
+    if album.user.id != user.id:
+        raise NoRightsException()
+
     data = {
         "name": albums_data.title,
         "description": albums_data.description,
@@ -147,7 +166,12 @@ async def update_album(
     response_model=SDeleteAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SDeleteAlbumResponse}},
 )
-async def delete_albums(album_id: int) -> SDeleteAlbumResponse:
+async def delete_albums(album_id: int, user: User = Depends(get_current_user)) -> SDeleteAlbumResponse:
+    album = await AlbumsRepository.find_one_by_id(id_=album_id)
+
+    if album.user.id != user.id:
+        raise NoRightsException()
+
     await AlbumsRepository.delete(id_=album_id)
 
     return SDeleteAlbumResponse()

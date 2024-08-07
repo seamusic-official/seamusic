@@ -3,6 +3,7 @@ from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
+from src.schemas.base import DetailMixin
 from src.schemas.beats import Beat
 
 
@@ -37,8 +38,8 @@ class SBeatPack(SBeatPackBase):
     model_config = ConfigDict(from_attributes=True)
 
 
-class SCommentDeleteResponse(BaseModel):
-    response: str = "Comment deleted"
+class SCommentDeleteResponse(BaseModel, DetailMixin):
+    detail: str = "Comment deleted"
 
 
 class CommentCreate(BaseModel):
@@ -53,8 +54,8 @@ class CommentUpdate(BaseModel):
     comment: str
 
 
-class CommentUpdateResponse(BaseModel):
-    response: str = "Comment updated"
+class CommentUpdateResponse(BaseModel, DetailMixin):
+    detail: str = "Comment updated"
 
 
 class GetAuthor(BaseModel):

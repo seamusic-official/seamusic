@@ -5,10 +5,10 @@ from pydantic import BaseModel
 from src.models.beatpacks import Beatpack as _Beatpack
 from src.schemas.auth import User
 from src.schemas.base import FromDBModelMixin, DetailMixin
-from src.schemas.beats import SBeatCreate, Beat
+from src.schemas.beats import Beat
 
 
-class Beatpack(BaseModel, FromDBModelMixin):
+class Beatpack(FromDBModelMixin):
     title: str
     description: str
     users: List[User]
@@ -32,7 +32,7 @@ class SMyBeatpacksResponse(SBeatpacksResponse):
 class SCreateBeatpackRequest(BaseModel):
     title: str
     description: str
-    beats: List[SBeatCreate]
+    beats: List[Beat]
 
 
 class SCreateBeatpackResponse(Beatpack):
@@ -45,8 +45,8 @@ class SEditBeatpackRequest(BaseModel):
 
 
 class SEditBeatpackResponse(BaseModel, DetailMixin):
-    detail = "Beatpack edited"
+    detail: str = "Beatpack edited"
 
 
 class SDeleteBeatpackResponse(BaseModel, DetailMixin):
-    detail = "Beat pack deleted"
+    detail: str = "Beat pack deleted"

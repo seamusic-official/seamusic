@@ -1,5 +1,6 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
+from src.api.exceptions import NoRightsException
 from src.core.cruds import MediaRepository
 from src.schemas.auth import User
 from src.schemas.beats import (
@@ -83,8 +84,16 @@ async def add_beats(file: UploadFile = File(...), user: User = Depends(get_curre
     response_model=SUpdateBeatPictureResponse,
     responses={status.HTTP_200_OK: {"model": SUpdateBeatPictureResponse}},
 )
-async def update_pic_beats(beat_id: int, file: UploadFile = File(...),
-                           user: User = Depends(get_current_user)) -> SUpdateBeatPictureResponse:
+async def update_pic_beats(
+        beat_id: int,
+        file: UploadFile = File(...),
+        user: User = Depends(get_current_user)
+) -> SUpdateBeatPictureResponse:
+    beat = await BeatsRepository.find_one_by_id(id_=beat_id)
+
+    if beat.user_id != user.id:
+        raise NoRightsException()
+
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
 
@@ -105,6 +114,11 @@ async def release_beats(
         data: SBeatReleaseRequest,
         user: User = Depends(get_current_user)
 ) -> SBeatReleaseResponse:
+    beat = await BeatsRepository.find_one_by_id(id_=beat_id)
+
+    if beat.user_id != user.id:
+        raise NoRightsException()
+
     update_data = {}
 
     if data.title:
@@ -131,6 +145,11 @@ async def update_beats(
         data: SBeatUpdateRequest,
         user: User = Depends(get_current_user)
 ) -> SBeatUpdateResponse:
+    beat = await BeatsRepository.find_one_by_id(id_=beat_id)
+
+    if beat.user_id != user.id:
+        raise NoRightsException()
+
     update_data = {}
 
     if data.title:
@@ -157,5 +176,10 @@ async def update_beats(
 async def delete_beats(
         beat_id: int, user: User = Depends(get_current_user)
 ) -> SDeleteBeatResponse:
+    beat = await BeatsRepository.find_one_by_id(id_=beat_id)
+
+    if beat.user_id != user.id:
+        raise NoRightsException()
+
     await BeatsRepository.delete(id_=beat_id)
     return SDeleteBeatResponse()

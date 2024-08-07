@@ -7,7 +7,7 @@ from src.models.licenses import License as _License
 from src.schemas.base import FromDBModelMixin, DetailMixin
 
 
-class License(BaseModel, FromDBModelMixin):
+class License(FromDBModelMixin):
     id: int
     title: str
     picture_url: Optional[str] = None
@@ -52,8 +52,8 @@ class SEditLicenseRequest(License):
 
 
 class SEditLicensesResponse(BaseModel, DetailMixin):
-    response: str = "License edited"
+    detail: str = "License edited"
 
 
 class SLicensesDeleteResponse(BaseModel, DetailMixin):
-    response: str = "License deleted"
+    detail: str = "License deleted"

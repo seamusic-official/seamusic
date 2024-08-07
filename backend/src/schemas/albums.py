@@ -7,7 +7,7 @@ from src.models.albums import Album as _Album
 from src.schemas.base import FromDBModelMixin, DetailMixin
 
 
-class Album(BaseModel, FromDBModelMixin):
+class Album(FromDBModelMixin):
     id: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
@@ -68,4 +68,4 @@ class SUpdateAlbumResponse(Album):
 
 
 class SDeleteAlbumResponse(BaseModel, DetailMixin):
-    message: str = "Album was deleted."
+    detail: str = "Album was deleted."
