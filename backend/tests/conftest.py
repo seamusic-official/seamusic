@@ -3,7 +3,7 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from src.schemas.auth import SRegisterUser, Role, SLoginUser, SUserLoginResponse
+from src.schemas.auth import SRegisterUserRequest, Role, SLoginUser, SUserLoginResponse
 from src.core.config import settings
 from src.core.database import Base
 from src.api.app import app
@@ -22,7 +22,7 @@ def client() -> TestClient:
 
 @pytest.fixture(autouse=True, scope='session')
 def login(client: TestClient):
-    register = SRegisterUser(
+    register = SRegisterUserRequest(
         username='test_username',
         password=password,
         email=email,

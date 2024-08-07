@@ -155,4 +155,4 @@ async def update_soundkits(
 )
 async def delete_soundkits(soundkit_id: int) -> SSoundkitDeleteResponse:
     await SoundkitRepository.delete(id_=soundkit_id)
-    return SSoundkitDeleteResponse
+    return SSoundkitDeleteResponse()

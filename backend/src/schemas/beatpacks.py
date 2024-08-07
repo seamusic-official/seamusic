@@ -1,44 +1,52 @@
-from datetime import datetime
-from typing import List
+from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-from src.models.beatpacks import Beatpack
-from src.schemas.base import BaseResponse
-from src.schemas.beats import SBeatCreate
-
-
-class Beat(BaseModel):
-    id: int
+from src.models.beatpacks import Beatpack as _Beatpack
+from src.schemas.auth import User
+from src.schemas.base import FromDBModelMixin, DetailMixin
+from src.schemas.beats import SBeatCreate, Beat
 
 
-class BeatpackCreate(BaseModel):
+class Beatpack(BaseModel, FromDBModelMixin):
+    title: str
+    description: str
+    users: List[User]
+    beats: List[Beat]
+
+    _model_type = _Beatpack
+
+
+class SBeatpackResponse(Beatpack):
+    pass
+
+
+class SBeatpacksResponse(BaseModel):
+    beatpacks: List[Beatpack]
+
+
+class SMyBeatpacksResponse(SBeatpacksResponse):
+    pass
+
+
+class SCreateBeatpackRequest(BaseModel):
     title: str
     description: str
     beats: List[SBeatCreate]
 
 
-class BeatResponse(BaseModel):
-    id: int
-    name: str
-
-    model_config = ConfigDict(from_attributes=True)
+class SCreateBeatpackResponse(Beatpack):
+    pass
 
 
-class SBeatpackEditResponse(BaseModel):
-    response: str = "Beat pack edited"
+class SEditBeatpackRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
 
 
-class SBeatpackDeleteResponse(BaseModel):
-    response: str = "Beat pack deleted"
+class SEditBeatpackResponse(BaseModel, DetailMixin):
+    detail = "Beatpack edited"
 
 
-class SBeatpackResponse(BaseResponse):
-    id: int
-    description: str
-    is_available: bool
-    title: str
-    created_at: datetime
-    updated_at: datetime
-
-    _model_type = Beatpack
+class SDeleteBeatpackResponse(BaseModel, DetailMixin):
+    detail = "Beat pack deleted"

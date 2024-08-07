@@ -1,13 +1,12 @@
-from typing import List
-
 from fastapi import APIRouter, Depends, status
 
 from src.schemas.auth import User
 from src.schemas.beatpacks import (
-    BeatpackCreate,
     SBeatpackResponse,
-    SBeatpackEditResponse,
-    SBeatpackDeleteResponse,
+    SCreateBeatpackRequest,
+    SEditBeatpackResponse,
+    SDeleteBeatpackResponse,
+    SMyBeatpacksResponse, Beatpack, SBeatpacksResponse, SCreateBeatpackResponse, SEditBeatpackRequest
 )
 from src.services.beatpacks import BeatpacksRepository
 from src.utils.auth import get_current_user
@@ -19,27 +18,29 @@ beatpacks = APIRouter(prefix="/beatpacks", tags=["Beatpacks"])
 @beatpacks.post(
     path="/my",
     summary="Get beat packs by current user",
-    response_model=SBeatpackResponse,
-    responses={status.HTTP_200_OK: {"model": SBeatpackResponse}},
+    response_model=SMyBeatpacksResponse,
+    responses={status.HTTP_200_OK: {"model": SMyBeatpacksResponse}},
 )
 async def get_user_beatpacks(
     user: User = Depends(get_current_user),
-) -> SBeatpackResponse:
-    response = await BeatpacksRepository.find_all(owner=user)
+) -> SMyBeatpacksResponse:
 
-    return SBeatpackResponse.from_db_model(model=response)
+    response = await BeatpacksRepository.find_all(owner=user)
+    from_db_model = lambda beatpack: Beatpack.from_db_model(model=beatpack)  # noqa: E731
+
+    beatpacks_ = list(map(from_db_model, response))
+    return SMyBeatpacksResponse(beatpacks=beatpacks_)
 
 
 @beatpacks.get(
     path="/all",
     summary="Get all beat packs",
-    response_model=List[SBeatpackResponse],
-    responses={status.HTTP_200_OK: {"model": List[SBeatpackResponse]}},
+    response_model=SBeatpacksResponse,
+    responses={status.HTTP_200_OK: {"model": SBeatpacksResponse}},
 )
-async def all_beatpacks() -> List[SBeatpackResponse]:
+async def all_beatpacks() -> SBeatpacksResponse:
     response = await BeatpacksRepository.find_all()
-
-    return [SBeatpackResponse.from_db_model(model=beatpack) for beatpack in response]
+    return SBeatpacksResponse(beatpacks=[SBeatpackResponse.from_db_model(model=beatpack) for beatpack in response])
 
 
 @beatpacks.get(
@@ -50,52 +51,40 @@ async def all_beatpacks() -> List[SBeatpackResponse]:
 )
 async def get_one(beatpack_id: int):
     response = await BeatpacksRepository.find_one_by_id(beatpack_id)
-
     return SBeatpackResponse.from_db_model(model=response)
 
 
 @beatpacks.post(
     path="/add",
     summary="Add a file for new beat",
-    response_model=SBeatpackResponse,
-    responses={status.HTTP_200_OK: {"model": SBeatpackResponse}},
+    response_model=SCreateBeatpackResponse,
+    responses={status.HTTP_200_OK: {"model": SCreateBeatpackResponse}},
 )
-async def add_beatpack(
-    data: BeatpackCreate,
-) -> SBeatpackResponse:
-    data = {"title": data.title, "description": data.description, "beats": data.beats}
-
-    response = await BeatpacksRepository.add_one(data)
-
-    return SBeatpackResponse.from_db_model(model=response)
+async def add_beatpack(data: SCreateBeatpackRequest) -> SCreateBeatpackResponse:
+    response = await BeatpacksRepository.add_one(data.model_dump())
+    return SCreateBeatpackResponse.from_db_model(model=response)
 
 
 @beatpacks.put(
     path="/update/{beatpack_id}",
     summary="Edit beat pack",
-    response_model=SBeatpackEditResponse,
-    responses={status.HTTP_200_OK: {"model": SBeatpackResponse}},
+    response_model=SEditBeatpackResponse,
+    responses={status.HTTP_200_OK: {"model": SEditBeatpackResponse}},
 )
 async def update_beatpacks(
-    beatpack_id: int, beatpacks_data: BeatpackCreate
-) -> SBeatpackEditResponse:
-    data = {
-        "title": beatpacks_data.title,
-        "description": beatpacks_data.description,
-    }
-
-    await BeatpacksRepository.edit_one(beatpack_id, data)
-
-    return SBeatpackEditResponse
+    beatpack_id: int,
+    beatpacks_data: SEditBeatpackRequest
+) -> SEditBeatpackResponse:
+    await BeatpacksRepository.edit_one(beatpack_id, beatpacks_data.model_dump())
+    return SEditBeatpackResponse()
 
 
 @beatpacks.delete(
     path="/delete/{beatpack_id}",
     summary="Delete beat pack",
-    response_model=SBeatpackDeleteResponse,
-    responses={status.HTTP_200_OK: {"model": SBeatpackDeleteResponse}},
+    response_model=SDeleteBeatpackResponse,
+    responses={status.HTTP_200_OK: {"model": SDeleteBeatpackResponse}},
 )
-async def delete_beatpacks(beatpack_id: int) -> SBeatpackDeleteResponse:
+async def delete_beatpacks(beatpack_id: int) -> SDeleteBeatpackResponse:
     await BeatpacksRepository.delete(id_=beatpack_id)
-
-    return SBeatpackDeleteResponse
+    return SDeleteBeatpackResponse()

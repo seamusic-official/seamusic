@@ -1,5 +1,4 @@
-from datetime import datetime
-from typing import Type, Optional
+from typing import Optional, Type
 
 from pydantic import BaseModel, ConfigDict
 
@@ -18,9 +17,5 @@ class FromDBModelMixin(BaseModel):
         return cls.model_validate(**model.__dict__)
 
 
-class MessageMixin:
-    message: Optional[str] = None
-
-
-class BaseResponse(MessageMixin, FromDBModelMixin):
-    pass
+class DetailMixin:
+    detail: Optional[str] = None

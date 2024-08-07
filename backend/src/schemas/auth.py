@@ -3,13 +3,13 @@ from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, Field
 
-from src.models.auth import User as _User
 from src.enums.auth import Role
-from src.schemas.base import BaseResponse, FromDBModelMixin
+from src.models.auth import User as _User
+from src.schemas.base import FromDBModelMixin, DetailMixin
 from src.schemas.tags import Tag
 
 
-class User(FromDBModelMixin):
+class User(BaseModel, FromDBModelMixin):
     id: int
     username: str
     email: str
@@ -20,33 +20,96 @@ class User(FromDBModelMixin):
     _model_type = _User
 
 
-class SUserRequest(BaseModel):
-    username: str
-    email: str
-    password: str
-    picture_url: str
-    birthday: datetime
-    roles: List[Role]
-    tags: List[Tag]
-
-
-class SAllUserResponse(BaseModel):
-    users: List[User]
-
-
-class SUserResponse(BaseResponse, User, BaseModel):
+class SUserResponse(User, FromDBModelMixin):
     pass
 
 
-class SUserUpdateRequest(BaseModel):
+class SMeResponse(SUserResponse):
+    pass
+
+
+class SUsersResponse(BaseModel):
+    users: List[User]
+
+
+class SUpdateUserPictureResponse(BaseModel, DetailMixin):
+    detail = 'User picture updated.'
+
+
+class SUpdateUserRequest(BaseModel):
     name: Optional[str]
+    username: Optional[str]
     picture_url: Optional[str]
     description: Optional[str]
-    co_prod: Optional[str]
 
 
-class SUserDeleteResponse(BaseResponse):
-    message: str = "User was deactivated."
+class SUpdateUserResponse(BaseModel):
+    name: str
+    username: str
+    picture_url: str
+    description: str
+
+
+class SDeleteUserResponse(BaseModel, DetailMixin):
+    detail = 'User deleted.'
+
+
+class Artist(BaseModel, FromDBModelMixin):
+    user: User
+    description: Optional[str] = "Description not found"
+
+
+class SArtistResponse(Artist):
+    pass
+
+
+class SMeAsArtistResponse(SMeResponse):
+    pass
+
+
+class SArtistsResponse(BaseModel):
+    artists: List[Artist]
+
+
+class SUpdateArtistRequest(BaseModel):
+    description: Optional[str] = Field(max_length=255)
+
+
+class SUpdateArtistResponse(BaseModel):
+    description: str = Field(max_length=255)
+
+
+class SDeleteArtistResponse(BaseModel, DetailMixin):
+    detail = 'Artist deleted.'
+
+
+class Producer(BaseModel, FromDBModelMixin):
+    user: User
+    description: Optional[str] = "Description not found"
+
+
+class SProducerResponse(Producer):
+    pass
+
+
+class SMeAsProducerResponse(SProducerResponse):
+    pass
+
+
+class SProducersResponse(BaseModel):
+    producers: List[Producer]
+
+
+class SUpdateProducerRequest(BaseModel):
+    description: Optional[str] = Field(max_length=255)
+
+
+class SUpdateProducerResponse(BaseModel):
+    description: str
+
+
+class SDeleteProducerResponse(BaseModel, DetailMixin):
+    detail = 'Producer deleted.'
 
 
 class SRegisterUserRequest(BaseModel):
@@ -58,19 +121,19 @@ class SRegisterUserRequest(BaseModel):
     tags: Optional[List[str]]
 
 
-class SRegisterUserResponse(BaseModel):
-    response: str = "User created"
+class SRegisterUserResponse(BaseModel, DetailMixin):
+    detail = 'User created.'
 
 
-class SLoginUserRequest(BaseModel):
+class SLoginRequest(BaseModel):
     email: EmailStr
     password: str
 
 
-class SSpotifyCallbackResponse(BaseResponse):
-    access_token: str
-    refresh_token: str
-    user: SUserResponse
+class SLoginResponse(BaseModel):
+    accessToken: str
+    refreshToken: str
+    user: User
 
 
 class SRefreshTokenResponse(BaseModel):
@@ -78,51 +141,7 @@ class SRefreshTokenResponse(BaseModel):
     refreshToken: str
 
 
-class SUserLoginResponse(BaseResponse):
-    accessToken: str
-    refreshToken: str
-    user: SUserResponse
-
-
-class Artist(BaseModel):
+class SSpotifyCallbackResponse(BaseModel):
+    access_token: str
+    refresh_token: str
     user: User
-    description: Optional[str] = "Description not found"
-
-
-class SArtistDetail(BaseModel):
-    user: User
-    description: str
-
-
-class SArtistResponse(BaseModel):
-    artist_profiles: List[Artist]
-
-
-class SArtistUpdate(BaseModel):
-    description: Optional[str] = Field(max_length=255)
-
-
-class SArtistDelete(BaseModel):
-    response: str = "Artist deleted"
-
-
-class Producer(BaseModel):
-    user: User
-    description: Optional[str] = "Description not found"
-
-
-class SProducerDetail(BaseModel):
-    user: User
-    description: str
-
-
-class SProducerResponse(BaseModel):
-    artist_profiles: List[Artist]
-
-
-class SProducerUpdateRequest(BaseModel):
-    description: Optional[str] = Field(max_length=255)
-
-
-class SProducerDeleteResponse(BaseResponse):
-    message: str = "Producer deleted"

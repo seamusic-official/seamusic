@@ -4,10 +4,10 @@ from typing import List
 from pydantic import BaseModel
 
 from src.models.albums import Album as _Album
-from src.schemas.base import BaseResponse, FromDBModelMixin
+from src.schemas.base import FromDBModelMixin, DetailMixin
 
 
-class Album(FromDBModelMixin):
+class Album(BaseModel, FromDBModelMixin):
     id: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
@@ -29,15 +29,15 @@ class SAllAlbumsResponse(BaseModel):
     albums: List[Album]
 
 
-class SAlbumResponse(BaseResponse, Album, BaseModel):
+class SAlbumResponse(Album):
     pass
 
 
-class SAddAlbumResponse(BaseResponse, Album, BaseModel):
+class SAddAlbumResponse(Album):
     pass
 
 
-class SUpdateAlbumPictureResponse(BaseResponse, Album):
+class SUpdateAlbumPictureResponse(Album):
     pass
 
 
@@ -50,7 +50,7 @@ class SReleaseAlbumsRequest(BaseModel):
     type: str = "album"
 
 
-class SReleaseAlbumsResponse(BaseResponse, Album):
+class SReleaseAlbumsResponse(Album):
     pass
 
 
@@ -63,9 +63,9 @@ class SUpdateAlbumRequest(BaseModel):
     type: str = "album"
 
 
-class SUpdateAlbumResponse(BaseResponse, Album):
+class SUpdateAlbumResponse(Album):
     pass
 
 
-class SDeleteAlbumResponse(BaseResponse):
+class SDeleteAlbumResponse(BaseModel, DetailMixin):
     message: str = "Album was deleted."

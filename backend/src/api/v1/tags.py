@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
-from src.core.exceptions import NotFoundException
+from src.api.exceptions import NotFoundException
 from src.schemas.auth import User
 
 from src.schemas.tags import (

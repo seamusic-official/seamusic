@@ -3,14 +3,14 @@ from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
-from src.schemas.beats import SBeatBase
+from src.schemas.beats import Beat
 
 
-class SBeatCreate(SBeatBase):
+class SBeatCreate(Beat):
     pass
 
 
-class SBeat(SBeatBase):
+class SBeat(Beat):
     id: int
     username: str
     picture_url: str
