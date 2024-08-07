@@ -3,17 +3,21 @@ from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, Field
 
+from src.models.auth import User as _User
 from src.enums.auth import Role
-from src.schemas.base import BaseResponse, SBaseSchema
+from src.schemas.base import BaseResponse, FromDBModelMixin
 from src.schemas.tags import Tag
 
 
-class User(SBaseSchema):
+class User(FromDBModelMixin):
+    id: int
     username: str
     email: str
     password: str
     picture_url: str
     birthday: datetime
+
+    _model_type = _User
 
 
 class SUserRequest(BaseModel):
@@ -26,19 +30,15 @@ class SUserRequest(BaseModel):
     tags: List[Tag]
 
 
-class SUserResponse(SBaseSchema):
+class SAllUserResponse(BaseModel):
     users: List[User]
 
 
-class SUserDetail(SBaseSchema):
-    username: str
-    email: str
-    password: str
-    picture_url: str
-    birthday: datetime
+class SUserResponse(BaseResponse, User, BaseModel):
+    pass
 
 
-class SUserUpdate(SBaseSchema):
+class SUserUpdateRequest(BaseModel):
     name: Optional[str]
     picture_url: Optional[str]
     description: Optional[str]
@@ -46,7 +46,7 @@ class SUserUpdate(SBaseSchema):
 
 
 class SUserDeleteResponse(BaseResponse):
-    message = "User was deactivated."
+    message: str = "User was deactivated."
 
 
 class SRegisterUserRequest(BaseModel):
@@ -84,17 +84,17 @@ class SUserLoginResponse(BaseResponse):
     user: SUserResponse
 
 
-class Artist(SBaseSchema):
+class Artist(BaseModel):
     user: User
     description: Optional[str] = "Description not found"
 
 
-class SArtistDetail(SBaseSchema):
+class SArtistDetail(BaseModel):
     user: User
     description: str
 
 
-class SArtistResponse(SBaseSchema):
+class SArtistResponse(BaseModel):
     artist_profiles: List[Artist]
 
 
@@ -106,17 +106,17 @@ class SArtistDelete(BaseModel):
     response: str = "Artist deleted"
 
 
-class Producer(SBaseSchema):
+class Producer(BaseModel):
     user: User
     description: Optional[str] = "Description not found"
 
 
-class SProducerDetail(SBaseSchema):
+class SProducerDetail(BaseModel):
     user: User
     description: str
 
 
-class SProducerResponse(SBaseSchema):
+class SProducerResponse(BaseModel):
     artist_profiles: List[Artist]
 
 
@@ -125,4 +125,4 @@ class SProducerUpdateRequest(BaseModel):
 
 
 class SProducerDeleteResponse(BaseResponse):
-    message = "Producer deleted"
+    message: str = "Producer deleted"

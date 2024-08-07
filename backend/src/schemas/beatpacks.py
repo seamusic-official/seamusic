@@ -4,17 +4,18 @@ from typing import List
 from pydantic import BaseModel, ConfigDict
 
 from src.models.beatpacks import Beatpack
-from src.schemas.base import BaseResponse, SBaseSchema
+from src.schemas.base import BaseResponse
+from src.schemas.beats import SBeatCreate
 
 
-class Beat(SBaseSchema):
+class Beat(BaseModel):
     id: int
 
 
 class BeatpackCreate(BaseModel):
     title: str
     description: str
-    beats: List[BeatCreate]
+    beats: List[SBeatCreate]
 
 
 class BeatResponse(BaseModel):

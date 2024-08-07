@@ -1,7 +1,8 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.core.cruds import MediaRepository
-from src.schemas.auth import SUser
+from src.schemas.auth import User
+
 from src.schemas.tracks import (
     STrack,
     STrackResponse,
@@ -28,7 +29,7 @@ tracks = APIRouter(prefix="/tracks", tags=["Tracks"])
     responses={status.HTTP_200_OK: {"model": SMyTracksResponse}}
 )
 async def get_my_tracks(
-    user: SUser = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> SMyTracksResponse:
     response = TracksRepository.find_all(user=user)
     return SMyTracksResponse(tracks=[STrack.from_db_model(model=track) for track in response])
@@ -63,7 +64,7 @@ async def get_one_track(track_id: int) -> STrackResponse:
     responses={status.HTTP_200_OK: {"model": SAddTracksResponse}},
 )
 async def add_track(
-    file: UploadFile = File(...), user: SUser = Depends(get_current_user)
+    file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SAddTracksResponse:
     file_info = await unique_filename(file) if file else None
 
@@ -90,7 +91,7 @@ async def add_track(
 async def update_pic_tracks(
     tracks_id: int,
     file: UploadFile = File(...),
-    user: SUser = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> SUpdateTrackPictureResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
@@ -110,7 +111,7 @@ async def update_pic_tracks(
 async def release_track(
     track_id: int,
     tracks_data: SReleaseTrackRequest,
-    user: SUser = Depends(get_current_user)
+    user: User = Depends(get_current_user)
 ) -> SReleaseTrackResponse:
     data = {
         "name": tracks_data.title,
@@ -131,7 +132,7 @@ async def release_track(
 async def update_track(
     track_id: int,
     tracks_data: SUpdateTrackRequest,
-    user: SUser = Depends(get_current_user)
+    user: User = Depends(get_current_user)
 ) -> SUpdateTrackResponse:
     data = {
         "name": tracks_data.title,

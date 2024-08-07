@@ -3,7 +3,8 @@ from typing import List
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.core.cruds import MediaRepository
-from src.schemas.auth import SUser
+from src.schemas.auth import User
+
 from src.schemas.beats import (
     SBeatUpdate,
     SBeatRelease,
@@ -25,7 +26,7 @@ beats = APIRouter(prefix="/beats", tags=["Beats"])
     responses={status.HTTP_200_OK: {"model": List[SBeatResponse]}},
 )
 async def get_user_beats(
-        user: SUser = Depends(get_current_user),
+        user: User = Depends(get_current_user),
 ) -> List[SBeatResponse]:
     response = await BeatsRepository.find_all(user=user)
 
@@ -61,7 +62,7 @@ async def get_one_beat(beat_id: int) -> SBeatResponse:
     responses={status.HTTP_200_OK: {"model": SBeatResponse}},
 )
 async def add_beats(
-        file: UploadFile = File(...), user: SUser = Depends(get_current_user)
+        file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SBeatResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
@@ -86,7 +87,7 @@ async def add_beats(
     responses={status.HTTP_200_OK: {"model": SBeatResponse}},
 )
 async def update_pic_beats(
-        beats_id: int, file: UploadFile = File(...), user: SUser = Depends(get_current_user)
+        beats_id: int, file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SBeatResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
@@ -105,7 +106,7 @@ async def update_pic_beats(
     responses={status.HTTP_200_OK: {"model": SBeatResponse}},
 )
 async def release_beats(
-        beat_id: int, data: SBeatRelease, user: SUser = Depends(get_current_user)
+        beat_id: int, data: SBeatRelease, user: User = Depends(get_current_user)
 ) -> SBeatResponse:
     update_data = {}
 
@@ -130,7 +131,7 @@ async def release_beats(
     responses={status.HTTP_200_OK: {"model": SBeatResponse}},
 )
 async def update_beats(
-        beat_id: int, data: SBeatUpdate, user: SUser = Depends(get_current_user)
+        beat_id: int, data: SBeatUpdate, user: User = Depends(get_current_user)
 ) -> SBeatResponse:
     update_data = {}
 
@@ -157,7 +158,7 @@ async def update_beats(
     responses={status.HTTP_200_OK: {"model": SBeatDeleteResponse}},
 )
 async def delete_beats(
-        beat_id: int, user: SUser = Depends(get_current_user)
+        beat_id: int, user: User = Depends(get_current_user)
 ) -> SBeatDeleteResponse:
     await BeatsRepository.delete(id_=beat_id)
     return SBeatDeleteResponse

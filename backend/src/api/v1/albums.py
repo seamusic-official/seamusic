@@ -14,7 +14,7 @@ from src.schemas.albums import (
     SUpdateAlbumRequest,
     SUpdateAlbumResponse,
 )
-from src.schemas.auth import SUserResponse
+from src.schemas.auth import SAllUserResponse
 from src.services.albums import AlbumsRepository
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename
@@ -30,7 +30,7 @@ albums = APIRouter(prefix="/albums", tags=["Albums"])
     responses={status.HTTP_200_OK: {"model": SMyAlbumsResponse}},
 )
 async def get_my_albums(
-    user: SUserResponse = Depends(get_current_user),
+    user: SAllUserResponse = Depends(get_current_user),
 ) -> SMyAlbumsResponse:
     response = await AlbumsRepository.find_all(user=user)
     return SMyAlbumsResponse(albums=[Album.from_db_model(album) for album in response])
@@ -65,7 +65,7 @@ async def get_one_album(album_id: int) -> SAlbumResponse:
     responses={status.HTTP_200_OK: {"model": SAddAlbumResponse}},
 )
 async def add_albums(
-    file: UploadFile = File(...), user: SUserResponse = Depends(get_current_user)
+    file: UploadFile = File(...), user: SAllUserResponse = Depends(get_current_user)
 ) -> SAddAlbumResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)

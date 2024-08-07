@@ -19,7 +19,7 @@ class OnlyTelegramSubscribeMonth(BaseModel):
 class OnlyTelegramSubscribeYear(BaseModel):
     subscribe: Optional[bool] = None
     telegram_account_id: Optional[int] = None
-    telegram_account = TelegramAccount
+    telegram_account: TelegramAccount
 
 
 class SCreateTelegramAccountResponse(BaseResponse):

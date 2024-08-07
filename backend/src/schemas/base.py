@@ -22,5 +22,5 @@ class MessageMixin:
     message: Optional[str] = None
 
 
-class BaseResponse(BaseModel, MessageMixin, FromDBModelMixin):
+class BaseResponse(MessageMixin, FromDBModelMixin):
     pass

@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, status
 
 from src.core.exceptions import NotFoundException
-from src.schemas.auth import SUser
+from src.schemas.auth import User
+
 from src.schemas.tags import (
     SAddTagRequest,
     SMyListenerTagsResponse,
@@ -24,7 +25,7 @@ tags = APIRouter(prefix="/tags", tags=["All tags"])
     responses={status.HTTP_200_OK: {"model": SAddTagResponse}}
 )
 async def add_tag(
-        tag: SAddTagRequest, user: SUser = Depends(get_current_user)
+        tag: SAddTagRequest, user: User = Depends(get_current_user)
 ) -> SAddTagResponse:
     # ???
     listener_tags = await TagsDAO.add_one(tag.model_dump())
@@ -37,7 +38,7 @@ async def add_tag(
     response_model=SMyListenerTagsResponse,
     responses={status.HTTP_200_OK: {"model": SMyListenerTagsResponse}}
 )
-async def get_my_listener_tags(user: SUser = Depends(get_current_user)) -> SMyListenerTagsResponse:
+async def get_my_listener_tags(user: User = Depends(get_current_user)) -> SMyListenerTagsResponse:
     # ???
     listener_tags = ListenerTagsDAO.find_all(listener_profile=user)
     return SMyListenerTagsResponse(tags=listener_tags)
@@ -49,7 +50,7 @@ async def get_my_listener_tags(user: SUser = Depends(get_current_user)) -> SMyLi
     response_model=SMyProducerTagsResponse,
     responses={status.HTTP_200_OK: {"model": SMyProducerTagsResponse}}
 )
-async def get_my_producer_tags(user: SUser = Depends(get_current_user)) -> SMyProducerTagsResponse:
+async def get_my_producer_tags(user: User = Depends(get_current_user)) -> SMyProducerTagsResponse:
     # ???
     producer_profile = await ProducerDAO.find_one_or_none(producer_profile=user)
     if not producer_profile:
@@ -65,7 +66,7 @@ async def get_my_producer_tags(user: SUser = Depends(get_current_user)) -> SMyPr
     response_model=SMyArtistTagsResponse,
     responses={status.HTTP_200_OK: {"model": SMyArtistTagsResponse}}
 )
-async def get_my_artist_tags(user: SUser = Depends(get_current_user)) -> SMyArtistTagsResponse:
+async def get_my_artist_tags(user: User = Depends(get_current_user)) -> SMyArtistTagsResponse:
     # ???
     artist_profile = await ArtistDAO.find_one_or_none(artist_profile=user)
     if not artist_profile:

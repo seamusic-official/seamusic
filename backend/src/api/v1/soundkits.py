@@ -3,7 +3,7 @@ from typing import List
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.core.cruds import MediaRepository
-from src.schemas.auth import SUser
+from src.schemas.auth import User
 from src.schemas.soundkits import (
     SSoundkitUpdate,
     SSoundkitResponse,
@@ -24,7 +24,7 @@ soundkits = APIRouter(prefix="/soundkits", tags=["Sound-kits"])
     responses={status.HTTP_200_OK: {"model": List[SSoundkitResponse]}},
 )
 async def get_user_soundkits(
-    user: SUser = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> List[SSoundkitResponse]:
     response = await SoundkitRepository.find_all(user=user)
 
@@ -60,7 +60,7 @@ async def get_one_soundkit(soundkit_id: int) -> SSoundkitResponse:
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def add_soundkits(
-    file: UploadFile = File(...), user: SUser = Depends(get_current_user)
+    file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SSoundkitResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
@@ -85,7 +85,7 @@ async def add_soundkits(
 async def update_pic_soundkits(
     soundkits_id: int,
     file: UploadFile = File(...),
-    user: SUser = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> SSoundkitResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
@@ -103,7 +103,7 @@ async def update_pic_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def release_soundkits(
-    soundkit_id: int, data: SSoundkitUpdate, user: SUser = Depends(get_current_user)
+    soundkit_id: int, data: SSoundkitUpdate, user: User = Depends(get_current_user)
 ):
     update_data = {}
 
@@ -128,7 +128,7 @@ async def release_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def update_soundkits(
-    soundkit_id: int, data: SSoundkitUpdate, user: SUser = Depends(get_current_user)
+    soundkit_id: int, data: SSoundkitUpdate, user: User = Depends(get_current_user)
 ) -> SSoundkitResponse:
     update_data = {}
 

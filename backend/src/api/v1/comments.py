@@ -8,7 +8,6 @@ from sqlalchemy.orm import joinedload
 from src.core.database import get_async_session
 from src.models.beats import Beat
 from src.models.comments import BaseComment
-from src.schemas.auth import SUser
 from src.schemas.comments import (
     CommentCreate,
     CommentResponse,

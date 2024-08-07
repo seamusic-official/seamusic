@@ -59,7 +59,7 @@ class SAddTracksResponse(BaseResponse):
     _model_type = Track
 
 
-class SUpdateTrackPictureResponse(BaseResponse, STrackResponse):
+class SUpdateTrackPictureResponse(STrackResponse):
     pass
 
 
@@ -75,7 +75,7 @@ class SReleaseTrackRequest(BaseModel):
     Track_pack_id: Optional[int]
 
 
-class SReleaseTrackResponse(BaseResponse, STrackResponse):
+class SReleaseTrackResponse(STrackResponse):
     pass
 
 
@@ -92,8 +92,8 @@ class SUpdateTrackRequest(BaseModel):
 
 
 class SUpdateTrackResponse(BaseResponse):
-    message = "Track updated"
+    message: str = "Track updated"
 
 
 class SDeleteTrackResponse(BaseResponse):
-    message = "Track deleted"
+    message: str = "Track deleted"

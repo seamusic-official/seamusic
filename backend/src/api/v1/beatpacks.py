@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, status
 
-from src.schemas.auth import SUser
+from src.schemas.auth import User
 from src.schemas.beatpacks import (
     BeatpackCreate,
     SBeatpackResponse,
@@ -23,7 +23,7 @@ beatpacks = APIRouter(prefix="/beatpacks", tags=["Beatpacks"])
     responses={status.HTTP_200_OK: {"model": SBeatpackResponse}},
 )
 async def get_user_beatpacks(
-    user: SUser = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> SBeatpackResponse:
     response = await BeatpacksRepository.find_all(owner=user)
 

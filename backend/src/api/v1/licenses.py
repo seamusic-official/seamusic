@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends, status
 
-from src.schemas.auth import SUser
+from src.models.auth import User
 from src.schemas.licenses import (
     SLicenseBase,
     SLicensesResponse,
@@ -23,7 +23,7 @@ licenses = APIRouter(prefix="/licenses", tags=["Licenses"])
     responses={status.HTTP_200_OK: {"model": List[SLicensesResponse]}},
 )
 async def get_user_licenses(
-    user: SUser = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> List[SLicensesResponse]:
     response = await LicensesRepository.find_all(owner=user)
     return [SLicensesResponse.from_db_model(model=license_) for license_ in response]
@@ -57,7 +57,7 @@ async def get_one(license_id: int) -> SLicensesResponse:
     response_model=SLicensesResponse,
     responses={status.HTTP_200_OK: {"model": SLicensesResponse}},
 )
-async def add_licenses(data: SLicenseBase, user: SUser = Depends(get_current_user)):
+async def add_licenses(data: SLicenseBase, user: User = Depends(get_current_user)):
     data = {"title": data.title, "description": data.description, "price": data.price}
 
     response = await LicensesRepository.add_one(data)
