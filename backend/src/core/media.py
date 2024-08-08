@@ -19,9 +19,7 @@ class MediaRepository:
     bucket_name = "seamusic"
 
     @classmethod
-    async def upload_file(cls, folder, filename, file: UploadFile = File(...)) -> str:
-        file_data = await file.read()
-        file_stream = BytesIO(file_data)
+    async def upload_file(cls, folder, filename, file_stream: BytesIO) -> str:
         key = f"{folder}/{filename}"
         cls.s3.upload_fileobj(file_stream, cls.bucket_name, key)
         file_url = f"https://storage.yandexcloud.net/{cls.bucket_name}/{key}"

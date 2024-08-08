@@ -1,6 +1,4 @@
-from src.core.cruds import SQLAlchemyRepository
-from src.models.squads import Squad
+from fastapi import APIRouter
 
 
-class SquadRepository(SQLAlchemyRepository):
-    model = Squad
+squads = APIRouter(prefix="/squads", tags=["Squads"])

@@ -1,6 +1,4 @@
-from src.core.cruds import SQLAlchemyRepository
-from src.models.messages import Message
+from fastapi import APIRouter
 
 
-class MessagesRepository(SQLAlchemyRepository):
-    model = Message
+messages = APIRouter(prefix="/messages", tags=["Messages"])

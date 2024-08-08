@@ -1,6 +1,6 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
-from src.api.exceptions import NoRightsException
+from src.exceptions.api import NoRightsException
 from src.core.media import MediaRepository
 from src.schemas.albums import (
     Album,
@@ -15,10 +15,11 @@ from src.schemas.albums import (
     SUpdateAlbumRequest,
     SUpdateAlbumResponse,
 )
+from src.services import albums as services
 from src.schemas.auth import User
-from src.services.albums import AlbumsRepository
+from src.repositories.albums import AlbumsRepository
 from src.utils.auth import get_current_user
-from src.utils.files import unique_filename
+from src.utils.files import unique_filename, get_file_stream
 
 albums = APIRouter(prefix="/albums", tags=["Albums"])
 
@@ -33,8 +34,11 @@ albums = APIRouter(prefix="/albums", tags=["Albums"])
 async def get_my_albums(
     user: User = Depends(get_current_user),
 ) -> SMyAlbumsResponse:
-    response = await AlbumsRepository.find_all(user=user)
-    return SMyAlbumsResponse(albums=[Album.from_db_model(album) for album in response])
+
+    albums_ = await services.get_user_albums(user_id=user.id)
+    albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
+
+    return SMyAlbumsResponse(albums=albums_)
 
 
 @albums.get(
@@ -44,8 +48,11 @@ async def get_my_albums(
     responses={status.HTTP_200_OK: {"model": SAllAlbumsResponse}},
 )
 async def all_albums() -> SAllAlbumsResponse:
-    response = await AlbumsRepository.find_all()
-    return SAllAlbumsResponse(albums=[Album.from_db_model(album) for album in response])
+
+    albums_ = await services.get_all_albums()
+    albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
+
+    return SAllAlbumsResponse(albums=albums_)
 
 
 @albums.get(
@@ -55,8 +62,9 @@ async def all_albums() -> SAllAlbumsResponse:
     responses={status.HTTP_200_OK: {"model": SAlbumResponse}},
 )
 async def get_one_album(album_id: int) -> SAlbumResponse:
-    response = await AlbumsRepository.find_one_by_id(album_id)
-    return SAlbumResponse.from_db_model(model=response)
+
+    album = await services.get_one_album(album_id=album_id)
+    return SAlbumResponse.from_db_model(model=album)
 
 
 @albums.post(
@@ -65,22 +73,20 @@ async def get_one_album(album_id: int) -> SAlbumResponse:
     response_model=SAddAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SAddAlbumResponse}},
 )
-async def add_albums(
-    file: UploadFile = File(...), user: User = Depends(get_current_user)
+async def add_album(
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user)
 ) -> SAddAlbumResponse:
-    file_info = await unique_filename(file) if file else None
-    file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
+    file_info = unique_filename(file) if file else None
 
-    data = {
-        "title": "Unknown title",
-        "file_url": file_url,
-        "prod_by": user.username,
-        "user_id": user.id,
-        "type": "album",
-    }
+    album = await services.add_album(
+        file_stream=await get_file_stream(file=file),
+        file_info=file_info,
+        prod_by=user.username,
+        user_id=user.id
+    )
 
-    response = await AlbumsRepository.add_one(data)
-    return SAddAlbumResponse.from_db_model(model=response)
+    return SAddAlbumResponse.from_db_model(album)
 
 
 @albums.post(
@@ -89,8 +95,10 @@ async def add_albums(
     response_model=SUpdateAlbumPictureResponse,
     responses={status.HTTP_200_OK: {"model": SUpdateAlbumPictureResponse}},
 )
-async def update_pic_albums(
-    album_id: int, file: UploadFile = File(...), user: User = Depends(get_current_user)
+async def update_album_picture(
+    album_id: int,
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user)
 ) -> SUpdateAlbumPictureResponse:
     album = await AlbumsRepository.find_one_by_id(id_=album_id)
 
