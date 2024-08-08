@@ -6,11 +6,14 @@ from src.schemas.licenses import (
     SLicensesResponse,
     SEditLicensesResponse,
     SLicensesDeleteResponse,
-    SMyLicensesResponse, SLicenseResponse, SCreateLicenseRequest, SCreateLicenseResponse, SEditLicenseRequest,
+    SMyLicensesResponse,
+    SLicenseResponse,
+    SCreateLicenseRequest,
+    SCreateLicenseResponse,
+    SEditLicenseRequest,
 )
 from src.services.licenses import LicensesRepository
 from src.utils.auth import get_current_user
-
 
 licenses = APIRouter(prefix="/licenses", tags=["Licenses"])
 
@@ -21,9 +24,15 @@ licenses = APIRouter(prefix="/licenses", tags=["Licenses"])
     response_model=SMyLicensesResponse,
     responses={status.HTTP_200_OK: {"model": SMyLicensesResponse}},
 )
-async def get_user_licenses(user: User = Depends(get_current_user)) -> SMyLicensesResponse:
+async def get_user_licenses(
+    user: User = Depends(get_current_user),
+) -> SMyLicensesResponse:
     response = await LicensesRepository.find_all(owner=user)
-    return SMyLicensesResponse(licenses=[SLicensesResponse.from_db_model(model=license_) for license_ in response])
+    return SMyLicensesResponse(
+        licenses=[
+            SLicensesResponse.from_db_model(model=license_) for license_ in response
+        ]
+    )
 
 
 @licenses.get(
@@ -34,7 +43,11 @@ async def get_user_licenses(user: User = Depends(get_current_user)) -> SMyLicens
 )
 async def all_licenses() -> SLicensesResponse:
     response = await LicensesRepository.find_all()
-    return SLicensesResponse(licenses=[SLicensesResponse.from_db_model(model=_license) for _license in response])
+    return SLicensesResponse(
+        licenses=[
+            SLicensesResponse.from_db_model(model=_license) for _license in response
+        ]
+    )
 
 
 @licenses.get(
@@ -55,11 +68,13 @@ async def get_one(license_id: int) -> SLicenseResponse:
     responses={status.HTTP_200_OK: {"model": SCreateLicenseResponse}},
 )
 async def add_license(
-    data: SCreateLicenseRequest,
-    user: User = Depends(get_current_user)
+    data: SCreateLicenseRequest, user: User = Depends(get_current_user)
 ) -> SCreateLicenseResponse:
 
-    response = await LicensesRepository.add_one(data.mo)
+    data = data.model_dump()
+    data["user"] = user
+
+    response = await LicensesRepository.add_one(data=data)
     return SCreateLicenseResponse.from_db_model(model=response)
 
 
@@ -72,11 +87,11 @@ async def add_license(
 async def update_license(
     license_id: int,
     licenses_data: SEditLicenseRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ) -> SEditLicensesResponse:
-    license = await LicensesRepository.find_one_by_id(id_=license_id)
+    license_ = await LicensesRepository.find_one_by_id(id_=license_id)
 
-    if license.user.id != user.id:
+    if license_.user.id != user.id:
         raise NoRightsException()
 
     data = {
@@ -95,12 +110,11 @@ async def update_license(
     responses={status.HTTP_200_OK: {"model": SLicensesDeleteResponse}},
 )
 async def delete_licenses(
-        license_id: int,
-        user: User = Depends(get_current_user)
+    license_id: int, user: User = Depends(get_current_user)
 ) -> SLicensesDeleteResponse:
-    license = await LicensesRepository.find_one_by_id(id_=license_id)
+    license_ = await LicensesRepository.find_one_by_id(id_=license_id)
 
-    if license.user.id != user.id:
+    if license_.user.id != user.id:
         raise NoRightsException()
 
     await LicensesRepository.delete(id_=license_id)

@@ -1,11 +1,11 @@
-from datetime import datetime, UTC
+from datetime import datetime
 from typing import List
 
 from sqlalchemy import DateTime, Column, Table, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.albums import Album, artist_profile_album_association
 from src.core.database import Base
+from src.models.albums import Album, artist_profile_album_association
 from src.models.squads import (
     Squad,
     squad_producer_profile_association,
@@ -18,7 +18,6 @@ from src.models.tags import (
     listener_tags_association,
 )
 from src.models.tracks import Track, artist_profile_track_association
-
 
 user_to_roles_association = Table(
     "user_to_roles_association",

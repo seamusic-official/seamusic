@@ -32,7 +32,7 @@ class SUsersResponse(BaseModel):
 
 
 class SUpdateUserPictureResponse(BaseModel, DetailMixin):
-    detail: str = 'User picture updated.'
+    detail: str = "User picture updated."
 
 
 class SUpdateUserRequest(BaseModel):
@@ -50,7 +50,7 @@ class SUpdateUserResponse(BaseModel):
 
 
 class SDeleteUserResponse(BaseModel, DetailMixin):
-    detail: str = 'User deleted.'
+    detail: str = "User deleted."
 
 
 class Artist(FromDBModelMixin):
@@ -79,7 +79,7 @@ class SUpdateArtistResponse(BaseModel):
 
 
 class SDeleteArtistResponse(BaseModel, DetailMixin):
-    detail: str = 'Artist deleted.'
+    detail: str = "Artist deleted."
 
 
 class Producer(FromDBModelMixin):
@@ -108,7 +108,7 @@ class SUpdateProducerResponse(BaseModel):
 
 
 class SDeleteProducerResponse(BaseModel, DetailMixin):
-    detail: str = 'Producer deleted.'
+    detail: str = "Producer deleted."
 
 
 class SRegisterUserRequest(BaseModel):
@@ -121,7 +121,7 @@ class SRegisterUserRequest(BaseModel):
 
 
 class SRegisterUserResponse(BaseModel, DetailMixin):
-    detail: str = 'User created.'
+    detail: str = "User created."
 
 
 class SLoginRequest(BaseModel):

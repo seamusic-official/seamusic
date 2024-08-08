@@ -1,4 +1,4 @@
-from fastapi import UploadFile, File, APIRouter, Depends, status, HTTPException
+from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.api.exceptions import NoRightsException
 from src.core.cruds import MediaRepository
@@ -90,9 +90,7 @@ async def add_albums(
     responses={status.HTTP_200_OK: {"model": SUpdateAlbumPictureResponse}},
 )
 async def update_pic_albums(
-    album_id: int,
-    file: UploadFile = File(...),
-    user: User = Depends(get_current_user)
+    album_id: int, file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SUpdateAlbumPictureResponse:
     album = await AlbumsRepository.find_one_by_id(id_=album_id)
 
@@ -117,7 +115,7 @@ async def update_pic_albums(
 async def release_albums(
     album_id: int,
     albums_data: SReleaseAlbumsRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ) -> SReleaseAlbumsResponse:
     album = await AlbumsRepository.find_one_by_id(id_=album_id)
 
@@ -143,7 +141,7 @@ async def release_albums(
 async def update_album(
     album_id: int,
     albums_data: SUpdateAlbumRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ) -> SUpdateAlbumResponse:
     album = await AlbumsRepository.find_one_by_id(id_=album_id)
 
@@ -166,7 +164,9 @@ async def update_album(
     response_model=SDeleteAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SDeleteAlbumResponse}},
 )
-async def delete_albums(album_id: int, user: User = Depends(get_current_user)) -> SDeleteAlbumResponse:
+async def delete_albums(
+    album_id: int, user: User = Depends(get_current_user)
+) -> SDeleteAlbumResponse:
     album = await AlbumsRepository.find_one_by_id(id_=album_id)
 
     if album.user.id != user.id:

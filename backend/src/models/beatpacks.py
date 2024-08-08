@@ -3,9 +3,9 @@ from typing import List
 from sqlalchemy import Integer, String, Table, ForeignKey, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.core.database import Base
 from src.models.auth import User
 from src.models.beats import Beat
-from src.core.database import Base
 
 beats_to_beatpacks_association_table = Table(
     "beats_to_beatpacks_association_table",

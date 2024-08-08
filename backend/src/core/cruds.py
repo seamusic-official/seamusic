@@ -3,7 +3,6 @@ from io import BytesIO
 from typing import Any
 
 import boto3
-from botocore.exceptions import ClientError
 from fastapi import UploadFile, File
 from sqlalchemy import insert, select, update, delete
 

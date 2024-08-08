@@ -3,10 +3,8 @@ from typing import List
 import pytest
 from fastapi import UploadFile, Response
 from fastapi.testclient import TestClient
-from httpx import Response
 
-from src.schemas.auth import SAllUserResponse, SRegisterUserRequest, Role
-
+from src.schemas.auth import SUserResponse, SRegisterUserRequest, Role
 
 email = 'test_email2@example.com'
 password = 'test_password'
@@ -58,12 +56,12 @@ def test_get_users(client: TestClient) -> None:
     assert response.status_code == 200
 
 
-def test_get_one(client: TestClient, user: SAllUserResponse) -> None:
+def test_get_one(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.get(f'/auth/users/{user.id}')
     assert response.status_code == 200
 
 
-def test_update_user_picture(client: TestClient, user: SAllUserResponse) -> None:
+def test_update_user_picture(client: TestClient, user: SUserResponse) -> None:
     with open('some_file', 'rb') as file:
         response: Response = client.put(
             url=f'/auth/users/picture/{user.id}',
@@ -72,7 +70,7 @@ def test_update_user_picture(client: TestClient, user: SAllUserResponse) -> None
     assert response.status_code == 200
 
 
-def test_update_user(client: TestClient, user: SAllUserResponse) -> None:
+def test_update_user(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.put(
         url=f'/auth/users/{user.id}',
         json={
@@ -86,7 +84,7 @@ def test_update_user(client: TestClient, user: SAllUserResponse) -> None:
     assert response.status_code == 200
 
 
-def test_delete_user(client: TestClient, user: SAllUserResponse) -> None:
+def test_delete_user(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.delete(f'/auth/users/{user.id}')
     assert response.status_code == 200
 
@@ -101,12 +99,12 @@ def test_get_artists(client: TestClient) -> None:
     assert response.status_code == 200
 
 
-def test_get_one_artist(client: TestClient, user: SAllUserResponse) -> None:
+def test_get_one_artist(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.get(f'/auth/users/artists/{user.id}')
     assert response.status_code == 200
 
 
-def test_update_artists(client: TestClient, user: SAllUserResponse) -> None:
+def test_update_artists(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.put(
         url=f'/auth/users/artists/{user.id}',
         json={'description': 'new_description'}
@@ -114,7 +112,7 @@ def test_update_artists(client: TestClient, user: SAllUserResponse) -> None:
     assert response.status_code
 
 
-def test_deactivate_artists(client: TestClient, user: SAllUserResponse) -> None:
+def test_deactivate_artists(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.delete(f'/auth/users/artists/{user.id}')
     assert response.status_code == 200
 
@@ -129,12 +127,12 @@ def test_get_all_producers(client: TestClient) -> None:
     assert response.status_code == 200
 
 
-def test_get_one_producer(client: TestClient, user: SAllUserResponse) -> None:
+def test_get_one_producer(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.get(f'/auth/users/producers/{user.id}')
     assert response.status_code == 200
 
 
-def test_update_one_producer(client: TestClient, user: SAllUserResponse) -> None:
+def test_update_one_producer(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.put(
         url=f'/auth/users/producers/{user.id}',
         json={'description': 'new_description'}
@@ -142,7 +140,7 @@ def test_update_one_producer(client: TestClient, user: SAllUserResponse) -> None
     assert response.status_code == 200
 
 
-def test_deactivate_one_producer(client: TestClient, user: SAllUserResponse) -> None:
+def test_deactivate_one_producer(client: TestClient, user: SUserResponse) -> None:
     response: Response = client.post(f'/auth/users/producers/{user.id}')
     assert response.status_code == 200
 

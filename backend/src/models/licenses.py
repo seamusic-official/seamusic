@@ -3,7 +3,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.database import Base
 
-
 user_to_licenses_association = Table(
     "user_to_licenses_association",
     Base.metadata,
@@ -20,4 +19,4 @@ class License(Base):
     description: Mapped[str] = mapped_column(nullable=False)
     picture_url: Mapped[str] = mapped_column(nullable=True)
 
-    user: Mapped["User"] = relationship("User", secondary=user_to_licenses_association)
+    user: Mapped["User"] = relationship("User", secondary=user_to_licenses_association)  # noqa: F821

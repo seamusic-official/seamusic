@@ -1,9 +1,8 @@
 from sqlalchemy import Column, ForeignKey, Integer, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.albums import album_track_association
 from src.core.database import Base
-
+from src.models.albums import album_track_association
 
 artist_profile_track_association = Table(
     "artist_profile_track_association",
@@ -25,10 +24,10 @@ class Track(Base):
     type: Mapped[str] = mapped_column(nullable=True)
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
 
-    artist_profiles: Mapped["ArtistProfile"] = relationship(
+    artist_profiles: Mapped["ArtistProfile"] = relationship(  # noqa: F821
         secondary=artist_profile_track_association, back_populates="tracks"
     )
-    albums: Mapped["Album"] = relationship(
+    albums: Mapped["Album"] = relationship(  # noqa: F821
         secondary=album_track_association, back_populates="tracks"
     )
-    user: Mapped["User"] = relationship("User")
+    user: Mapped["User"] = relationship("User")  # noqa: F821

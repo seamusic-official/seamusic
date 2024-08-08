@@ -2,7 +2,6 @@ from fastapi import APIRouter
 
 from src.services.spotify import Spotify
 
-
 music = APIRouter(prefix="/notifications", tags=["Music & Albums"])
 
 

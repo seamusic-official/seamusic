@@ -5,7 +5,6 @@ from google_auth_oauthlib.flow import Flow
 
 from src.core.config import settings
 
-
 httplib2.RETRIES = 1
 MAX_RETRIES = 10
 RETRIABLE_EXCEPTIONS = (httplib2.HttpLib2Error, IOError)
@@ -27,11 +26,12 @@ https://console.cloud.google.com/
 
 For more information about the client_secrets.json file format, please visit:
 https://developers.google.com/api-client-library/python/guide/aaa_client_secrets
-""" % os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                   CLIENT_SECRETS_FILE))
+""" % os.path.abspath(
+    os.path.join(os.path.dirname(__file__), CLIENT_SECRETS_FILE)
+)
 
 flow = Flow.from_client_secrets_file(
     CLIENT_SECRETS_FILE,
     scopes=[YOUTUBE_UPLOAD_SCOPE],
-    redirect_uri=f'{settings.root_url}/subscription/callback'
+    redirect_uri=f"{settings.root_url}/subscription/callback",
 )

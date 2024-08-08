@@ -11,7 +11,7 @@ from src.schemas.beats import (
     SCreateBeatResponse,
     SUpdateBeatPictureResponse,
     SBeatReleaseRequest,
-    SBeatReleaseResponse
+    SBeatReleaseResponse,
 )
 from src.schemas.beats import SBeatUpdateRequest, SBeatUpdateResponse
 from src.services.beats import BeatsRepository
@@ -31,7 +31,9 @@ beats = APIRouter(prefix="/beats", tags=["Beats"])
 async def get_user_beats(user: User = Depends(get_current_user)) -> SMyBeatsResponse:
     response = await BeatsRepository.find_all(user=user)
 
-    return SMyBeatsResponse(beats=[SBeatResponse.from_db_model(model=beat) for beat in response])
+    return SMyBeatsResponse(
+        beats=[SBeatResponse.from_db_model(model=beat) for beat in response]
+    )
 
 
 @beats.get(
@@ -42,7 +44,9 @@ async def get_user_beats(user: User = Depends(get_current_user)) -> SMyBeatsResp
 )
 async def all_beats() -> SBeatsResponse:
     response = await BeatsRepository.find_all()
-    return SBeatsResponse(beats=[SBeatResponse.from_db_model(model=beat) for beat in response])
+    return SBeatsResponse(
+        beats=[SBeatResponse.from_db_model(model=beat) for beat in response]
+    )
 
 
 @beats.get(
@@ -62,7 +66,9 @@ async def get_one_beat(beat_id: int) -> SBeatResponse:
     response_model=SCreateBeatResponse,
     responses={status.HTTP_200_OK: {"model": SCreateBeatResponse}},
 )
-async def add_beats(file: UploadFile = File(...), user: User = Depends(get_current_user)) -> SCreateBeatResponse:
+async def add_beats(
+    file: UploadFile = File(...), user: User = Depends(get_current_user)
+) -> SCreateBeatResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
 
@@ -85,9 +91,7 @@ async def add_beats(file: UploadFile = File(...), user: User = Depends(get_curre
     responses={status.HTTP_200_OK: {"model": SUpdateBeatPictureResponse}},
 )
 async def update_pic_beats(
-        beat_id: int,
-        file: UploadFile = File(...),
-        user: User = Depends(get_current_user)
+    beat_id: int, file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SUpdateBeatPictureResponse:
     beat = await BeatsRepository.find_one_by_id(id_=beat_id)
 
@@ -110,9 +114,7 @@ async def update_pic_beats(
     responses={status.HTTP_200_OK: {"model": SBeatReleaseResponse}},
 )
 async def release_beats(
-        beat_id: int,
-        data: SBeatReleaseRequest,
-        user: User = Depends(get_current_user)
+    beat_id: int, data: SBeatReleaseRequest, user: User = Depends(get_current_user)
 ) -> SBeatReleaseResponse:
     beat = await BeatsRepository.find_one_by_id(id_=beat_id)
 
@@ -141,9 +143,7 @@ async def release_beats(
     responses={status.HTTP_200_OK: {"model": SBeatUpdateResponse}},
 )
 async def update_beats(
-        beat_id: int,
-        data: SBeatUpdateRequest,
-        user: User = Depends(get_current_user)
+    beat_id: int, data: SBeatUpdateRequest, user: User = Depends(get_current_user)
 ) -> SBeatUpdateResponse:
     beat = await BeatsRepository.find_one_by_id(id_=beat_id)
 
@@ -174,7 +174,7 @@ async def update_beats(
     responses={status.HTTP_200_OK: {"model": SDeleteBeatResponse}},
 )
 async def delete_beats(
-        beat_id: int, user: User = Depends(get_current_user)
+    beat_id: int, user: User = Depends(get_current_user)
 ) -> SDeleteBeatResponse:
     beat = await BeatsRepository.find_one_by_id(id_=beat_id)
 

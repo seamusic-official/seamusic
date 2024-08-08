@@ -5,7 +5,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.database import Base
 
-
 squad_artist_profile_association = Table(
     "squad_artist_profile_association",
     Base.metadata,
@@ -30,12 +29,12 @@ class Squad(Base):
     file_path: Mapped[str] = mapped_column(nullable=False)
     co_prod: Mapped[str] = mapped_column(nullable=True)
     prod_by: Mapped[str] = mapped_column(nullable=True)
-    artist_profiles: Mapped[List["ArtistProfile"]] = relationship(
+    artist_profiles: Mapped[List["ArtistProfile"]] = relationship(  # noqa: F821
         secondary=squad_artist_profile_association, back_populates="squads"
     )
-    producer_profiles: Mapped[List["ProducerProfile"]] = relationship(
+    producer_profiles: Mapped[List["ProducerProfile"]] = relationship(  # noqa: F821
         secondary=squad_producer_profile_association, back_populates="squads"
     )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    user: Mapped["User"] = relationship("User")
+    user: Mapped["User"] = relationship("User")  # noqa: F821

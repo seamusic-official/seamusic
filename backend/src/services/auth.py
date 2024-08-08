@@ -1,3 +1,4 @@
+from src.core.cruds import SQLAlchemyRepository
 from src.models.auth import (
     User,
     ProducerProfile,
@@ -8,8 +9,6 @@ from src.models.auth import (
     producer_tags_association,
     listener_tags_association,
 )
-
-from src.core.cruds import SQLAlchemyRepository
 
 
 class UsersDAO(SQLAlchemyRepository):

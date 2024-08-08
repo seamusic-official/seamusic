@@ -3,7 +3,6 @@ from fastapi import UploadFile, File, APIRouter, Depends, status
 from src.api.exceptions import NoRightsException
 from src.core.cruds import MediaRepository
 from src.schemas.auth import User
-
 from src.schemas.tracks import (
     STrack,
     STrackResponse,
@@ -14,7 +13,7 @@ from src.schemas.tracks import (
     SReleaseTrackResponse,
     SUpdateTrackResponse,
     SUpdateTrackRequest,
-    SDeleteTrackResponse
+    SDeleteTrackResponse,
 )
 from src.services.tracks import TracksRepository
 from src.utils.auth import get_current_user
@@ -27,24 +26,28 @@ tracks = APIRouter(prefix="/tracks", tags=["Tracks"])
     path="/my",
     summary="tracks by current user",
     response_model=SMyTracksResponse,
-    responses={status.HTTP_200_OK: {"model": SMyTracksResponse}}
+    responses={status.HTTP_200_OK: {"model": SMyTracksResponse}},
 )
 async def get_my_tracks(
     user: User = Depends(get_current_user),
 ) -> SMyTracksResponse:
     response = TracksRepository.find_all(user=user)
-    return SMyTracksResponse(tracks=[STrack.from_db_model(model=track) for track in response])
+    return SMyTracksResponse(
+        tracks=[STrack.from_db_model(model=track) for track in response]
+    )
 
 
 @tracks.get(
     path="/all",
     summary="Get all tracks",
     response_model=SMyTracksResponse,
-    responses={status.HTTP_200_OK: {"model": SMyTracksResponse}}
+    responses={status.HTTP_200_OK: {"model": SMyTracksResponse}},
 )
 async def all_tracks() -> SMyTracksResponse:
     response = TracksRepository.find_all()
-    return SMyTracksResponse(tracks=[STrackResponse.from_db_model(model=track) for track in response])
+    return SMyTracksResponse(
+        tracks=[STrackResponse.from_db_model(model=track) for track in response]
+    )
 
 
 @tracks.get(
@@ -117,7 +120,7 @@ async def update_pic_tracks(
 async def release_track(
     track_id: int,
     tracks_data: SReleaseTrackRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ) -> SReleaseTrackResponse:
     track = await TracksRepository.find_one_by_id(id_=track_id)
 
@@ -143,7 +146,7 @@ async def release_track(
 async def update_track(
     track_id: int,
     tracks_data: SUpdateTrackRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ) -> SUpdateTrackResponse:
     track = await TracksRepository.find_one_by_id(id_=track_id)
 
@@ -166,10 +169,7 @@ async def update_track(
     response_model=SDeleteTrackResponse,
     responses={status.HTTP_200_OK: {"model": SDeleteTrackResponse}},
 )
-async def delete_tracks(
-        track_id: int,
-        user: User = Depends(get_current_user)
-):
+async def delete_tracks(track_id: int, user: User = Depends(get_current_user)):
     track = await TracksRepository.find_one_by_id(id_=track_id)
 
     if track.id != user.id:

@@ -7,11 +7,14 @@ from src.schemas.beatpacks import (
     SCreateBeatpackRequest,
     SEditBeatpackResponse,
     SDeleteBeatpackResponse,
-    SMyBeatpacksResponse, Beatpack, SBeatpacksResponse, SCreateBeatpackResponse, SEditBeatpackRequest
+    SMyBeatpacksResponse,
+    Beatpack,
+    SBeatpacksResponse,
+    SCreateBeatpackResponse,
+    SEditBeatpackRequest,
 )
 from src.services.beatpacks import BeatpacksRepository
 from src.utils.auth import get_current_user
-
 
 beatpacks = APIRouter(prefix="/beatpacks", tags=["Beatpacks"])
 
@@ -41,7 +44,11 @@ async def get_user_beatpacks(
 )
 async def all_beatpacks() -> SBeatpacksResponse:
     response = await BeatpacksRepository.find_all()
-    return SBeatpacksResponse(beatpacks=[SBeatpackResponse.from_db_model(model=beatpack) for beatpack in response])
+    return SBeatpacksResponse(
+        beatpacks=[
+            SBeatpackResponse.from_db_model(model=beatpack) for beatpack in response
+        ]
+    )
 
 
 @beatpacks.get(
@@ -75,18 +82,16 @@ async def add_beatpack(data: SCreateBeatpackRequest) -> SCreateBeatpackResponse:
 async def update_beatpacks(
     beatpack_id: int,
     beatpacks_data: SEditBeatpackRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ) -> SEditBeatpackResponse:
     beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
 
-    for user in beat_pack.users:
-        if user.id == user.id:
+    for user_ in beat_pack.users:
+        if user.id == user_.id:
             await BeatpacksRepository.edit_one(beatpack_id, beatpacks_data.model_dump())
             return SEditBeatpackResponse()
 
     raise NoRightsException()
-
-
 
 
 @beatpacks.delete(
@@ -95,11 +100,13 @@ async def update_beatpacks(
     response_model=SDeleteBeatpackResponse,
     responses={status.HTTP_200_OK: {"model": SDeleteBeatpackResponse}},
 )
-async def delete_beatpacks(beatpack_id: int, user: User = Depends(get_current_user)) -> SDeleteBeatpackResponse:
+async def delete_beatpacks(
+    beatpack_id: int, user: User = Depends(get_current_user)
+) -> SDeleteBeatpackResponse:
     beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
 
-    for user in beat_pack.users:
-        if user.id == user.id:
+    for user_ in beat_pack.users:
+        if user.id == user_.id:
             await BeatpacksRepository.delete(id_=beatpack_id)
             return SDeleteBeatpackResponse()
 

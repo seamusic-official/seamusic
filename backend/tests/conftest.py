@@ -3,11 +3,10 @@ from fastapi.testclient import TestClient
 from httpx import Response
 from sqlalchemy.ext.asyncio import create_async_engine
 
-from src.schemas.auth import SRegisterUserRequest, Role, SLoginUser, SUserLoginResponse
+from src.api.app import app
 from src.core.config import settings
 from src.core.database import Base
-from src.api.app import app
-
+from src.schemas.auth import SRegisterUserRequest, Role, SLoginRequest, SLoginResponse
 
 engine_test = create_async_engine(settings.db.url, echo=True)
 
@@ -30,10 +29,10 @@ def login(client: TestClient):
         birthday=None,
         tags=['supertrap', 'newjazz', 'rage', 'hyperpop']
     )
-    login = SLoginUser(email=email, password=password)
+    login = SLoginRequest(email=email, password=password)
     client.post(url='/auth/register', json=register.model_dump())
     response: Response = client.post(url='/auth/login', json=login.model_dump())
-    yield SUserLoginResponse(**response.json())
+    yield SLoginResponse(**response.json())
 
 
 @pytest.fixture(autouse=True, scope='session')

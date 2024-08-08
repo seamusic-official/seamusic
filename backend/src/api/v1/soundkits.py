@@ -14,7 +14,6 @@ from src.services.soundkits import SoundkitRepository
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename
 
-
 soundkits = APIRouter(prefix="/soundkits", tags=["Sound-kits"])
 
 
@@ -109,9 +108,7 @@ async def update_pic_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def release_soundkits(
-    soundkit_id: int,
-    data: SSoundkitUpdate,
-    user: User = Depends(get_current_user)
+    soundkit_id: int, data: SSoundkitUpdate, user: User = Depends(get_current_user)
 ) -> SSoundkitResponse:
     soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
 
@@ -141,9 +138,7 @@ async def release_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def update_soundkits(
-    soundkit_id: int,
-    data: SSoundkitUpdate,
-    user: User = Depends(get_current_user)
+    soundkit_id: int, data: SSoundkitUpdate, user: User = Depends(get_current_user)
 ) -> SSoundkitResponse:
     soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
 
@@ -174,8 +169,7 @@ async def update_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitDeleteResponse}},
 )
 async def delete_soundkits(
-        soundkit_id: int,
-        user: User = Depends(get_current_user)
+    soundkit_id: int, user: User = Depends(get_current_user)
 ) -> SSoundkitDeleteResponse:
     soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
 

@@ -9,10 +9,9 @@ from src.schemas.spotify import (
     SSpotifyAlbumsResponse,
     SSpotifyAlbumTracksResponse,
     SSpotifyArtistResponse,
-    SSpotifySearchResponse
+    SSpotifySearchResponse,
 )
 from src.services.spotify import Spotify
-
 
 music = APIRouter(prefix="/music", tags=["Spotify"])
 
@@ -31,7 +30,7 @@ async def get_spotify_tracks() -> SSpotifyTracksResponse:
     path="/track/{music_id}",
     summary="Create new music",
     response_model=SSpotifyTrackResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyTrackResponse}}
+    responses={status.HTTP_200_OK: {"model": SSpotifyTrackResponse}},
 )
 async def get_spotify_track(music_id: int) -> SSpotifyTrackResponse:
     return Spotify.track(music_id)
@@ -51,7 +50,7 @@ async def get_spotify_albums() -> SSpotifyAlbumsResponse:
     path="/spotify/album",
     summary="Get an album from spotify",
     response_model=SSpotifyAlbumResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyAlbumResponse}}
+    responses={status.HTTP_200_OK: {"model": SSpotifyAlbumResponse}},
 )
 async def get_spotify_album(album_id: int) -> SSpotifyAlbumResponse:
     return Spotify.get_album(album_id)
@@ -61,7 +60,7 @@ async def get_spotify_album(album_id: int) -> SSpotifyAlbumResponse:
     path="/spotify/tracks_from_album",
     summary="Create new music",
     response_model=SSpotifyAlbumTracksResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyAlbumTracksResponse}}
+    responses={status.HTTP_200_OK: {"model": SSpotifyAlbumTracksResponse}},
 )
 async def get_tracks_from_album(album_id) -> SSpotifyAlbumTracksResponse:
     return Spotify.get_tracks_from_album(album_id)
@@ -71,7 +70,7 @@ async def get_tracks_from_album(album_id) -> SSpotifyAlbumTracksResponse:
     path="/spotify/artist",
     summary="Create new music",
     response_model=SSpotifyArtistResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyArtistResponse}}
+    responses={status.HTTP_200_OK: {"model": SSpotifyArtistResponse}},
 )
 async def get_spotify_artist(artist_id) -> SSpotifyArtistResponse:
     return Spotify.get_artist(artist_id)
@@ -81,7 +80,7 @@ async def get_spotify_artist(artist_id) -> SSpotifyArtistResponse:
     path="/spotify/search",
     summary="Search in spotify",
     response_model=SSpotifySearchResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifySearchResponse}}
+    responses={status.HTTP_200_OK: {"model": SSpotifySearchResponse}},
 )
 async def get_spotify_search(query: str) -> SSpotifySearchResponse:
     return Spotify.search(query)

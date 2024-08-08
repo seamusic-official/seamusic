@@ -16,11 +16,30 @@ from src.schemas.auth import (
     SRefreshTokenResponse,
     SSpotifyCallbackResponse,
     SArtistResponse,
-    SProducerResponse, SRegisterUserResponse,
-    SRegisterUserRequest, SLoginRequest, User, SMeResponse, SUsersResponse, SUserResponse, SUpdateUserPictureResponse,
-    SUpdateUserRequest, SUpdateUserResponse, SDeleteUserResponse, SMeAsArtistResponse, SArtistsResponse,
-    SUpdateArtistRequest, SUpdateArtistResponse, SDeleteArtistResponse, SProducersResponse, Producer,
-    SMeAsProducerResponse, SUpdateProducerRequest, SUpdateProducerResponse, SDeleteProducerResponse, SLoginResponse,
+    SProducerResponse,
+    SRegisterUserResponse,
+    SRegisterUserRequest,
+    SLoginRequest,
+    User,
+    SMeResponse,
+    SUsersResponse,
+    SUserResponse,
+    SUpdateUserPictureResponse,
+    SUpdateUserRequest,
+    SUpdateUserResponse,
+    SDeleteUserResponse,
+    SMeAsArtistResponse,
+    SArtistsResponse,
+    SUpdateArtistRequest,
+    SUpdateArtistResponse,
+    SDeleteArtistResponse,
+    SProducersResponse,
+    Producer,
+    SMeAsProducerResponse,
+    SUpdateProducerRequest,
+    SUpdateProducerResponse,
+    SDeleteProducerResponse,
+    SLoginResponse,
 )
 from src.services.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
 from src.services.tags import ListenerTagsDAO, TagsDAO
@@ -29,7 +48,7 @@ from src.utils.auth import (
     create_access_token,
     create_refresh_token,
     get_hashed_password,
-    get_current_user
+    get_current_user,
 )
 from src.utils.files import unique_filename
 
@@ -87,9 +106,7 @@ async def get_one(user_id: int) -> SUserResponse:
     responses={status.HTTP_200_OK: {"model": SUpdateUserPictureResponse}},
 )
 async def update_user_picture(
-    user_id: int,
-    file: UploadFile = File(...),
-    user: User = Depends(get_current_user)
+    user_id: int, file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SUpdateUserPictureResponse:
 
     if user.id != user_id:
@@ -110,9 +127,7 @@ async def update_user_picture(
     responses={status.HTTP_200_OK: {"model": SUpdateUserResponse}},
 )
 async def update_user(
-    user_id: int,
-    data: SUpdateUserRequest,
-    user: User = Depends(get_current_user)
+    user_id: int, data: SUpdateUserRequest, user: User = Depends(get_current_user)
 ) -> SUpdateUserResponse:
 
     if not user:
@@ -143,8 +158,7 @@ async def update_user(
     responses={status.HTTP_200_OK: {"model": SDeleteUserResponse}},
 )
 async def delete_users(
-    user_id: int,
-    user: User = Depends(get_current_user)
+    user_id: int, user: User = Depends(get_current_user)
 ) -> SDeleteUserResponse:
     if not user:
         raise NotFoundException()
@@ -168,7 +182,9 @@ Artists routes
     response_model=SMeAsArtistResponse,
     responses={status.HTTP_200_OK: {"model": SMeAsArtistResponse}},
 )
-async def get_me_as_artist(user: User = Depends(get_current_user)) -> SMeAsArtistResponse:
+async def get_me_as_artist(
+    user: User = Depends(get_current_user),
+) -> SMeAsArtistResponse:
     response = await ArtistDAO.find_one_or_none(user=user)
     return SMeAsArtistResponse.from_db_model(**response)
 
@@ -207,9 +223,7 @@ async def get_one_artist(artist_id: int) -> SArtistResponse:
     responses={status.HTTP_200_OK: {"model": SUpdateArtistResponse}},
 )
 async def update_artist(
-    artist_id: int,
-    data: SUpdateArtistRequest,
-    user: User = Depends(get_current_user)
+    artist_id: int, data: SUpdateArtistRequest, user: User = Depends(get_current_user)
 ) -> SUpdateArtistResponse:
     if not user:
         raise NotFoundException()
@@ -255,7 +269,9 @@ Producers routes
     response_model=SMeAsProducerResponse,
     responses={status.HTTP_200_OK: {"model": SMeAsProducerResponse}},
 )
-async def get_me_as_producer(user: User = Depends(get_current_user)) -> SMeAsProducerResponse:
+async def get_me_as_producer(
+    user: User = Depends(get_current_user),
+) -> SMeAsProducerResponse:
     producer_profile = await ProducerDAO.find_one_or_none(user=user)
     # lazy load error
     return SMeAsProducerResponse.from_db_model(producer_profile)
@@ -299,7 +315,7 @@ async def get_one_producer(producer_id: int) -> SProducerResponse:
 async def update_one_producer(
     producer_id: int,
     data: SUpdateProducerRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
 ) -> SUpdateProducerResponse:
 
     if not user:
@@ -428,13 +444,12 @@ async def login(user: SLoginRequest, response: Response) -> SLoginResponse:
     refresh_token_ = create_refresh_token({"sub": str(auth_user.id)})
 
     response.set_cookie(
-        key="refreshToken",
-        value=refresh_token_,
-        httponly=True,
-        samesite="strict"
+        key="refreshToken", value=refresh_token_, httponly=True, samesite="strict"
     )
 
-    return SLoginResponse(user=auth_user, accessToken=access_token, refreshToken=refresh_token_)
+    return SLoginResponse(
+        user=auth_user, accessToken=access_token, refreshToken=refresh_token_
+    )
 
 
 @auth.post(
@@ -444,7 +459,9 @@ async def login(user: SLoginRequest, response: Response) -> SLoginResponse:
     status_code=status.HTTP_200_OK,
     responses={status.HTTP_200_OK: {"model": SRefreshTokenResponse}},
 )
-async def refresh_token(user: User = Depends(get_current_user)) -> SRefreshTokenResponse:
+async def refresh_token(
+    user: User = Depends(get_current_user),
+) -> SRefreshTokenResponse:
     if not user:
         HTTPException(status_code=401, detail="refresh token is not valid")
 
@@ -487,7 +504,7 @@ async def spotify_callback(code, response: Response) -> SSpotifyCallbackResponse
                 "id": user_data["id"],
                 "username": user_data.get("username"),
                 "email": user_data.get("email"),
-                "password": None
+                "password": None,
             }
 
             await UsersDAO.add_one(new_user)
