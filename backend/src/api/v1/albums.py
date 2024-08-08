@@ -44,14 +44,25 @@ async def get_my_albums(
 @albums.get(
     path="/all",
     summary="Get all albums",
-    response_model=SAllAlbumsResponse,
-    responses={status.HTTP_200_OK: {"model": SAllAlbumsResponse}},
+    response_model=Album,
+    responses={status.HTTP_200_OK: {"model": Album}},
 )
-async def all_albums() -> SAllAlbumsResponse:
+async def all_albums() -> Album:
 
     albums_ = await services.get_all_albums()
-    albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
-
+    # albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
+    album = albums_[0]
+    return Album(
+        id=album.id,
+        created_at=album.created_at,
+        updated_at=album.updated_at,
+        is_available=album.is_available,
+        title=album.name,
+        picture_url=album.picture_url,
+        description=album.description,
+        co_prod=album.co_prod,
+        type=album.type
+    )
     return SAllAlbumsResponse(albums=albums_)
 
 

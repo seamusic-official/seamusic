@@ -3,7 +3,6 @@ from datetime import datetime, timedelta, UTC
 from fastapi import Depends, Request, HTTPException
 from jose import JWTError, jwt
 from passlib.context import CryptContext
-from pydantic import EmailStr
 
 from src.core.config import settings
 from src.schemas.auth import User
@@ -44,7 +43,7 @@ def create_refresh_token(data: dict) -> str:
     return encoded_jwt
 
 
-async def authenticate_user(email: EmailStr, password: str):
+async def authenticate_user(email: str, password: str):
     user = await UsersDAO.find_one_or_none(email=email)
 
     if user:
