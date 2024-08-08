@@ -3,7 +3,7 @@ from typing import List
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.api.exceptions import NoRightsException
-from src.core.cruds import MediaRepository
+from src.core.media import MediaRepository
 from src.schemas.auth import User
 from src.schemas.soundkits import (
     SSoundkitUpdate,

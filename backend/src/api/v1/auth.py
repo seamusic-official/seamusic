@@ -11,7 +11,7 @@ from fastapi import (
 
 from src.api.exceptions import NotFoundException, NoRightsException
 from src.core.config import settings
-from src.core.cruds import MediaRepository
+from src.core.media import MediaRepository
 from src.schemas.auth import (
     SRefreshTokenResponse,
     SSpotifyCallbackResponse,
