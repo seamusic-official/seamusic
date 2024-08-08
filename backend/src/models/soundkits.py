@@ -1,8 +1,8 @@
 from sqlalchemy import Column, Table, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.auth import User
 from src.core.database import Base
+from src.models.auth import User
 
 
 class Soundkit(Base):

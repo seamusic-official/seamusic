@@ -1,57 +1,59 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel
 
-from src.models.licenses import License
+from src.models.licenses import License as _License
+from src.schemas.base import FromDBModelMixin, DetailMixin
 
 
-class SLicenseBase(BaseModel):
-    title: str
-    picture: Optional[str]
-    description: Optional[str]
-    file_path: str
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-    playlist_id: Optional[int]
-    user_id: int
-    beat_pack_id: Optional[int]
-    price: str
-
-
-class SLicense(SLicenseBase):
+class License(FromDBModelMixin):
     id: int
+    title: str
+    picture_url: Optional[str] = None
+    description: Optional[str] = None
+    file_path: str
+    co_prod: Optional[str] = None
+    prod_by: Optional[str] = None
+    playlist_id: Optional[int] = None
+    user_id: int
+    beat_pack_id: Optional[int] = None
+    price: str
     created_at: datetime
     updated_at: datetime
+
+    _model_type = _License
+
+
+class SLicenseResponse(License):
+    pass
 
 
 class SLicensesResponse(BaseModel):
-    id: int
-    title: str
-    price: str
-    description: str
-    picture_url: str | None
-    is_available: bool
-    created_at: datetime
-    updated_at: datetime
-
-    @classmethod
-    def from_db_model(cls, licenses: License) -> "SLicensesResponse":
-        return cls(
-            id=licenses.id,
-            title=licenses.title,
-            price=licenses.price,
-            description=licenses.description,
-            picture_url=licenses.picture_url,
-            is_available=licenses.is_available,
-            created_at=licenses.created_at,
-            updated_at=licenses.updated_at,
-        )
+    licenses: List[License]
 
 
-class SLicensesEditResponse(BaseModel):
-    response: str = "License edited"
+class SMyLicensesResponse(SLicensesResponse):
+    pass
 
 
-class SLicensesDeleteResponse(BaseModel):
-    response: str = "License deleted"
+class SCreateLicenseRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[str] = None
+
+
+class SCreateLicenseResponse(License):
+    pass
+
+
+class SEditLicenseRequest(License):
+    pass
+
+
+class SEditLicensesResponse(BaseModel, DetailMixin):
+    detail: str = "License edited"
+
+
+class SLicensesDeleteResponse(BaseModel, DetailMixin):
+    detail: str = "License deleted"

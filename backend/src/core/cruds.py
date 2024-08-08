@@ -1,8 +1,8 @@
 from abc import ABC
 from io import BytesIO
+from typing import Any
 
 import boto3
-from botocore.exceptions import ClientError
 from fastapi import UploadFile, File
 from sqlalchemy import insert, select, update, delete
 
@@ -18,36 +18,36 @@ class SQLAlchemyRepository(AbstractRepository):
     model = None
 
     @classmethod
-    async def add_one(cls, data: dict) -> int:
+    async def add_one(cls, data: dict) -> Any:
         async with async_session_maker() as session:
             stmt = insert(cls.model).values(**data).returning(cls.model)
             result = await session.execute(stmt)
             await session.commit()
-            return result.scalar()
+            yield result.scalar()
 
     @classmethod
-    async def edit_one(cls, id_: int, data: dict) -> int:
+    async def edit_one(cls, id_: int, data: dict) -> Any:
         async with async_session_maker() as session:
             stmt = (
                 update(cls.model).values(**data).filter_by(id=id_).returning(cls.model)
             )
             result = await session.execute(stmt)
+            yield result.scalar_one_or_none()
             await session.commit()
-            return result.scalar_one_or_none()
 
     @classmethod
-    async def find_one_by_id(cls, id_: int):
+    async def find_one_by_id(cls, id_: int) -> Any:
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(id=id_)
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+            yield result.scalar_one_or_none()
 
     @classmethod
-    async def find_one_or_none(cls, **filter_by):
+    async def find_one_or_none(cls, **filter_by) -> Any:
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
-            return result.scalar_one_or_none()
+            yield result.scalar_one_or_none()
 
     @classmethod
     async def delete(cls, id_: int) -> None:
@@ -61,7 +61,7 @@ class SQLAlchemyRepository(AbstractRepository):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
-            return result.scalars().all()
+            yield result.scalars().all()
 
 
 class MediaRepository(AbstractRepository):
@@ -77,7 +77,7 @@ class MediaRepository(AbstractRepository):
     bucket_name = "seamusic"
 
     @classmethod
-    async def upload_file(cls, folder, filename, file: UploadFile = File(...)):
+    async def upload_file(cls, folder, filename, file: UploadFile = File(...)) -> str:
         file_data = await file.read()
         file_stream = BytesIO(file_data)
         key = f"{folder}/{filename}"
@@ -87,10 +87,6 @@ class MediaRepository(AbstractRepository):
         return file_url
 
     @classmethod
-    async def delete_file(cls, folder, filename):
+    async def delete_file(cls, folder, filename) -> None:
         key = f"{folder}/{filename}"
-        try:
-            cls.s3.delete_object(Bucket=cls.bucket_name, Key=key)
-            return f"File {filename} deleted successfully from folder {folder}."
-        except ClientError as e:
-            return f"An error occurred: {e}"
+        cls.s3.delete_object(Bucket=cls.bucket_name, Key=key)

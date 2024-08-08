@@ -2,8 +2,9 @@ from typing import List
 
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
+from src.api.exceptions import NoRightsException
 from src.core.cruds import MediaRepository
-from src.schemas.auth import SUser
+from src.schemas.auth import User
 from src.schemas.soundkits import (
     SSoundkitUpdate,
     SSoundkitResponse,
@@ -12,7 +13,6 @@ from src.schemas.soundkits import (
 from src.services.soundkits import SoundkitRepository
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename
-
 
 soundkits = APIRouter(prefix="/soundkits", tags=["Sound-kits"])
 
@@ -24,11 +24,11 @@ soundkits = APIRouter(prefix="/soundkits", tags=["Sound-kits"])
     responses={status.HTTP_200_OK: {"model": List[SSoundkitResponse]}},
 )
 async def get_user_soundkits(
-    user: SUser = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> List[SSoundkitResponse]:
     response = await SoundkitRepository.find_all(user=user)
 
-    return [SSoundkitResponse.from_db_model(soundkit=soundkit) for soundkit in response]
+    return [SSoundkitResponse.from_db_model(model=soundkit) for soundkit in response]
 
 
 @soundkits.get(
@@ -39,7 +39,7 @@ async def get_user_soundkits(
 )
 async def all_soundkits() -> List[SSoundkitResponse]:
     response = await SoundkitRepository.find_all()
-    return [SSoundkitResponse.from_db_model(soundkit=soundkit) for soundkit in response]
+    return [SSoundkitResponse.from_db_model(model=soundkit) for soundkit in response]
 
 
 @soundkits.get(
@@ -50,7 +50,7 @@ async def all_soundkits() -> List[SSoundkitResponse]:
 )
 async def get_one_soundkit(soundkit_id: int) -> SSoundkitResponse:
     response = await SoundkitRepository.find_one_by_id(soundkit_id)
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.post(
@@ -60,7 +60,7 @@ async def get_one_soundkit(soundkit_id: int) -> SSoundkitResponse:
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def add_soundkits(
-    file: UploadFile = File(...), user: SUser = Depends(get_current_user)
+    file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SSoundkitResponse:
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
@@ -73,7 +73,7 @@ async def add_soundkits(
     }
 
     response = await SoundkitRepository.add_one(data)
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.post(
@@ -83,17 +83,22 @@ async def add_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def update_pic_soundkits(
-    soundkits_id: int,
+    soundkit_id: int,
     file: UploadFile = File(...),
-    user: SUser = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> SSoundkitResponse:
+    soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
+
+    if soundkit.user_id != user.id:
+        raise NoRightsException()
+
     file_info = await unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
 
     data = {"picture_url": file_url}
 
-    response = await SoundkitRepository.edit_one(soundkits_id, data)
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    response = await SoundkitRepository.edit_one(soundkit_id, data)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.post(
@@ -103,8 +108,13 @@ async def update_pic_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def release_soundkits(
-    soundkit_id: int, data: SSoundkitUpdate, user: SUser = Depends(get_current_user)
-):
+    soundkit_id: int, data: SSoundkitUpdate, user: User = Depends(get_current_user)
+) -> SSoundkitResponse:
+    soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
+
+    if soundkit.user_id != user.id:
+        raise NoRightsException()
+
     update_data = {}
 
     if data.title:
@@ -118,7 +128,7 @@ async def release_soundkits(
 
     response = await SoundkitRepository.edit_one(soundkit_id, update_data)
 
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.put(
@@ -128,8 +138,13 @@ async def release_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
 async def update_soundkits(
-    soundkit_id: int, data: SSoundkitUpdate, user: SUser = Depends(get_current_user)
+    soundkit_id: int, data: SSoundkitUpdate, user: User = Depends(get_current_user)
 ) -> SSoundkitResponse:
+    soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
+
+    if soundkit.user_id != user.id:
+        raise NoRightsException()
+
     update_data = {}
 
     if data.title:
@@ -144,7 +159,7 @@ async def update_soundkits(
         update_data["prod_by"] = data.prod_by
 
     response = await SoundkitRepository.edit_one(soundkit_id, update_data)
-    return SSoundkitResponse.from_db_model(soundkit=response)
+    return SSoundkitResponse.from_db_model(model=response)
 
 
 @soundkits.delete(
@@ -153,6 +168,13 @@ async def update_soundkits(
     response_model=SSoundkitDeleteResponse,
     responses={status.HTTP_200_OK: {"model": SSoundkitDeleteResponse}},
 )
-async def delete_soundkits(soundkit_id: int) -> SSoundkitDeleteResponse:
+async def delete_soundkits(
+    soundkit_id: int, user: User = Depends(get_current_user)
+) -> SSoundkitDeleteResponse:
+    soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
+
+    if soundkit.user_id != user.id:
+        raise NoRightsException()
+
     await SoundkitRepository.delete(id_=soundkit_id)
-    return SSoundkitDeleteResponse
+    return SSoundkitDeleteResponse()

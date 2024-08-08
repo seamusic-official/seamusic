@@ -1,80 +1,72 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, List
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-from src.models.beats import Beat
+from src.models.beats import Beat as _Beat
+from src.schemas.base import FromDBModelMixin, DetailMixin
 
 
-class SBeatBase(BaseModel):
+class Beat(FromDBModelMixin):
     id: int
     title: str
-    description: Optional[str]
-    picture_url: Optional[str]
+    description: Optional[str] = None
+    picture_url: Optional[str] = None
     file_url: str
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-    view_count: Optional[int] = None
-
-    playlist_id: Optional[int] = None
-    user_id: int
-    beat_pack_id: Optional[int] = None
-
-
-class SBeatUpdate(BaseModel):
-    title: Optional[str]
-    description: Optional[str]
-    picture_url: Optional[str]
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-
-
-class SBeatRelease(BaseModel):
-    title: Optional[str]
-    description: Optional[str]
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-
-
-class SBeatCreate(SBeatBase):
-    pass
-
-
-class SBeat(SBeatBase):
-    id: int
-    is_available: bool
-    created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
-
-
-class SBeatResponse(BaseModel):
-    id: int
-    title: str
-    description: str
-    picture_url: str
-    type: str
-    file_url: str
+    co_prod: Optional[str] = None
+    prod_by: Optional[str] = None
     user_id: int
     is_available: bool
     created_at: datetime
     updated_at: datetime
 
-    @classmethod
-    def from_db_model(cls, beat: Beat) -> "SBeatResponse":
-        return cls(
-            id=beat.id,
-            title=beat.title,
-            description=beat.description,
-            picture_url=beat.picture_url,
-            type=beat.type,
-            file_url=beat.file_url,
-            user_id=beat.user_id,
-            is_available=beat.is_available,
-            created_at=beat.created_at,
-            updated_at=beat.updated_at,
-        )
+    _model_type = _Beat
 
 
-class SBeatDeleteResponse(BaseModel):
-    response: str = "Beat deleted"
+class SBeatResponse(Beat):
+    pass
+
+
+class SBeatsResponse(BaseModel):
+    beats: List[Beat]
+
+
+class SMyBeatsResponse(SBeatsResponse):
+    pass
+
+
+class SCreateBeatResponse(Beat):
+    pass
+
+
+class SUpdateBeatPictureResponse(Beat):
+    pass
+
+
+class SBeatReleaseRequest(FromDBModelMixin):
+    title: Optional[str]
+    description: Optional[str]
+    co_prod: Optional[str]
+    prod_by: Optional[str]
+
+    _model_type = _Beat
+
+
+class SBeatReleaseResponse(Beat):
+    pass
+
+
+class SBeatUpdateRequest(BaseModel):
+    title: Optional[str]
+    description: Optional[str]
+    picture_url: Optional[str]
+    co_prod: Optional[str]
+    prod_by: Optional[str]
+
+
+class SBeatUpdateResponse(Beat):
+    pass
+
+
+class SDeleteBeatResponse(BaseModel, DetailMixin):
+    detail: str = "Beat deleted"

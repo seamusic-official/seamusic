@@ -1,51 +1,52 @@
-from datetime import datetime
-from typing import List
+from typing import List, Optional
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-from src.models.beatpacks import Beatpack
-
-
-class BeatCreate(BaseModel):
-    id: int
+from src.models.beatpacks import Beatpack as _Beatpack
+from src.schemas.auth import User
+from src.schemas.base import FromDBModelMixin, DetailMixin
+from src.schemas.beats import Beat
 
 
-class BeatpackCreate(BaseModel):
+class Beatpack(FromDBModelMixin):
     title: str
     description: str
-    beats: List[BeatCreate]
+    users: List[User]
+    beats: List[Beat]
+
+    _model_type = _Beatpack
 
 
-class BeatResponse(BaseModel):
-    id: int
-    name: str
-
-    model_config = ConfigDict(from_attributes=True)
+class SBeatpackResponse(Beatpack):
+    pass
 
 
-class SBeatpackEditResponse(BaseModel):
-    response: str = "Beat pack edited"
+class SBeatpacksResponse(BaseModel):
+    beatpacks: List[Beatpack]
 
 
-class SBeatpackDeleteResponse(BaseModel):
-    response: str = "Beat pack deleted"
+class SMyBeatpacksResponse(SBeatpacksResponse):
+    pass
 
 
-class SBeatpackResponse(BaseModel):
-    id: int
-    description: str
-    is_available: bool
+class SCreateBeatpackRequest(BaseModel):
     title: str
-    created_at: datetime
-    updated_at: datetime
+    description: str
+    beats: List[Beat]
 
-    @classmethod
-    def from_db_model(cls, beatpack: Beatpack) -> "SBeatpackResponse":
-        return cls(
-            id=beatpack.id,
-            description=beatpack.description,
-            is_available=beatpack.is_available,
-            title=beatpack.title,
-            created_at=beatpack.created_at,
-            updated_at=beatpack.updated_at,
-        )
+
+class SCreateBeatpackResponse(Beatpack):
+    pass
+
+
+class SEditBeatpackRequest(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+
+
+class SEditBeatpackResponse(BaseModel, DetailMixin):
+    detail: str = "Beatpack edited"
+
+
+class SDeleteBeatpackResponse(BaseModel, DetailMixin):
+    detail: str = "Beat pack deleted"

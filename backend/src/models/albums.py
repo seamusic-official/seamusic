@@ -25,15 +25,14 @@ class Album(Base):
     picture_url: Mapped[str] = mapped_column(nullable=True)
     description: Mapped[str] = mapped_column(nullable=True)
     co_prod: Mapped[str] = mapped_column(nullable=True)
-    prod_by: Mapped[str] = mapped_column(nullable=True)
+
     type: Mapped[str] = mapped_column(nullable=True)
 
-    artist_profiles: Mapped["ArtistProfile"] = relationship(
+    artist_profiles: Mapped["ArtistProfile"] = relationship(  # noqa: F821
         secondary=artist_profile_album_association, back_populates="albums"
     )
-    tracks: Mapped["Track"] = relationship(
+    tracks: Mapped["Track"] = relationship(  # noqa: F821
         secondary=album_track_association, back_populates="albums"
     )
-
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship("User")
+    user: Mapped["User"] = relationship("User")  # noqa: F821

@@ -1,136 +1,117 @@
 from datetime import date, datetime
-from enum import Enum
 from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, Field
 
-from src.models.auth import User
-from src.schemas.tags import STag
+from src.enums.auth import Role
+from src.models.auth import User as _User
+from src.schemas.base import FromDBModelMixin, DetailMixin
 
 
-class Role(str, Enum):
-    superuser = "superuser"
-    moder = "moder"
-    artist = "artist"
-    producer = "producer"
-    listener = "listener"
-
-
-"""
-User (Listener) schemas
-"""
-
-
-class SUserBase(BaseModel):
-    username: str = Field(min_length=5, max_length=25)
-    email: EmailStr
-    picture_url: Optional[str]
-    birthday: Optional[date]
-    roles: Optional[List[Role]] = None
-
-
-class SUser(SUserBase):
-    id: int
-    created_at: datetime
-    updated_at: datetime
-
-
-class SUserEditImageResponse(BaseModel):
-    response: str = "User image edited"
-
-
-class SUserResponse(BaseModel):
+class User(FromDBModelMixin):
     id: int
     username: str
-    email: EmailStr
+    email: str
+    password: str
     picture_url: str
-    birthday: Optional[date]
+    birthday: datetime
 
-    @classmethod
-    def from_db_model(cls, user: User) -> "SUserResponse":
-        return cls(
-            id=user.id,
-            username=user.username,
-            email=user.email,
-            picture_url=user.picture_url,
-            birthday=user.birthday,
-        )
+    _model_type = _User
 
 
-class SUserUpdate(BaseModel):
-    username: Optional[str] = Field(min_length=5, max_length=25)
-    email: Optional[EmailStr]
+class SUserResponse(User, FromDBModelMixin):
+    pass
+
+
+class SMeResponse(SUserResponse):
+    pass
+
+
+class SUsersResponse(BaseModel):
+    users: List[User]
+
+
+class SUpdateUserPictureResponse(BaseModel, DetailMixin):
+    detail: str = "User picture updated."
+
+
+class SUpdateUserRequest(BaseModel):
+    name: Optional[str]
+    username: Optional[str]
     picture_url: Optional[str]
-    tags: Optional[List[STag]]
-    roles: Optional[List[Role]]
-
-
-class SUserUpdateResponse(BaseModel):
-    username: str
-    email: EmailStr
-    picture_url: str
-
-
-class SUserDeleteResponse(BaseModel):
-    response: str = "User deleted"
-
-
-"""
-Artist schemas
-"""
-
-
-class SArtistBase(BaseModel):
-    user: SUser
     description: Optional[str]
-    tags: Optional[List[STag]]
 
 
-class SArtist(SArtistBase):
-    id: int
-    created_at: datetime
-    updated_at: datetime
+class SUpdateUserResponse(BaseModel):
+    name: str
+    username: str
+    picture_url: str
+    description: str
 
 
-class SArtistUpdate(BaseModel):
+class SDeleteUserResponse(BaseModel, DetailMixin):
+    detail: str = "User deleted."
+
+
+class Artist(FromDBModelMixin):
+    user: User
+    description: Optional[str] = "Description not found"
+
+
+class SArtistResponse(Artist):
+    pass
+
+
+class SMeAsArtistResponse(SMeResponse):
+    pass
+
+
+class SArtistsResponse(BaseModel):
+    artists: List[Artist]
+
+
+class SUpdateArtistRequest(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
 
-class SArtistDeleteResponse(BaseModel):
-    response: str = "Artist deleted"
+class SUpdateArtistResponse(BaseModel):
+    description: str = Field(max_length=255)
 
 
-"""
-Producer schemas
-"""
+class SDeleteArtistResponse(BaseModel, DetailMixin):
+    detail: str = "Artist deleted."
 
 
-class SProducerBase(BaseModel):
-    user: SUser
-    description: Optional[str]
-    tags: Optional[List[STag]]
+class Producer(FromDBModelMixin):
+    user: User
+    description: Optional[str] = "Description not found"
 
 
-class SProducer(SProducerBase):
-    id: int
-    created_at: datetime
-    updated_at: datetime
+class SProducerResponse(Producer):
+    pass
 
 
-class SProducerDeleteResponse(BaseModel):
-    response: str = "Producer deleted"
+class SMeAsProducerResponse(SProducerResponse):
+    pass
 
 
-class SProducerUpdate(BaseModel):
+class SProducersResponse(BaseModel):
+    producers: List[Producer]
+
+
+class SUpdateProducerRequest(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
 
-"""
-Auth schemas
-"""
+class SUpdateProducerResponse(BaseModel):
+    description: str
 
 
-class SRegisterUser(BaseModel):
+class SDeleteProducerResponse(BaseModel, DetailMixin):
+    detail: str = "Producer deleted."
+
+
+class SRegisterUserRequest(BaseModel):
     username: str = Field(min_length=3, max_length=25)
     password: str = Field(min_length=5)
     email: EmailStr
@@ -139,45 +120,27 @@ class SRegisterUser(BaseModel):
     tags: Optional[List[str]]
 
 
-class SAuthUserRegisterResponse(BaseModel):
-    response: str = "User created"
+class SRegisterUserResponse(BaseModel, DetailMixin):
+    detail: str = "User created."
 
 
-class SLoginUser(BaseModel):
+class SLoginRequest(BaseModel):
     email: EmailStr
     password: str
 
 
-class SUserLoginResponse(BaseModel):
+class SLoginResponse(BaseModel):
     accessToken: str
     refreshToken: str
-    user: SUserResponse
-
-    @classmethod
-    def from_db_model(
-        cls, user: User, access_token: str, refresh_token: str
-    ) -> "SUserLoginResponse":
-        return cls(
-            accessToken=access_token,
-            refreshToken=refresh_token,
-            user=SUserResponse.from_db_model(user=user),
-        )
-
-
-class SSpotifyCallbackResponse(BaseModel):
-    access_token: str
-    refresh_token: str
-    user: SUserResponse
-
-    @classmethod
-    def from_db_model(cls, user: User, refresh_token: str, access_token: str):
-        return cls(
-            access_token=access_token,
-            refresh_token=refresh_token,
-            user=SUserResponse.from_db_model(user=user),
-        )
+    user: User
 
 
 class SRefreshTokenResponse(BaseModel):
     accessToken: str
     refreshToken: str
+
+
+class SSpotifyCallbackResponse(BaseModel):
+    access_token: str
+    refresh_token: str
+    user: User

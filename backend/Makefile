@@ -3,7 +3,7 @@ install:
 
 run:
 	python -m alembic upgrade head
-	uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir . --log-config=log_config.ini --log-level=debug
+	python -m uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir . --log-config=log_config.ini --log-level=debug
 
 build:
 	docker-compose -f docker-compose.$(for).yml build

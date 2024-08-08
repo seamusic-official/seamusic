@@ -1,60 +1,71 @@
-from datetime import datetime
-from typing import Optional
+import datetime
+from typing import List
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
-from src.models.albums import Album
+from src.models.albums import Album as _Album
+from src.schemas.base import FromDBModelMixin, DetailMixin
 
 
-class SAlbumBase(BaseModel):
+class Album(FromDBModelMixin):
+    id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    is_available: bool
     title: str
-    picture: Optional[str]
-    description: Optional[str]
-    file_path: str
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-    playlist_id: Optional[int]
-    user_id: int
-    Track_pack_id: Optional[int]
+    picture_url: str
+    description: str
+    co_prod: str
+    type: str = "album"
+
+    _model_type = _Album
 
 
-class SAlbumEdit(BaseModel):
-    name: str
-    description: Optional[str]
-    prod_by: Optional[str]
+class SMyAlbumsResponse(BaseModel):
+    albums: List[Album]
 
 
-class SAlbumCreate(SAlbumBase):
+class SAllAlbumsResponse(BaseModel):
+    albums: List[Album]
+
+
+class SAlbumResponse(Album):
     pass
 
 
-class SAlbum(SAlbumBase):
-    id: int
-    is_available: bool
-    created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
+class SAddAlbumResponse(Album):
+    pass
 
 
-class SAlbumResponse(BaseModel):
+class SUpdateAlbumPictureResponse(Album):
+    pass
+
+
+class SReleaseAlbumsRequest(BaseModel):
     title: str
-    picture: Optional[str]
-    description: Optional[str]
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-    user_id: int
-
-    @classmethod
-    def from_db_model(cls, album: Album) -> "SAlbumResponse":
-        return cls(
-            title=album.name,
-            picture=album.picture_url,
-            description=album.description,
-            co_prod=album.co_prod,
-            prod_by=album.prod_by,
-            user_id=album.user_id,
-        )
+    name: str
+    picture_url: str
+    description: str
+    co_prod: str
+    type: str = "album"
 
 
-class SAlbumDeleteResponse(BaseModel):
-    response: str = "Album deleted."
+class SReleaseAlbumsResponse(Album):
+    pass
+
+
+class SUpdateAlbumRequest(BaseModel):
+    title: str
+    picture_url: str
+    description: str
+    co_prod: str
+    prod_by: str
+    type: str = "album"
+
+
+class SUpdateAlbumResponse(Album):
+    pass
+
+
+class SDeleteAlbumResponse(BaseModel, DetailMixin):
+    detail: str = "Album was deleted."

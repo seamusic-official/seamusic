@@ -3,9 +3,9 @@ from typing import List
 from sqlalchemy import Integer, String, Table, ForeignKey, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
+from src.core.database import Base
 from src.models.auth import User
 from src.models.beats import Beat
-from src.core.database import Base
 
 beats_to_beatpacks_association_table = Table(
     "beats_to_beatpacks_association_table",
@@ -25,11 +25,10 @@ user_to_beatpacks_association_table = Table(
 class Beatpack(Base):
     __tablename__ = "beatpacks"
 
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     title: Mapped[str] = mapped_column(String, nullable=False)
     description: Mapped[str] = mapped_column(String, nullable=False)
 
-    user: Mapped[List["User"]] = relationship(
+    users: Mapped[List["User"]] = relationship(
         "User", secondary=user_to_beatpacks_association_table
     )
     beats: Mapped[List["Beat"]] = relationship(

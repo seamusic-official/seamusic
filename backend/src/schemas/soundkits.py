@@ -4,6 +4,7 @@ from typing import Optional
 from pydantic import BaseModel, ConfigDict
 
 from src.models.soundkits import Soundkit
+from src.schemas.base import DetailMixin
 
 
 class SSoundkitBase(BaseModel):
@@ -49,20 +50,8 @@ class SSoundkitResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    @classmethod
-    def from_db_model(cls, soundkit: Soundkit) -> "SSoundkitResponse":
-        return cls(
-            id=soundkit.id,
-            name=soundkit.name,
-            description=soundkit.description,
-            picture_url=soundkit.picture_url,
-            file_url=soundkit.file_url,
-            user_id=soundkit.user_id,
-            is_available=soundkit.is_available,
-            created_at=soundkit.created_at,
-            updated_at=soundkit.updated_at,
-        )
+    _model_type = Soundkit
 
 
-class SSoundkitDeleteResponse(BaseModel):
-    response: str = "Soundkit deleted"
+class SSoundkitDeleteResponse(BaseModel, DetailMixin):
+    detail: str = "Soundkit deleted"

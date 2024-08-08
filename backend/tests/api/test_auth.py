@@ -3,10 +3,8 @@ from typing import List
 import pytest
 from fastapi import UploadFile, Response
 from fastapi.testclient import TestClient
-from httpx import Response
 
-from src.schemas.auth import SUserResponse, SRegisterUser, Role
-
+from src.schemas.auth import SUserResponse, SRegisterUserRequest, Role
 
 email = 'test_email2@example.com'
 password = 'test_password'
@@ -21,7 +19,7 @@ password = 'test_password'
     ]
 )
 def test_register(client: TestClient, roles: List[Role], expected_status_code: int, username: str, email_: str) -> None:
-    user = SRegisterUser(
+    user = SRegisterUserRequest(
         username=username,
         password=password,
         email=email_,

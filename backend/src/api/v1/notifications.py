@@ -1,9 +1,8 @@
 from fastapi import APIRouter
 
-from src.services.music import Spotify
+from src.services.spotify import Spotify
 
-
-music = APIRouter(prefix="/music", tags=["Music & Albums"])
+music = APIRouter(prefix="/notifications", tags=["Music & Albums"])
 
 
 @music.get(path="/tracks", summary="Create new music")

@@ -1,11 +1,11 @@
-from datetime import datetime, UTC
+from datetime import datetime
 from typing import List
 
 from sqlalchemy import DateTime, Column, Table, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.albums import Album, artist_profile_album_association
 from src.core.database import Base
+from src.models.albums import Album, artist_profile_album_association
 from src.models.squads import (
     Squad,
     squad_producer_profile_association,
@@ -18,8 +18,6 @@ from src.models.tags import (
     listener_tags_association,
 )
 from src.models.tracks import Track, artist_profile_track_association
-from src.models.views import View
-
 
 user_to_roles_association = Table(
     "user_to_roles_association",
@@ -48,9 +46,7 @@ class User(Base):
         nullable=True,
         default="https://img.favpng.com/22/0/21/computer-icons-user-profile-clip-art-png-favpng-MhMHJ0Fw21MJadYjpvDQbzu5S.jpg",
     )
-    is_active: Mapped[bool] = mapped_column(nullable=True, default=False)
     birthday: Mapped[datetime] = mapped_column(DateTime, nullable=False)
-    registered_at: Mapped[datetime] = mapped_column(DateTime, default=datetime.now(UTC))
 
     artist_profile_id: Mapped[int] = mapped_column(
         ForeignKey("artist_profiles.id"), nullable=True
@@ -68,7 +64,6 @@ class User(Base):
         secondary=listener_tags_association, back_populates="listener_profiles"
     )
     squads: Mapped["Squad"] = relationship("Squad", overlaps="user")
-    views: Mapped["View"] = relationship("View", back_populates="user")
 
 
 class ArtistProfile(Base):
