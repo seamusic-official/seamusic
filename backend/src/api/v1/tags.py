@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
-from src.api.exceptions import NotFoundException, UnauthorizedException
+from src.exceptions.api import NotFoundException, UnauthorizedException
 from src.schemas.auth import User
 from src.schemas.tags import (
     SAddTagRequest,
@@ -9,8 +9,8 @@ from src.schemas.tags import (
     SMyArtistTagsResponse,
     SAddTagResponse,
 )
-from src.services.auth import ProducerDAO, ArtistDAO
-from src.services.tags import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
+from src.repositories.auth import ProducerDAO, ArtistDAO
+from src.repositories.tags import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
 from src.utils.auth import get_current_user
 
 tags = APIRouter(prefix="/tags", tags=["All tags"])

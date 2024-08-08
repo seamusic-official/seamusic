@@ -9,7 +9,7 @@ from fastapi import (
     status,
 )
 
-from src.api.exceptions import NotFoundException, NoRightsException
+from src.exceptions.api import NotFoundException, NoRightsException
 from src.core.config import settings
 from src.core.media import MediaRepository
 from src.schemas.auth import (
@@ -41,8 +41,8 @@ from src.schemas.auth import (
     SDeleteProducerResponse,
     SLoginResponse,
 )
-from src.services.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
-from src.services.tags import ListenerTagsDAO, TagsDAO
+from src.repositories.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
+from src.repositories.tags import ListenerTagsDAO, TagsDAO
 from src.utils.auth import (
     authenticate_user,
     create_access_token,

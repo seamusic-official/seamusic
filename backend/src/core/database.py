@@ -3,7 +3,7 @@ from typing import AsyncGenerator
 
 from sqlalchemy import func
 from sqlalchemy.dialects.postgresql import TIMESTAMP
-from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine, async_sessionmaker
+from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
 from src.core.config import settings
@@ -24,8 +24,3 @@ class Base(DeclarativeBase):
     updated_at: Mapped[datetime] = mapped_column(
         TIMESTAMP(timezone=True), server_default=func.now(), onupdate=func.now()
     )
-
-
-async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
-    async with async_session_maker() as session:
-        yield session

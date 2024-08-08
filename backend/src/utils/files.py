@@ -1,79 +1,19 @@
 import os
-import shutil
 import uuid
+from io import BytesIO
 
-import aiofiles
-from fastapi import HTTPException
-from fastapi import UploadFile
-from mutagen.mp3 import MP3
-from mutagen.wavpack import WavPack
+from fastapi import HTTPException, UploadFile
 
 
-async def unique_filename(file: UploadFile) -> str:
+def unique_filename(file: UploadFile) -> str:
     try:
         file_name, file_extension = os.path.splitext(file.filename)
-
-        unique_filename_ = (
-            f'track-{file_name.replace(" ", "-")}_{uuid.uuid4()}{file_extension}'
-        )
-
-        return unique_filename_
+        return f'track-{file_name.replace(" ", "-")}_{uuid.uuid4()}{file_extension}'
 
     except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Failed to process the audio file: {str(e)}"
-        )
+        raise HTTPException(status_code=500, detail=f"Failed to process the audio file: {str(e)}")
 
 
-async def save_image(upload_folder: str, file: UploadFile):
-    try:
-        file_name, file_extension = os.path.splitext(file.filename)
-        unique_filename_ = f"{file_name}-{uuid.uuid4()}{file_extension}"
-        file_path = os.path.join(upload_folder, unique_filename_)
-
-        async with aiofiles.open(file_path, "wb") as buffer:
-            await buffer.write(await file.read())
-
-        return file_path
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error uploading image: {str(e)}")
-
-
-async def save_audio(upload_folder: str, file: UploadFile) -> dict:
-    try:
-        if not os.path.exists(upload_folder):
-            os.makedirs(upload_folder)
-
-        allowed_formats = [".mp3", ".wav"]
-        file_name, file_extension = os.path.splitext(file.filename)
-
-        if file_extension not in allowed_formats:
-            raise HTTPException(
-                status_code=400, detail="Only MP3 and WAV files are allowed."
-            )
-
-        unique_filename_ = f"{file_name}-{uuid.uuid4()}{file_extension}"
-        file_path = os.path.join(upload_folder, unique_filename_)
-
-        with open(file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
-
-        # Get file info
-        file_info = dict()
-        file_info["file_path"] = unique_filename_
-
-        if file_extension == ".mp3":
-            audio = MP3(file_path)
-            file_info["title"] = str(audio.get("TIT2", "Unknown Title"))
-            file_info["artist"] = str(audio.get("TPE1", "Unknown Artist"))
-        elif file_extension == ".wav":
-            audio = WavPack(file_path)
-            file_info["title"] = str(audio.get("title", "Unknown Title"))
-            file_info["artist"] = str(audio.get("artist", "Unknown Artist"))
-
-        return file_info
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=500, detail=f"Error uploading audio file: {str(e)}"
-        )
+async def get_file_stream(file: UploadFile) -> BytesIO:
+    file_data = await file.read()
+    return BytesIO(file_data)

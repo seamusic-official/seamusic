@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
-from src.api.exceptions import NoRightsException
+from src.exceptions.api import NoRightsException
 from src.models.auth import User
 from src.schemas.licenses import (
     SLicensesResponse,
@@ -12,7 +12,7 @@ from src.schemas.licenses import (
     SCreateLicenseResponse,
     SEditLicenseRequest,
 )
-from src.services.licenses import LicensesRepository
+from src.repositories.licenses import LicensesRepository
 from src.utils.auth import get_current_user
 
 licenses = APIRouter(prefix="/licenses", tags=["Licenses"])

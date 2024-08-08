@@ -7,7 +7,7 @@ from pydantic import EmailStr
 
 from src.core.config import settings
 from src.schemas.auth import User
-from src.services.auth import UsersDAO
+from src.repositories.auth import UsersDAO
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 

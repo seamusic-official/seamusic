@@ -1,6 +1,3 @@
-from src.core.cruds import SQLAlchemyRepository
-from src.models.beats import Beat
+from fastapi import APIRouter
 
-
-class BeatsRepository(SQLAlchemyRepository):
-    model = Beat
+comments = APIRouter(prefix="/comments", tags=["Comments"])
