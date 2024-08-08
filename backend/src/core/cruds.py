@@ -23,7 +23,7 @@ class SQLAlchemyRepository(AbstractRepository):
             stmt = insert(cls.model).values(**data).returning(cls.model)
             result = await session.execute(stmt)
             await session.commit()
-            yield result.scalar()
+            return result.scalar()
 
     @classmethod
     async def edit_one(cls, id_: int, data: dict) -> Any:
@@ -32,7 +32,7 @@ class SQLAlchemyRepository(AbstractRepository):
                 update(cls.model).values(**data).filter_by(id=id_).returning(cls.model)
             )
             result = await session.execute(stmt)
-            yield result.scalar_one_or_none()
+            return result.scalar_one_or_none()
             await session.commit()
 
     @classmethod
@@ -40,14 +40,14 @@ class SQLAlchemyRepository(AbstractRepository):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(id=id_)
             result = await session.execute(query)
-            yield result.scalar_one_or_none()
+            return result.scalar_one_or_none()
 
     @classmethod
     async def find_one_or_none(cls, **filter_by) -> Any:
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
-            yield result.scalar_one_or_none()
+            return result.scalar_one_or_none()
 
     @classmethod
     async def delete(cls, id_: int) -> None:
@@ -61,7 +61,7 @@ class SQLAlchemyRepository(AbstractRepository):
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
-            yield result.scalars().all()
+            return result.scalars().all()
 
 
 class MediaRepository(AbstractRepository):
