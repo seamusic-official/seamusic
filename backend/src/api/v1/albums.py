@@ -47,22 +47,10 @@ async def get_my_albums(
     response_model=Album,
     responses={status.HTTP_200_OK: {"model": Album}},
 )
-async def all_albums() -> Album:
+async def all_albums() -> SAllAlbumsResponse:
 
     albums_ = await services.get_all_albums()
-    # albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
-    album = albums_[0]
-    return Album(
-        id=album.id,
-        created_at=album.created_at,
-        updated_at=album.updated_at,
-        is_available=album.is_available,
-        title=album.name,
-        picture_url=album.picture_url,
-        description=album.description,
-        co_prod=album.co_prod,
-        type=album.type
-    )
+    albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
     return SAllAlbumsResponse(albums=albums_)
 
 
@@ -116,7 +104,7 @@ async def update_album_picture(
     if album.user.id != user.id:
         raise NoRightsException()
 
-    file_info = await unique_filename(file) if file else None
+    file_info = unique_filename(file) if file else None
     file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
 
     data = {"picture_url": file_url}
