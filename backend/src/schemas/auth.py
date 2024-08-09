@@ -74,8 +74,8 @@ class SUpdateArtistRequest(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
 
-class SUpdateArtistResponse(BaseModel, DetailMixin):
-    detail: str = "Artist Updated"
+class SUpdateArtistResponse(BaseModel):
+    description: str = Field(max_length=255)
 
 
 class SDeleteArtistResponse(BaseModel, DetailMixin):
@@ -103,8 +103,8 @@ class SUpdateProducerRequest(BaseModel):
     description: Optional[str] = Field(max_length=255)
 
 
-class SUpdateProducerResponse(BaseModel, DetailMixin):
-    detail: str = "Producer updated"
+class SUpdateProducerResponse(BaseModel):
+    description: str
 
 
 class SDeleteProducerResponse(BaseModel, DetailMixin):
