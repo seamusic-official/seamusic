@@ -4,65 +4,64 @@ from src.repositories.beatpacks import BeatpacksRepository
 from src.schemas.auth import User
 
 
-async def get_user_beatpacks(user: User) -> list[Beatpack]:
-    return await BeatpacksRepository.find_all(owner=user)
+class BeatpacksService:
+    @staticmethod
+    async def get_user_beatpacks(user: User) -> list[Beatpack]:
+        return await BeatpacksRepository.find_all(owner=user)
 
+    @staticmethod
+    async def all_beatpacks() -> list[Beatpack]:
+        return await BeatpacksRepository.find_all()
 
-async def all_beatpacks() -> list[Beatpack]:
-    return await BeatpacksRepository.find_all()
+    @staticmethod
+    async def get_one(beatpack_id: int) -> Beatpack:
+        return await BeatpacksRepository.find_one_by_id(beatpack_id)
 
+    @staticmethod
+    async def add_beatpack(
+        title: str,
+        description: str,
+        beats: list[dict]
+    ) -> Beatpack:
 
-async def get_one(beatpack_id: int) -> Beatpack:
-    return await BeatpacksRepository.find_one_by_id(beatpack_id)
+        data = {
+            "title": title,
+            "description": description,
+            "beats": beats
+        }
 
+        return await BeatpacksRepository.add_one(data)
 
-async def add_beatpack(
-    title: str,
-    description: str,
-    beats: list[dict]
-) -> Beatpack:
+    @staticmethod
+    async def update_beatpacks(
+        beatpack_id: int,
+        user_id: int,
+        title: str | None = None,
+        description: str | None = None,
+    ) -> None:
 
-    data = {
-        "title": title,
-        "description": description,
-        "beats": beats
-    }
+        beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
+        data = dict()
 
-    return await BeatpacksRepository.add_one(data)
+        if title:
+            data["title"] = title
+        if description:
+            data["description"] = description
 
+        for user_ in beat_pack.users:
+            if user_id == user_.id:
+                await BeatpacksRepository.edit_one(beatpack_id, data=data)
+                return
 
-async def update_beatpacks(
-    beatpack_id: int,
-    user_id: int,
-    title: str | None = None,
-    description: str | None = None,
-) -> None:
+        raise NoRightsException()
 
-    beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
-    data = dict()
+    @staticmethod
+    async def delete_beatpacks(beatpack_id: int, user_id: int) -> None:
+        beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
 
-    if title:
-        data["title"] = title
-    if description:
-        data["description"] = description
+        for user_ in beat_pack.users:
+            if user_id == user_.id:
+                await BeatpacksRepository.delete(id_=beatpack_id)
+                return
 
-    for user_ in beat_pack.users:
-        if user_id == user_.id:
-            await BeatpacksRepository.edit_one(beatpack_id, data=data)
-            return
-
-    raise NoRightsException()
-
-
-async def delete_beatpacks(
-    beatpack_id: int,
-    user_id: int
-) -> None:
-    beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
-
-    for user_ in beat_pack.users:
-        if user_id == user_.id:
-            await BeatpacksRepository.delete(id_=beatpack_id)
-            return
-
-    raise NoRightsException()
+        raise NoRightsException()

@@ -1,179 +1,130 @@
-from fastapi import UploadFile, File, APIRouter, Depends, status
+from io import BytesIO
 
-from src.exceptions.api import NoRightsException
 from src.core.media import MediaRepository
-from src.schemas.auth import User
-from src.schemas.tracks import (
-    STrack,
-    STrackResponse,
-    SMyTracksResponse,
-    SAddTracksResponse,
-    SUpdateTrackPictureResponse,
-    SReleaseTrackRequest,
-    SReleaseTrackResponse,
-    SUpdateTrackResponse,
-    SUpdateTrackRequest,
-    SDeleteTrackResponse,
-)
+from src.enums.type import Type
+from src.exceptions.services import NoRightsException
+from src.models.tracks import Track
 from src.repositories.tracks import TracksRepository
-from src.utils.auth import get_current_user
-from src.utils.files import unique_filename
-
-tracks = APIRouter(prefix="/tracks", tags=["Tracks"])
 
 
-@tracks.get(
-    path="/my",
-    summary="tracks by current user",
-    response_model=SMyTracksResponse,
-    responses={status.HTTP_200_OK: {"model": SMyTracksResponse}},
-)
-async def get_my_tracks(
-    user: User = Depends(get_current_user),
-) -> SMyTracksResponse:
-    response = TracksRepository.find_all(user=user)
-    return SMyTracksResponse(
-        tracks=[STrack.from_db_model(model=track) for track in response]
-    )
+class TracksService:
+    @staticmethod
+    async def get_my_tracks(user: dict) -> list[Track]:
+        return await TracksRepository.find_all(user=user)
 
+    @staticmethod
+    async def all_tracks() -> list[Track]:
+        return await TracksRepository.find_all()
 
-@tracks.get(
-    path="/all",
-    summary="Get all tracks",
-    response_model=SMyTracksResponse,
-    responses={status.HTTP_200_OK: {"model": SMyTracksResponse}},
-)
-async def all_tracks() -> SMyTracksResponse:
-    response = TracksRepository.find_all()
-    return SMyTracksResponse(
-        tracks=[STrackResponse.from_db_model(model=track) for track in response]
-    )
+    @staticmethod
+    async def get_one_track(track_id: int) -> Track:
+        return await TracksRepository.find_one_by_id(track_id)
 
+    @staticmethod
+    async def add_track(
+        user: dict,
+        file_info: str | None,
+        file_stream: BytesIO
+    ) -> Track:
 
-@tracks.get(
-    path="/get_one/{track_id}",
-    summary="Get one track by id",
-    response_model=STrackResponse,
-    responses={status.HTTP_200_OK: {"model": STrackResponse}},
-)
-async def get_one_track(track_id: int) -> STrackResponse:
-    response = await TracksRepository.find_one_by_id(track_id)
-    return STrackResponse.from_db_model(model=response)
+        file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file_stream)
 
+        data = {
+            "title": "Unknown title",
+            "file_url": file_url,
+            "prod_by": user["username"],
+            "user_id": user["id"],
+            "type": Type.track
+        }
 
-@tracks.post(
-    path="/add",
-    summary="Init a track with file",
-    response_model=SAddTracksResponse,
-    responses={status.HTTP_200_OK: {"model": SAddTracksResponse}},
-)
-async def add_track(
-    file: UploadFile = File(...), user: User = Depends(get_current_user)
-) -> SAddTracksResponse:
-    file_info = await unique_filename(file) if file else None
+        return await TracksRepository.add_one(data)
 
-    file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
+    @staticmethod
+    async def update_pic_tracks(
+        track_id: int,
+        user_id: int,
+        file_info: str | None,
+        file_stream: BytesIO,
+    ) -> Track:
 
-    data = {
-        "title": "Unknown title",
-        "file_url": file_url,
-        "prod_by": user.username,
-        "user_id": user.id,
-        "type": "Track",
-    }
+        track = await TracksRepository.find_one_by_id(id_=track_id)
 
-    response = await TracksRepository.add_one(data)
-    return SAddTracksResponse.from_db_model(model=response)
+        if track.id != user_id:
+            raise NoRightsException()
 
+        file_url = await MediaRepository.upload_file("PICTURES", file_info, file_stream)
+        data = {"picture_url": file_url}
+        return await TracksRepository.edit_one(track_id, data)
 
-@tracks.post(
-    path="/picture/{tracks_id}",
-    summary="Update a picture for one track by id",
-    response_model=SUpdateTrackPictureResponse,
-    responses={status.HTTP_200_OK: {"model": SUpdateTrackPictureResponse}},
-)
-async def update_pic_tracks(
-    track_id: int,
-    file: UploadFile = File(...),
-    user: User = Depends(get_current_user),
-) -> SUpdateTrackPictureResponse:
-    track = await TracksRepository.find_one_by_id(id_=track_id)
+    @staticmethod
+    async def release_track(
+        track_id: int,
+        user_id: int,
+        title: str,
+        picture_url: str | None,
+        description: str | None,
+        co_prod: str | None,
+        prod_by: str | None,
+        playlist_id: int | None,
+        track_pack_id: int | None,
+    ) -> Track:
 
-    if track.id != user.id:
-        raise NoRightsException()
+        track = await TracksRepository.find_one_by_id(id_=track_id)
 
-    file_info = await unique_filename(file) if file else None
-    file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
+        if track.id != user_id:
+            raise NoRightsException()
 
-    data = {"picture_url": file_url}
+        data = {
+            "name": title,
+            "description": description,
+            "co_prod": co_prod,
+            "prod_by": prod_by,
+            "playlist_id": playlist_id,
+            "picture_url": picture_url,
+            "user_id": user_id,
+            "track_pack_id": track_pack_id,
+        }
 
-    response = await TracksRepository.edit_one(track_id, data)
-    return SUpdateTrackPictureResponse.from_db_model(model=response)
+        return await TracksRepository.edit_one(track_id, data)
 
+    @staticmethod
+    async def update_track(
+        track_id: int,
+        user_id: int,
+        title: str,
+        description: str | None,
+        prod_by: str | None,
+        picture: str | None,
+        file_path: str,
+        co_prod: str | None,
+        playlist_id: int | None,
+        track_pack_id: int | None,
+    ) -> None:
 
-@tracks.post(
-    path="/release/{track_id}",
-    summary="Release one track by id",
-    response_model=SReleaseTrackResponse,
-    responses={status.HTTP_200_OK: {"model": SReleaseTrackResponse}},
-)
-async def release_track(
-    track_id: int,
-    tracks_data: SReleaseTrackRequest,
-    user: User = Depends(get_current_user),
-) -> SReleaseTrackResponse:
-    track = await TracksRepository.find_one_by_id(id_=track_id)
+        track = await TracksRepository.find_one_by_id(id_=track_id)
 
-    if track.id != user.id:
-        raise NoRightsException()
+        if track.id != user_id:
+            raise NoRightsException()
 
-    data = {
-        "name": tracks_data.title,
-        "description": tracks_data.description,
-        "co_prod": tracks_data.co_prod,
-    }
+        data = {
+            "name": title,
+            "description": description,
+            "prod_by": prod_by,
+            "picture": picture,
+            "file_path": file_path,
+            "co_prod": co_prod,
+            "playlist_id": playlist_id,
+            "track_pack_id": track_pack_id
+        }
 
-    response = await TracksRepository.edit_one(track_id, data)
-    return SReleaseTrackResponse.from_db_model(model=response)
+        await TracksRepository.edit_one(track_id, data)
 
+    @staticmethod
+    async def delete_track(track_id: int, user_id: int) -> None:
 
-@tracks.put(
-    path="/update/{track_id}",
-    summary="Edit track",
-    response_model=SUpdateTrackResponse,
-    responses={status.HTTP_200_OK: {"model": SUpdateTrackResponse}},
-)
-async def update_track(
-    track_id: int,
-    tracks_data: SUpdateTrackRequest,
-    user: User = Depends(get_current_user),
-) -> SUpdateTrackResponse:
-    track = await TracksRepository.find_one_by_id(id_=track_id)
+        track = await TracksRepository.find_one_by_id(id_=track_id)
 
-    if track.id != user.id:
-        raise NoRightsException()
+        if track.id != user_id:
+            raise NoRightsException()
 
-    data = {
-        "name": tracks_data.title,
-        "description": tracks_data.description,
-        "prod_by": tracks_data.prod_by,
-    }
-
-    await TracksRepository.edit_one(track_id, data)
-    return SUpdateTrackResponse()
-
-
-@tracks.delete(
-    path="/delete/{track_id}",
-    summary="Delete track",
-    response_model=SDeleteTrackResponse,
-    responses={status.HTTP_200_OK: {"model": SDeleteTrackResponse}},
-)
-async def delete_tracks(track_id: int, user: User = Depends(get_current_user)):
-    track = await TracksRepository.find_one_by_id(id_=track_id)
-
-    if track.id != user.id:
-        raise NoRightsException()
-
-    await TracksRepository.delete(id_=track_id)
-    return SDeleteTrackResponse()
+        await TracksRepository.delete(id_=track_id)

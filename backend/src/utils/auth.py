@@ -5,16 +5,17 @@ from jose import JWTError, jwt
 from passlib.context import CryptContext
 
 from src.core.config import settings
-from src.schemas.auth import User
+from src.models.auth import User as _User
 from src.repositories.auth import UsersDAO
+from src.schemas.auth import User
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
-REFRESH_TOKEN_EXPIRE_MINUTES = (60 * 24 * 7) * 2  # 14 days
+REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 14  # 14 days
 ALGORITHM = "HS256"
-JWT_SECRET_KEY = settings.auth.JWT_SECRET_KEY  # should be kept secret
-JWT_REFRESH_SECRET_KEY = settings.auth.JWT_REFRESH_SECRET_KEY  # should be kept secret
+JWT_SECRET_KEY = settings.auth.JWT_SECRET_KEY
+JWT_REFRESH_SECRET_KEY = settings.auth.JWT_REFRESH_SECRET_KEY
 
 
 def get_hashed_password(password: str) -> str:
@@ -43,12 +44,11 @@ def create_refresh_token(data: dict) -> str:
     return encoded_jwt
 
 
-async def authenticate_user(email: str, password: str):
+async def authenticate_user(email: str, password: str) -> _User | None:
     user = await UsersDAO.find_one_or_none(email=email)
 
     if user:
         if not verify_password(password, user.password):
-            print(verify_password(password, user.password))
             return None
         return user
     return None

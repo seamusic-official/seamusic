@@ -6,3 +6,8 @@ class NoRightsException(Exception):
 class NotFoundException(Exception):
     def __init__(self, detail: str = "Not found"):
         super().__init__(detail)
+
+
+class ServerError(Exception):
+    def __init__(self, detail: str = "Internal server error"):
+        super().__init__(detail)

@@ -1,185 +1,122 @@
-from fastapi import UploadFile, File, APIRouter, Depends, status
+from io import BytesIO
 
-from src.exceptions.api import NoRightsException
 from src.core.media import MediaRepository
-from src.schemas.auth import User
-from src.schemas.beats import (
-    SBeatResponse,
-    SDeleteBeatResponse,
-    SMyBeatsResponse,
-    SBeatsResponse,
-    SCreateBeatResponse,
-    SUpdateBeatPictureResponse,
-    SBeatReleaseRequest,
-    SBeatReleaseResponse,
-)
-from src.schemas.beats import SBeatUpdateRequest, SBeatUpdateResponse
+from src.exceptions.services import NoRightsException
+from src.models.beats import Beat
 from src.repositories.beats import BeatsRepository
-from src.utils.auth import get_current_user
-from src.utils.files import unique_filename
-
-beats = APIRouter(prefix="/beats", tags=["Beats"])
 
 
-@beats.get(
-    path="/my",
-    summary="Beats by current user",
-    status_code=status.HTTP_200_OK,
-    response_model=SMyBeatsResponse,
-    responses={status.HTTP_200_OK: {"model": SMyBeatsResponse}},
-)
-async def get_user_beats(user: User = Depends(get_current_user)) -> SMyBeatsResponse:
-    response = await BeatsRepository.find_all(user=user)
+class BeatsService:
+    @staticmethod
+    async def get_user_beats(user: dict) -> list[Beat]:
+        return await BeatsRepository.find_all(user=user)
 
-    return SMyBeatsResponse(
-        beats=[SBeatResponse.from_db_model(model=beat) for beat in response]
-    )
+    @staticmethod
+    async def all_beats() -> list[Beat]:
+        return await BeatsRepository.find_all()
 
+    @staticmethod
+    async def get_one_beat(beat_id: int) -> Beat:
+        return await BeatsRepository.find_one_by_id(beat_id)
 
-@beats.get(
-    path="/",
-    summary="Get all beats",
-    response_model=SBeatsResponse,
-    responses={status.HTTP_200_OK: {"model": SBeatsResponse}},
-)
-async def all_beats() -> SBeatsResponse:
-    response = await BeatsRepository.find_all()
-    return SBeatsResponse(
-        beats=[SBeatResponse.from_db_model(model=beat) for beat in response]
-    )
+    @staticmethod
+    async def add_beats(
+            file_info: str | None,
+            file_stream: BytesIO,
+            user: dict
+    ) -> Beat:
+        file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file_stream)
 
+        data = {
+            "title": "Unknown title",
+            "file_url": file_url,
+            "prod_by": user["username"],
+            "user_id": user["id"],
+            "type": "beat",
+        }
 
-@beats.get(
-    path="/{beat_id}",
-    summary="Get one beat by id",
-    response_model=SBeatResponse,
-    responses={status.HTTP_200_OK: {"model": SBeatResponse}},
-)
-async def get_one_beat(beat_id: int) -> SBeatResponse:
-    response = await BeatsRepository.find_one_by_id(beat_id)
-    return SBeatResponse.from_db_model(model=response)
+        return await BeatsRepository.add_one(data)
 
+    @staticmethod
+    async def update_pic_beats(
+            beat_id: int,
+            user_id: int,
+            file_info: str | None,
+            file_stream: BytesIO
+    ) -> Beat:
+        beat = await BeatsRepository.find_one_by_id(id_=beat_id)
 
-@beats.post(
-    path="/",
-    summary="Init a beat with file",
-    response_model=SCreateBeatResponse,
-    responses={status.HTTP_200_OK: {"model": SCreateBeatResponse}},
-)
-async def add_beats(
-    file: UploadFile = File(...), user: User = Depends(get_current_user)
-) -> SCreateBeatResponse:
-    file_info = await unique_filename(file) if file else None
-    file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
+        if beat.user_id != user_id:
+            raise NoRightsException()
 
-    data = {
-        "title": "Unknown title",
-        "file_url": file_url,
-        "prod_by": user.username,
-        "user_id": user.id,
-        "type": "beat",
-    }
+        file_url = await MediaRepository.upload_file("PICTURES", file_info, file_stream)
 
-    response = await BeatsRepository.add_one(data)
-    return SCreateBeatResponse.from_db_model(model=response)
+        data = {"picture_url": file_url}
 
+        return await BeatsRepository.edit_one(beat_id, data)
 
-@beats.put(
-    path="/picture/{beat_id}",
-    summary="Update a picture for one beat by id",
-    response_model=SUpdateBeatPictureResponse,
-    responses={status.HTTP_200_OK: {"model": SUpdateBeatPictureResponse}},
-)
-async def update_pic_beats(
-    beat_id: int, file: UploadFile = File(...), user: User = Depends(get_current_user)
-) -> SUpdateBeatPictureResponse:
-    beat = await BeatsRepository.find_one_by_id(id_=beat_id)
+    @staticmethod
+    async def release_beats(
+            beat_id: int,
+            user_id: int,
+            title: str | None,
+            description: str | None,
+            co_prod: str | None,
+            prod_by: str | None
+    ) -> Beat:
+        beat = await BeatsRepository.find_one_by_id(id_=beat_id)
 
-    if beat.user_id != user.id:
-        raise NoRightsException()
+        if beat.user_id != user_id:
+            raise NoRightsException()
 
-    file_info = await unique_filename(file) if file else None
-    file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
+        update_data = dict()
 
-    data = {"picture_url": file_url}
+        if title:
+            update_data["title"] = title
+        if description:
+            update_data["description"] = description
+        if co_prod:
+            update_data["co_prod"] = co_prod
+        if prod_by:
+            update_data["prod_by"] = prod_by
 
-    response = await BeatsRepository.edit_one(beat_id, data)
-    return SUpdateBeatPictureResponse.from_db_model(model=response)
+        return await BeatsRepository.edit_one(beat_id, update_data)
 
+    @staticmethod
+    async def update_beats(
+            beat_id: int,
+            user_id: int,
+            title: str | None,
+            description: str | None,
+            picture_url: str | None,
+            co_prod: str | None,
+            prod_by: str | None
+    ) -> Beat:
+        beat = await BeatsRepository.find_one_by_id(id_=beat_id)
 
-@beats.post(
-    path="/release/{beat_id}",
-    summary="Release one beat by id",
-    response_model=SBeatReleaseResponse,
-    responses={status.HTTP_200_OK: {"model": SBeatReleaseResponse}},
-)
-async def release_beats(
-    beat_id: int, data: SBeatReleaseRequest, user: User = Depends(get_current_user)
-) -> SBeatReleaseResponse:
-    beat = await BeatsRepository.find_one_by_id(id_=beat_id)
+        if beat.user_id != user_id:
+            raise NoRightsException()
 
-    if beat.user_id != user.id:
-        raise NoRightsException()
+        update_data = {}
 
-    update_data = {}
+        if title:
+            update_data["title"] = title
+        if description:
+            update_data["description"] = description
+        if picture_url:
+            update_data["picture_url"] = picture_url
+        if co_prod:
+            update_data["co_prod"] = co_prod
+        if prod_by:
+            update_data["prod_by"] = prod_by
 
-    if data.title:
-        update_data["title"] = data.title
-    if data.description:
-        update_data["description"] = data.description
-    if data.co_prod:
-        update_data["co_prod"] = data.co_prod
-    if data.prod_by:
-        update_data["prod_by"] = data.prod_by
+        return await BeatsRepository.edit_one(beat_id, update_data)
 
-    response = await BeatsRepository.edit_one(beat_id, update_data)
-    return SBeatReleaseResponse.from_db_model(model=response)
+    @staticmethod
+    async def delete_beats(beat_id: int, user_id: int) -> None:
+        beat = await BeatsRepository.find_one_by_id(id_=beat_id)
 
+        if beat.user_id != user_id:
+            raise NoRightsException()
 
-@beats.put(
-    path="/{beat_id}",
-    summary="Edit beat by id",
-    response_model=SBeatUpdateResponse,
-    responses={status.HTTP_200_OK: {"model": SBeatUpdateResponse}},
-)
-async def update_beats(
-    beat_id: int, data: SBeatUpdateRequest, user: User = Depends(get_current_user)
-) -> SBeatUpdateResponse:
-    beat = await BeatsRepository.find_one_by_id(id_=beat_id)
-
-    if beat.user_id != user.id:
-        raise NoRightsException()
-
-    update_data = {}
-
-    if data.title:
-        update_data["title"] = data.title
-    if data.description:
-        update_data["description"] = data.description
-    if data.picture_url:
-        update_data["picture_url"] = data.picture_url
-    if data.co_prod:
-        update_data["co_prod"] = data.co_prod
-    if data.prod_by:
-        update_data["prod_by"] = data.prod_by
-
-    response = await BeatsRepository.edit_one(beat_id, update_data)
-    return SBeatUpdateResponse.from_db_model(model=response)
-
-
-@beats.delete(
-    path="/{beat_id}",
-    summary="delete beat by id",
-    response_model=SDeleteBeatResponse,
-    responses={status.HTTP_200_OK: {"model": SDeleteBeatResponse}},
-)
-async def delete_beats(
-    beat_id: int, user: User = Depends(get_current_user)
-) -> SDeleteBeatResponse:
-    beat = await BeatsRepository.find_one_by_id(id_=beat_id)
-
-    if beat.user_id != user.id:
-        raise NoRightsException()
-
-    await BeatsRepository.delete(id_=beat_id)
-    return SDeleteBeatResponse()
+        await BeatsRepository.delete(id_=beat_id)

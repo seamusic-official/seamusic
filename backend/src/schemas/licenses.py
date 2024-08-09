@@ -38,9 +38,9 @@ class SMyLicensesResponse(SLicensesResponse):
 
 
 class SCreateLicenseRequest(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
-    price: Optional[str] = None
+    title: str
+    description: str
+    price: str
 
 
 class SCreateLicenseResponse(License):
@@ -48,7 +48,9 @@ class SCreateLicenseResponse(License):
 
 
 class SEditLicenseRequest(License):
-    pass
+    title: Optional[str] = None
+    description: Optional[str] = None
+    price: Optional[str] = None
 
 
 class SEditLicensesResponse(BaseModel, DetailMixin):
