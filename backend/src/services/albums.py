@@ -82,22 +82,25 @@ class AlbumService:
     async def update_album(
         user_id: int,
         album_id: int,
-        title: str,
-        description: str,
-        prod_by: str,
+        title: str | None,
+        description: str | None,
+        prod_by: str | None,
     ) -> Album:
     
         album = await AlbumsRepository.find_one_by_id(id_=album_id)
     
         if album.user.id != user_id:
             raise NoRightsException()
-    
-        data = {
-            "name": title,
-            "description": description,
-            "prod_by": prod_by,
-        }
-    
+
+        data = dict()
+
+        if title:
+            data["title"] = title
+        if description:
+            data["description"] = description
+        if prod_by:
+            data["prod_by"] = prod_by
+
         return await AlbumsRepository.edit_one(album_id, data)
 
     @staticmethod
