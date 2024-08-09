@@ -15,13 +15,15 @@ from src.schemas.albums import (
     SUpdateAlbumRequest,
     SUpdateAlbumResponse,
 )
-from src.services import albums as services
+
 from src.schemas.auth import User
-from src.repositories.albums import AlbumsRepository
+from src.services.albums import get_album_service, AlbumService
+
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename, get_file_stream
 
 albums = APIRouter(prefix="/albums", tags=["Albums"])
+
 
 
 @albums.get(
@@ -33,6 +35,7 @@ albums = APIRouter(prefix="/albums", tags=["Albums"])
 )
 async def get_my_albums(
     user: User = Depends(get_current_user),
+    services: AlbumService = Depends(get_album_service)
 ) -> SMyAlbumsResponse:
 
     albums_ = await services.get_user_albums(user_id=user.id)
@@ -44,13 +47,14 @@ async def get_my_albums(
 @albums.get(
     path="/all",
     summary="Get all albums",
-    response_model=Album,
-    responses={status.HTTP_200_OK: {"model": Album}},
+    response_model=dict,
+    responses={status.HTTP_200_OK: {"model": dict}},
 )
-async def all_albums() -> SAllAlbumsResponse:
+async def all_albums(services: AlbumService = Depends(get_album_service)) -> dict:
 
     albums_ = await services.get_all_albums()
     albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
+
     return SAllAlbumsResponse(albums=albums_)
 
 
@@ -60,7 +64,10 @@ async def all_albums() -> SAllAlbumsResponse:
     response_model=SAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SAlbumResponse}},
 )
-async def get_one_album(album_id: int) -> SAlbumResponse:
+async def get_one_album(
+        album_id: int,
+        services: AlbumService = Depends(get_album_service)
+) -> SAlbumResponse:
 
     album = await services.get_one_album(album_id=album_id)
     return SAlbumResponse.from_db_model(model=album)
@@ -74,7 +81,8 @@ async def get_one_album(album_id: int) -> SAlbumResponse:
 )
 async def add_album(
     file: UploadFile = File(...),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    services: AlbumService = Depends(get_album_service)
 ) -> SAddAlbumResponse:
     file_info = unique_filename(file) if file else None
 
@@ -97,7 +105,8 @@ async def add_album(
 async def update_album_picture(
     album_id: int,
     file: UploadFile = File(...),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    services: AlbumService = Depends(get_album_service)
 ) -> SUpdateAlbumPictureResponse:
     album = await AlbumsRepository.find_one_by_id(id_=album_id)
 
