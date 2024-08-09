@@ -11,11 +11,11 @@ from src.services.auth import UsersDAO
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30  # 30 minutes
-REFRESH_TOKEN_EXPIRE_MINUTES = (60 * 24 * 7) * 2  # 14 days
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+REFRESH_TOKEN_EXPIRE_MINUTES = (60 * 24 * 7) * 2
 ALGORITHM = "HS256"
-JWT_SECRET_KEY = settings.auth.JWT_SECRET_KEY  # should be kept secret
-JWT_REFRESH_SECRET_KEY = settings.auth.JWT_REFRESH_SECRET_KEY  # should be kept secret
+JWT_SECRET_KEY = settings.auth.JWT_SECRET_KEY
+JWT_REFRESH_SECRET_KEY = settings.auth.JWT_REFRESH_SECRET_KEY
 
 
 def get_hashed_password(password: str) -> str:
