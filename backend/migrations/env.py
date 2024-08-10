@@ -6,8 +6,8 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
-from src.models.albums import Album, album_track_association, artist_profile_album_association  # noqa 401
-from src.models.auth import User, ProducerProfile, ArtistProfile, Role, user_to_roles_association  # noqa 401
+from src.models.albums import Album, AlbumTrackAssociation, AlbumTrackAssociation  # noqa 401
+from src.models.auth import User, ProducerProfile, ArtistProfile, Role  # noqa 401
 from src.models.beats import Beat  # noqa 401
 from src.models.tracks import Track  # noqa 401
 from src.models.subscriptions import TelegramAccount, OnlyTelegramSubscribeMonth, OnlyTelegramSubscribeYear  # noqa 401

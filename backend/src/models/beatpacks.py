@@ -7,19 +7,19 @@ from src.models.auth import User
 from src.models.beats import Beat
 from src.core.database import Base
 
-beats_to_beatpacks_association_table = Table(
-    "beats_to_beatpacks_association_table",
-    Base.metadata,
-    Column("beat_id", Integer, ForeignKey("beats.id")),
-    Column("beat_pack_id", Integer, ForeignKey("beatpacks.id")),
-)
 
-user_to_beatpacks_association_table = Table(
-    "user_to_beatpacks_association_table",
-    Base.metadata,
-    Column("beatpack_id", Integer, ForeignKey("beatpacks.id")),
-    Column("user_id", Integer, ForeignKey("users.id")),
-)
+class BeatToBeatpack(Base):
+    __tablename__ = "beats_to_beatpacks_association_table"
+
+    beat_id: Mapped[int] = mapped_column(Integer, ForeignKey("beats.id"), primary_key=True)
+    beatpack_id: Mapped[int] = mapped_column(Integer, ForeignKey("beatpacks.id"), primary_key=True)
+
+
+class UserToBeatpack(Base):
+    __tablename__ = "user_to_beatpacks_association_table"
+
+    beatpack_id: Mapped[int] = mapped_column(Integer, ForeignKey("beatpacks.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
 
 
 class Beatpack(Base):
@@ -29,8 +29,8 @@ class Beatpack(Base):
     description: Mapped[str] = mapped_column(String, nullable=False)
 
     users: Mapped[List["User"]] = relationship(
-        "User", secondary=user_to_beatpacks_association_table
+        "User", secondary="user_to_beatpacks_association_table"
     )
     beats: Mapped[List["Beat"]] = relationship(
-        "Beat", secondary=beats_to_beatpacks_association_table
+        "Beat", secondary="beats_to_beatpacks_association_table"
     )

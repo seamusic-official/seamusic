@@ -4,12 +4,11 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from src.core.database import Base
 
 
-user_to_licenses_association = Table(
-    "user_to_licenses_association",
-    Base.metadata,
-    Column("user_id", Integer, ForeignKey("users.id")),
-    Column("license_id", Integer, ForeignKey("licenses.id")),
-)
+class UserToLicense(Base):
+    __tablename__ = "user_to_licenses_association"
+
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
+    license_id: Mapped[int] = mapped_column(Integer, ForeignKey("licenses.id"), primary_key=True)
 
 
 class License(Base):
@@ -20,4 +19,4 @@ class License(Base):
     description: Mapped[str] = mapped_column(nullable=False)
     picture_url: Mapped[str] = mapped_column(nullable=True)
 
-    user: Mapped["User"] = relationship("User", secondary=user_to_licenses_association)
+    user: Mapped["User"] = relationship("User", secondary="user_to_licenses_association")

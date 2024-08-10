@@ -3,19 +3,19 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.database import Base
 
-artist_profile_album_association = Table(
-    "artist_profile_album_association",
-    Base.metadata,
-    Column("artist_profile_id", Integer, ForeignKey("artist_profiles.id")),
-    Column("album_id", Integer, ForeignKey("albums.id")),
-)
 
-album_track_association = Table(
-    "album_track_association",
-    Base.metadata,
-    Column("album_id", Integer, ForeignKey("albums.id")),
-    Column("track_id", Integer, ForeignKey("tracks.id")),
-)
+class ArtistProfileAlbumAssociation(Base):
+    __tablename__ = "artist_profile_album_association"
+
+    artist_profile_id: Mapped[int] = mapped_column(ForeignKey("artist_profiles.id"), primary_key=True)
+    album_id: Mapped[int] = mapped_column(ForeignKey("albums.id"), primary_key=True)
+
+
+class AlbumTrackAssociation(Base):
+    __tablename__ = "album_track_association"
+
+    album_id: Mapped[int] = mapped_column(ForeignKey("albums.id"), primary_key=True)
+    track_id: Mapped[int] = mapped_column(ForeignKey("tracks.id"), primary_key=True)
 
 
 class Album(Base):
@@ -29,10 +29,11 @@ class Album(Base):
     type: Mapped[str] = mapped_column(nullable=True)
 
     artist_profiles: Mapped["ArtistProfile"] = relationship(
-        secondary=artist_profile_album_association, back_populates="albums"
+        secondary="artist_profile_album_association", back_populates="albums"
     )
     tracks: Mapped["Track"] = relationship(
-        secondary=album_track_association, back_populates="albums"
+        secondary="album_track_association", back_populates="albums"
     )
+
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
     user: Mapped["User"] = relationship("User")

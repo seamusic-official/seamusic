@@ -1,7 +1,7 @@
 from sqlalchemy import Column, ForeignKey, Integer, Table
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
-from src.models.albums import album_track_association
+from src.models.albums import AlbumTrackAssociation
 from src.core.database import Base
 
 
@@ -29,6 +29,6 @@ class Track(Base):
         secondary=artist_profile_track_association, back_populates="tracks"
     )
     albums: Mapped["Album"] = relationship(
-        secondary=album_track_association, back_populates="tracks"
+        secondary="AlbumTrackAssociation", back_populates="tracks"
     )
     user: Mapped["User"] = relationship("User")

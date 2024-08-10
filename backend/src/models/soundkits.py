@@ -5,6 +5,13 @@ from src.models.auth import User
 from src.core.database import Base
 
 
+class UserToSoundkit(Base):
+    __tablename__ = "user_to_soundkits_association_table"
+
+    soundkit_id: Mapped[int] = mapped_column(Integer, ForeignKey("soundkits.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"), primary_key=True)
+
+
 class Soundkit(Base):
     __tablename__ = "soundkits"
 
@@ -14,11 +21,5 @@ class Soundkit(Base):
     file_url: Mapped[str] = mapped_column(nullable=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship("User")
+    user: Mapped["User"] = relationship("User", secondary="user_to_soundkits_association_table")
 
-    user_to_soundkits_association_table = Table(
-        "user_to_soundkits_association_table",
-        Base.metadata,
-        Column("soundkit_id", Integer, ForeignKey("soundkits.id")),
-        Column("user_id", Integer, ForeignKey("users.id")),
-    )
