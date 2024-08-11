@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, status
 
 from src.exceptions.api import NoRightsException
-from src.repositories.beatpacks import BeatpacksRepository
+
 from src.schemas.auth import User
 from src.schemas.beatpacks import (
     SBeatpackResponse,
@@ -14,6 +14,7 @@ from src.schemas.beatpacks import (
     SCreateBeatpackResponse,
     SEditBeatpackRequest,
 )
+from src.services.beatpacks import BeatpackService, get_beatpack_service
 from src.utils.auth import get_current_user
 
 
@@ -28,13 +29,11 @@ beatpacks = APIRouter(prefix="/beatpacks", tags=["Beatpacks"])
 )
 async def get_user_beatpacks(
     user: User = Depends(get_current_user),
+    service: BeatpackService = Depends(get_beatpack_service)
 ) -> SMyBeatpacksResponse:
+    beatpacks = await service.get_user_beatpacks(user_id=user.id)
 
-    response = await BeatpacksRepository.find_all(owner=user)
-    from_db_model = lambda beatpack: Beatpack.from_db_model(model=beatpack)  # noqa: E731
-
-    beatpacks_ = list(map(from_db_model, response))
-    return SMyBeatpacksResponse(beatpacks=beatpacks_)
+    return SMyBeatpacksResponse(beatpacks=beatpacks)
 
 
 @beatpacks.get(
@@ -43,11 +42,11 @@ async def get_user_beatpacks(
     response_model=SBeatpacksResponse,
     responses={status.HTTP_200_OK: {"model": SBeatpacksResponse}},
 )
-async def all_beatpacks() -> SBeatpacksResponse:
-    response = await BeatpacksRepository.find_all()
+async def all_beatpacks(service: BeatpackService = Depends(get_beatpack_service)) -> SBeatpacksResponse:
+    beatpacks = await service.get_all_beatpacks()
     return SBeatpacksResponse(
         beatpacks=[
-            SBeatpackResponse.from_db_model(model=beatpack) for beatpack in response
+            SBeatpackResponse.from_db_model(model=beatpack) for beatpack in beatpacks
         ]
     )
 
@@ -58,9 +57,13 @@ async def all_beatpacks() -> SBeatpacksResponse:
     response_model=SBeatpackResponse,
     responses={status.HTTP_200_OK: {"model": SBeatpackResponse}},
 )
-async def get_one(beatpack_id: int):
-    response = await BeatpacksRepository.find_one_by_id(beatpack_id)
-    return SBeatpackResponse.from_db_model(model=response)
+async def get_one(
+        beatpack_id: int,
+        service: BeatpackService = Depends(get_beatpack_service)
+):
+    beatpack = await service.get_one_beatpack(beatpack_id=beatpack_id)
+
+    return SBeatpackResponse.from_db_model(model=beatpack)
 
 
 @beatpacks.post(
@@ -69,9 +72,15 @@ async def get_one(beatpack_id: int):
     response_model=SCreateBeatpackResponse,
     responses={status.HTTP_200_OK: {"model": SCreateBeatpackResponse}},
 )
-async def add_beatpack(data: SCreateBeatpackRequest) -> SCreateBeatpackResponse:
-    response = await BeatpacksRepository.add_one(data.model_dump())
-    return SCreateBeatpackResponse.from_db_model(model=response)
+async def add_beatpack(
+        data: SCreateBeatpackRequest,
+        service: BeatpackService = Depends(get_beatpack_service)
+) -> SCreateBeatpackResponse:
+    beatpack = await service.add_beatpack(
+        title=data.title,
+        description=data.description
+    )
+    return SCreateBeatpackResponse.from_db_model(model=beatpack)
 
 
 @beatpacks.put(
@@ -84,15 +93,17 @@ async def update_beatpacks(
     beatpack_id: int,
     beatpacks_data: SEditBeatpackRequest,
     user: User = Depends(get_current_user),
+    service: BeatpackService = Depends(get_beatpack_service)
 ) -> SEditBeatpackResponse:
-    beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
+    beatpack = await service.update_beatpack(
+        beatpack_id=beatpack_id,
+        user_id=user.id,
+        title=beatpacks_data.title,
+        description=beatpacks_data.description
+    )
 
-    for user_ in beat_pack.users:
-        if user.id == user_.id:
-            await BeatpacksRepository.edit_one(beatpack_id, beatpacks_data.model_dump())
-            return SEditBeatpackResponse()
+    return SEditBeatpackResponse()
 
-    raise NoRightsException()
 
 
 @beatpacks.delete(
@@ -102,13 +113,13 @@ async def update_beatpacks(
     responses={status.HTTP_200_OK: {"model": SDeleteBeatpackResponse}},
 )
 async def delete_beatpacks(
-    beatpack_id: int, user: User = Depends(get_current_user)
+    beatpack_id: int,
+    user: User = Depends(get_current_user),
+    service: BeatpackService = Depends(get_beatpack_service)
 ) -> SDeleteBeatpackResponse:
-    beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
+    await service.delete_beatpack(
+        beatpack_id=beatpack_id,
+        user_id=user.id
+    )
+    return SDeleteBeatpackResponse()
 
-    for user_ in beat_pack.users:
-        if user.id == user_.id:
-            await BeatpacksRepository.delete(id_=beatpack_id)
-            return SDeleteBeatpackResponse()
-
-    raise NoRightsException()

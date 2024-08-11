@@ -1,67 +1,78 @@
-from src.exceptions.api import NoRightsException
+from dataclasses import dataclass
+
+
+from src.exceptions.services import NotFoundException, NoRightsException
 from src.models.beatpacks import Beatpack
-from src.repositories.beatpacks import BeatpacksRepository
-from src.schemas.auth import User
+from src.repositories.beatpacks.base import BaseBeatpackRepository
+from src.repositories.beatpacks.postgres import BeatpackRepository
 
 
-class BeatpacksService:
-    @staticmethod
-    async def get_user_beatpacks(user: User) -> list[Beatpack]:
-        return await BeatpacksRepository.find_all(owner=user)
+@dataclass
+class BeatpackService:
+    respository: BaseBeatpackRepository
 
-    @staticmethod
-    async def all_beatpacks() -> list[Beatpack]:
-        return await BeatpacksRepository.find_all()
+    async def get_user_beatpacks(self, user_id) -> list[Beatpack]:
+        return await self.respository.get_all_user_beatpacks(user_id=user_id)
 
-    @staticmethod
-    async def get_one(beatpack_id: int) -> Beatpack:
-        return await BeatpacksRepository.find_one_by_id(beatpack_id)
+    async def get_all_beatpacks(self) -> list[Beatpack]:
+        return await self.respository.get_all_beatpacks()
 
-    @staticmethod
-    async def add_beatpack(
-        title: str,
-        description: str,
-        beats: list[dict]
+    async def get_one_beatpack(self, beatpack_id: int) -> Beatpack:
+        beatpack = await self.respository.get_beatpack_by_id(beatpack_id=beatpack_id)
+
+        if not beatpack:
+            raise NotFoundException()
+
+        return beatpack
+
+    async def add_beatpack(self, title: str, description: str) -> None:
+        beatpack = Beatpack(
+            title=title,
+            description=description
+        )
+
+        return await self.respository.create_beatpack(beatpack=beatpack)
+
+    async def update_beatpack(
+            self,
+            beatpack_id: int,
+            user_id: int,
+            title: str | None = None,
+            description: str | None = None
     ) -> Beatpack:
+        beatpack = await self.respository.get_beatpack_by_id(beatpack_id=beatpack_id)
 
-        data = {
-            "title": title,
-            "description": description,
-            "beats": beats
-        }
+        if not beatpack:
+            raise NotFoundException()
 
-        return await BeatpacksRepository.add_one(data)
-
-    @staticmethod
-    async def update_beatpacks(
-        beatpack_id: int,
-        user_id: int,
-        title: str | None = None,
-        description: str | None = None,
-    ) -> None:
-
-        beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
-        data = dict()
-
-        if title:
-            data["title"] = title
-        if description:
-            data["description"] = description
-
-        for user_ in beat_pack.users:
-            if user_id == user_.id:
-                await BeatpacksRepository.edit_one(beatpack_id, data=data)
-                return
+        for user in beatpack.users:
+            if user.id == user_id:
+                beatpack = Beatpack(
+                    title=title if title else beatpack.title,
+                    description=description if description else beatpack.description
+                )
+                return await self.respository.edit_beatpack(beatpack=beatpack)
 
         raise NoRightsException()
 
-    @staticmethod
-    async def delete_beatpacks(beatpack_id: int, user_id: int) -> None:
-        beat_pack = await BeatpacksRepository.find_one_by_id(id_=beatpack_id)
+    async def delete_beatpack(self, beatpack_id: int, user_id: int):
+        beatpack = await self.respository.get_beatpack_by_id(beatpack_id=beatpack_id)
 
-        for user_ in beat_pack.users:
-            if user_id == user_.id:
-                await BeatpacksRepository.delete(id_=beatpack_id)
-                return
+        if not beatpack:
+            raise NotFoundException()
+
+        for user in beatpack.users:
+            if user.id == user_id:
+
+                return await self.respository.delete_beatpack(beatpack_id=beatpack_id)
 
         raise NoRightsException()
+
+
+def init_beatpack_repository() -> BaseBeatpackRepository:
+    return BeatpackRepository()
+
+def get_beatpack_service() -> BeatpackService:
+    repository = init_beatpack_repository()
+    return BeatpackService(respository=repository)
+

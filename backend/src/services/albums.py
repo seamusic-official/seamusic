@@ -4,7 +4,7 @@ from io import BytesIO
 
 from src.core.database import get_async_session
 from src.core.media import MediaRepository
-from src.exceptions.services import NoRightsException
+from src.exceptions.services import NoRightsException, NotFoundException
 from src.models.albums import Album
 from src.repositories.albums.album import AlbumRepository
 from src.repositories.albums.base import BaseAlbumRepository
@@ -29,7 +29,12 @@ class AlbumService:
 
 
     async def get_one_album(self, album_id: int) -> Album:
-        return await self.repository.get_album_by_id(album_id=album_id)
+        album = await self.repository.get_album_by_id(album_id=album_id)
+
+        if not album:
+            raise NotFoundException()
+
+        return album
 
 
     async def add_album(
@@ -65,6 +70,9 @@ class AlbumService:
     ) -> Album:
     
         album = await self.repository.get_album_by_id(album_id=album_id)
+
+        if not album:
+            raise NotFoundException()
     
         if album.user.id != user_id:
             raise NoRightsException()
@@ -91,6 +99,9 @@ class AlbumService:
         user_id: int,
     ) -> Album:
         album = await self.repository.get_album_by_id(album_id=album_id)
+
+        if not album:
+            raise NotFoundException()
     
         if album.user.id != user_id:
             raise NoRightsException()
@@ -110,12 +121,15 @@ class AlbumService:
         self,
         user_id: int,
         album_id: int,
-        title: str | None,
-        description: str | None,
-        prod_by: str | None,
+        title: str | None = None,
+        description: str | None = None,
+        prod_by: str | None = None,
     ) -> Album:
     
         album = await self.repository.get_album_by_id(album_id=album_id)
+
+        if not album:
+            raise NotFoundException()
     
         if album.user.id != user_id:
             raise NoRightsException()
@@ -123,8 +137,8 @@ class AlbumService:
         _album = Album(
             name=title,
             picture_url=album.picture_url,
-            description=description,
-            co_prod=prod_by,
+            description=description if description else album.description,
+            co_prod=prod_by if prod_by else album.co_prod,
             type=album.type,
             user_id=album.user_id
         )
@@ -133,16 +147,18 @@ class AlbumService:
 
     async def delete_albums(self, album_id: int, user_id: int) -> None:
         album = await self.repository.get_album_by_id(album_id=album_id)
+
+        if not album:
+            raise NotFoundException()
     
         if album.user.id != user_id:
             raise NoRightsException()
     
         await self.repository.delete_album(album_id=album_id, user_id=user_id)
 
-async def init_album_repository() -> BaseAlbumRepository:
-        async for session in get_async_session():
-            return AlbumRepository(_session=session)
+def init_album_repository() -> BaseAlbumRepository:
+            return AlbumRepository()
 
-async def get_album_service() -> AlbumService:
-    repository = await init_album_repository()
+def get_album_service() -> AlbumService:
+    repository = init_album_repository()
     return AlbumService(repository=repository)
