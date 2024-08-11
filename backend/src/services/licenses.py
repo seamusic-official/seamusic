@@ -9,7 +9,7 @@ class LicensesService:
         return await LicensesRepository.find_all(owner=user)
 
     @staticmethod
-    async def all_licenses() -> list[License]:
+    async def get_all_licenses() -> list[License]:
         return await LicensesRepository.find_all()
 
     @staticmethod
