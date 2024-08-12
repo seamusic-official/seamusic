@@ -29,5 +29,5 @@ class BaseAlbumRepository(ABC):
         ...
 
     @abstractmethod
-    async def delete_album(self, album_id: int,user_id: int) -> None:
+    async def delete_album(self, album_id: int,  user_id: int) -> None:
         ...

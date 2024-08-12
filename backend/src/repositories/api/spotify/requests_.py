@@ -1,27 +1,21 @@
-from abc import ABC
-
-import spotipy
-from spotipy.oauth2 import SpotifyClientCredentials
+from spotipy import SpotifyClientCredentials, Spotify
 
 from src.core.config import settings
+from src.repositories.api.base import APIRepository
+from src.repositories.api.spotify.base import BaseSpotifyRepository
 
 
-class AbstractRepository(ABC):
-    pass
-
-
-class Spotify(AbstractRepository):
-    sp = spotipy.Spotify(
+class SpotifyRepository(BaseSpotifyRepository, APIRepository):
+    client = Spotify(
         auth_manager=SpotifyClientCredentials(
             client_id=settings.spotify.CLIENT_ID,
             client_secret=settings.spotify.CLIENT_SECRET,
         )
     )
 
-    @staticmethod
-    def get_tracks():  # artist_id
+    def get_tracks(self, artist_id: int) -> list[dict]:
         lz_uri = "spotify:artist:36QJpDe2go2KgaRleHCDTp"
-        results = Spotify.sp.artist_top_tracks(lz_uri)
+        results = BaseSpotifyRepository.client.artist_top_tracks(lz_uri)
         tracks = []
 
         for track in results["tracks"]:
@@ -37,9 +31,8 @@ class Spotify(AbstractRepository):
 
         return tracks
 
-    @staticmethod
-    def get_tracks_from_album(album_id):
-        results = Spotify.sp.album_tracks(album_id)
+    def get_tracks_from_album(self, album_id: int) -> list[dict]:
+        results = BaseSpotifyRepository.client.album_tracks(album_id)
         tracks = []
 
         for track in results["items"]:
@@ -56,15 +49,13 @@ class Spotify(AbstractRepository):
 
         return tracks
 
-    @staticmethod
-    def track(track_id):
-        results = Spotify.sp.track(track_id)
+    def get_track(self, track_id):
+        results = BaseSpotifyRepository.client.track(track_id)
         return results["preview_url"]
 
-    @staticmethod
-    def get_albums():  # artist_id
+    def get_albums(self, artist_id: int) -> list[dict]:
         lz_uri = "spotify:artist:36QJpDe2go2KgaRleHCDTp"
-        results = Spotify.sp.artist_albums(lz_uri)
+        results = BaseSpotifyRepository.client.artist_albums(lz_uri)
         tracks = []
 
         for track in results["items"]:
@@ -78,9 +69,8 @@ class Spotify(AbstractRepository):
 
         return tracks
 
-    @staticmethod
-    def get_album(album_id):
-        album = Spotify.sp.album(album_id)
+    def get_album(self, album_id: int) -> dict:
+        album = BaseSpotifyRepository.client.album(album_id)
 
         album_detail = {
             "id": album["id"],
@@ -97,23 +87,11 @@ class Spotify(AbstractRepository):
 
         return album_detail
 
-    @staticmethod
-    def get_artist(artist_id):
-        results = Spotify.sp.artist(artist_id)
-        artists = []
+    def get_artist(self, artist_id: int) -> dict:
+        return BaseSpotifyRepository.client.artist(artist_id)
 
-        for artist in results["artist"]["items"]:
-            track_data = {
-                "name": artist["name"],
-            }
-
-            artists.append(track_data)
-
-        return artists
-
-    @staticmethod
-    def search(query):
-        results = Spotify.sp.search(q=query, type="track,artist,album")
+    def search(self, query: str) -> list[dict]:
+        results = BaseSpotifyRepository.client.search(q=query, type="track,artist,album")
         search_results = []
 
         # Поиск по артистам
