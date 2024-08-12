@@ -1,21 +1,21 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.models.beatpacks import Beatpack
+from src.repositories.dtos.beatpacks import BeatpackDTO
 
 
 @dataclass
 class BaseBeatpacksRepository(ABC):
     @abstractmethod
-    async def get_user_beatpacks(self, user: dict) -> list[Beatpack]:
+    async def get_user_beatpacks(self, user: dict) -> list[BeatpackDTO]:
         ...
 
     @abstractmethod
-    async def get_all_beatpacks(self) -> list[Beatpack]:
+    async def get_all_beatpacks(self) -> list[BeatpackDTO]:
         ...
 
     @abstractmethod
-    async def get_one_beatpack(self, beatpack_id: int) -> Beatpack:
+    async def get_one_beatpack(self, beatpack_id: int) -> BeatpackDTO:
         ...
 
     @abstractmethod
