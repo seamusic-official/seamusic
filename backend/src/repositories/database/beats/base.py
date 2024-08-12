@@ -7,15 +7,15 @@ from src.models.beats import Beat
 @dataclass
 class BaseBeatsRepository(ABC):
     @abstractmethod
-    async def get_user_beats(self, user_id: int) -> list[Beat]:
+    async def get_user_beats(self, user_id: int) -> list[BeatDTO]:
         ...
 
     @abstractmethod
-    async def all_beats(self) -> list[Beat]:
+    async def all_beats(self) -> list[BeatDTO]:
         ...
 
     @abstractmethod
-    async def get_one_beat(self, beat_id: int) -> Beat:
+    async def get_one_beat(self, beat_id: int) -> BeatDTO:
         ...
 
     @abstractmethod
