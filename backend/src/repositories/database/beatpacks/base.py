@@ -4,17 +4,19 @@ from dataclasses import dataclass
 from src.repositories.dtos.beatpacks import (
     BeatpackResponseDTO,
     BeatpacksResponseDTO,
+    CreateBeatpackRequestDTO,
+    UpdateBeatpackRequestDTO
 )
 
 
 @dataclass
 class BaseBeatpacksRepository(ABC):
     @abstractmethod
-    async def get_user_beatpacks(self, user: dict) -> BeatpacksResponseDTO:
+    async def get_user_beatpacks(self, user_id: int) -> BeatpacksResponseDTO:
         ...
 
     @abstractmethod
-    async def get_all_beatpacks(self) -> list[BeatpackResponseDTO]:
+    async def get_all_beatpacks(self) -> BeatpacksResponseDTO:
         ...
 
     @abstractmethod
@@ -22,11 +24,11 @@ class BaseBeatpacksRepository(ABC):
         ...
 
     @abstractmethod
-    async def add_beatpack(self, data: dict) -> None:
+    async def add_beatpack(self, album: CreateBeatpackRequestDTO) -> BeatpackResponseDTO:
         ...
 
     @abstractmethod
-    async def update_beatpack(self, data: dict) -> None:
+    async def update_beatpack(self, album: UpdateBeatpackRequestDTO) -> BeatpackResponseDTO:
         ...
 
     @abstractmethod

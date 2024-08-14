@@ -8,7 +8,7 @@ from src.models.licenses import License
 @dataclass
 class BaseLicensesRepository(ABC):
     @abstractmethod
-    async def get_user_licenses(self, user: dict, **filter_by) -> Iterable[License]:
+    async def get_user_licenses(self, user_id: int, **filter_by) -> Iterable[License]:
         ...
 
     @abstractmethod
