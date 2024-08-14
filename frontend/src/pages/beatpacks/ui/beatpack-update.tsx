@@ -8,7 +8,7 @@ import msToMin from '@/shared/utils/ms-to-min';
 import { SongLoading } from '@/shared/ui/loading-elements';
 import { BeatpackService } from '@/services';
 
-export function Beatpack() {
+export function BeatpackUpdate() {
 	const [data, setData] = useState([]);
 	const [tracks, setTracks] = useState([]);
 	const { id } = useParams<any>();

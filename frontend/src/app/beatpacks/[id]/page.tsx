@@ -1,9 +1,9 @@
 'use client';
-import { Beatpack } from '@/pages/beatpacks';
+import { BeatpackDetail } from '@/pages/beatpacks';
 import { HelloLayout } from '@/shared/layouts';
 
 function Page() {
-	return <HelloLayout><Beatpack /></HelloLayout>;
+	return <HelloLayout><BeatpackDetail /></HelloLayout>;
 }
 
 export default Page;

@@ -2,7 +2,7 @@ import { MainLayout } from '@/shared/layouts';
 import dess from '@/shared/assets/everydesigner.png';
 import { Song } from '@/entities/song';
 
-export function KitCreate() {
+export function SoundkitCreate() {
 	return (
 		<MainLayout>
 			<div className="mt-8">

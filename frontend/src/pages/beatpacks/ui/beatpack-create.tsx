@@ -11,11 +11,9 @@ import { Input } from '@/shared/ui/input';
 import { useAppSelector } from '@/shared/hooks/redux';
 import { SubmitButton } from '@/shared/ui/buttons';
 
-export function AddBeatpack() {
+export function BeatpackCreate() {
 	const user = useAppSelector((state) => state.auth.user);
 
-	const [data, setData] = useState([]);
-	const [tracks, setTracks] = useState([]);
 	const { id } = useParams();
 	const [loading, setLoading] = useState(true);
 	const [info, setInfo] = useState('');
@@ -29,9 +27,8 @@ export function AddBeatpack() {
 	useEffect(() => {
 		const fetchData = async () => {
 			try {
-				const response = await BeatpackService.get_one(id);
+				const response = await BeatpackService.add();
 				const responseData = response.data;
-				setData(responseData);
 			} catch (error) {
 				console.error(error);
 			}
@@ -40,21 +37,6 @@ export function AddBeatpack() {
 		fetchData();
 	}, []);
 
-	// useEffect(() => {
-	//   const fetchData = async () => {
-	//     try {
-	//       const response = await BeatpackService.get_one(id);
-	//       const responseData = response.data;
-	//       setTracks(responseData);
-	//       console.log(responseData)
-	//       setLoading(false);
-	//     } catch (error) {
-	//       console.error(error);
-	//     }
-	//   };
-
-	//   fetchData();
-	// }, []);
 
 	return (
 		<MainLayout>

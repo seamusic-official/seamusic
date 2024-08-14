@@ -1,8 +1,9 @@
 'use client';
-import { AlbumDetail } from '@/pages/albums';
+import { Albums } from '@/pages/albums';
+import { MainLayout } from '@/shared/layouts';
 
 function Page() {
-	return <AlbumDetail />;
+	return <MainLayout><Albums /></MainLayout>;
 }
 
 export default Page;

@@ -1,13 +1,13 @@
 import { AxiosResponse } from 'axios';
 import $api from '@/shared/utils/http';
 
-export class KitService {
+export class SoundkitService {
 	static async all(): Promise<AxiosResponse> {
-		return $api.get('kits/');
+		return $api.get('soundkits/');
 	}
 
 	static async add(data: any): Promise<AxiosResponse> {
-		return $api.post('kits/', data, {
+		return $api.post('soundkits/', data, {
 			headers: {
 				'Content-Type': 'multipart/form-data',
 			},
@@ -15,7 +15,7 @@ export class KitService {
 	}
 
 	static async update_picture(id: number, data: any): Promise<AxiosResponse> {
-		return $api.post(`kits/picture/${id}`, data, {
+		return $api.post(`soundkits/picture/${id}`, data, {
 			headers: {
 				'Content-Type': 'multipart/form-data',
 			},
@@ -23,17 +23,17 @@ export class KitService {
 	}
 
 	static async update(id: number, data: any): Promise<AxiosResponse> {
-		return $api.post(`kits/release/${id}`, data);
+		return $api.post(`soundkits/release/${id}`, data);
 	}
 
 	static async delete(id: number): Promise<AxiosResponse> {
-		return $api.delete(`kits/${id}`);
+		return $api.delete(`soundkits/${id}`);
 	}
 	static async get_one(id: number): Promise<AxiosResponse> {
-		return $api.get(`kits/${id}`);
+		return $api.get(`soundkits/${id}`);
 	}
 
 	static async my(): Promise<AxiosResponse> {
-		return $api.get(`kits/my`);
+		return $api.get(`soundkits/my`);
 	}
 }
