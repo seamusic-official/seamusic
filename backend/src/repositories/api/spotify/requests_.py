@@ -1,11 +1,11 @@
 from spotipy import SpotifyClientCredentials, Spotify
 
 from src.core.config import settings
-from src.repositories.api.base import APIRepository
+from src.repositories.api.base import BaseAPIRepository
 from src.repositories.api.spotify.base import BaseSpotifyRepository
 
 
-class SpotifyRepository(BaseSpotifyRepository, APIRepository):
+class SpotifyRepository(BaseSpotifyRepository, BaseAPIRepository):
     client = Spotify(
         auth_manager=SpotifyClientCredentials(
             client_id=settings.spotify.CLIENT_ID,

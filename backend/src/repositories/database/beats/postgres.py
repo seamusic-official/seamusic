@@ -4,23 +4,23 @@ from src.models.beats import Beat
 from src.repositories.converters.beats import convert_beat_db_query_result_to_dto
 from src.repositories.database.base import SQLAlchemyRepository
 from src.repositories.database.beats.base import BaseBeatsRepository
-from src.repositories.dtos.beats import BeatDTO
+from src.repositories.dtos.beats import BeatResponseDTO
 
 
 class BeatsRepository(BaseBeatsRepository, SQLAlchemyRepository):
-    async def get_user_beats(self, user_id: int) -> list[BeatDTO]:
+    async def get_user_beats(self, user_id: int) -> list[BeatResponseDTO]:
         query = select(Beat).filter_by(user_id=user_id)
         beats = await self.session.scalars(query)
 
         return [convert_beat_db_query_result_to_dto(beat=beat) for beat in beats]
 
-    async def all_beats(self) -> list[BeatDTO]:
+    async def all_beats(self) -> list[BeatResponseDTO]:
         query = select(Beat)
         beats = await self.session.scalars(query)
 
         return [convert_beat_db_query_result_to_dto(beat=beat) for beat in beats]
 
-    async def get_one_beat(self, beat_id: int) -> BeatDTO | None:
+    async def get_one_beat(self, beat_id: int) -> BeatResponseDTO | None:
         beat = await self.session.get(Beat, beat_id)
 
         return convert_beat_db_query_result_to_dto(beat=beat)

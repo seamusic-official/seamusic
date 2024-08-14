@@ -1,3 +1,4 @@
+from abc import ABC
 from dataclasses import dataclass
 
 import aiohttp
@@ -5,19 +6,19 @@ import requests
 
 
 @dataclass
-class APIRepository:
+class BaseAPIRepository(ABC):
     pass
 
 
 @dataclass
-class RequestsRepository(APIRepository):
+class RequestsRepository(BaseAPIRepository):
     @property
     def session(self) -> requests.Session:
         return requests.session()
 
 
 @dataclass
-class AiohttpRepositpry(APIRepository):
+class AiohttpRepositpry(BaseAPIRepository):
     @property
     async def session(self):
         async with aiohttp.ClientSession() as session_:

@@ -7,25 +7,25 @@ from src.models.beatpacks import Beatpack
 from src.repositories.converters.beatpacks import convert_beatpack_db_query_result_to_dto
 from src.repositories.database.base import SQLAlchemyRepository
 from src.repositories.database.beatpacks.base import BaseBeatpacksRepository
-from src.repositories.dtos.beatpacks import BeatpackDTO
+from src.repositories.dtos.beatpacks import BeatpackResponseDTO
 
 
 @dataclass
 class BeatpacksRepository(BaseBeatpacksRepository, SQLAlchemyRepository):
-    async def get_user_beatpacks(self, user: dict) -> list[BeatpackDTO]:
+    async def get_user_beatpacks(self, user: dict) -> list[BeatpackResponseDTO]:
         user = User(**user)
         query = select(Beatpack).where(user in Beatpack.users)
         beatpacks = await self.session.scalars(query)
 
         return [convert_beatpack_db_query_result_to_dto(beatpack=beatpack) for beatpack in beatpacks]
 
-    async def get_all_beatpacks(self) -> list[BeatpackDTO]:
+    async def get_all_beatpacks(self) -> list[BeatpackResponseDTO]:
         query = select(Beatpack)
         beatpacks = await self.session.scalars(query)
 
         return [convert_beatpack_db_query_result_to_dto(beatpack=beatpack) for beatpack in beatpacks]
 
-    async def get_one_beatpack(self, beatpack_id: int) -> BeatpackDTO | None:
+    async def get_one_beatpack(self, beatpack_id: int) -> BeatpackResponseDTO | None:
         beatpack = await self.session.get(Beatpack, beatpack_id)
 
         return convert_beatpack_db_query_result_to_dto(beatpack=beatpack)
