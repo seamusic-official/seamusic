@@ -1,4 +1,4 @@
-from src.repositories.dtos.base import BaseResponseDTO, BaseDTO
+from src.repositories.dtos.base import BaseResponseDTO, BaseDTO, BaseRequestDTO
 
 
 class TelegramAccount(BaseDTO):
@@ -37,5 +37,9 @@ class TelegramAccountResponseDTO(BaseResponseDTO):
     only_telegram_subscribe_month: OnlyTelegramSubscribeMonth
 
 
-class STelegramAccountsIDResponse(BaseResponseDTO):
+class TelegramAccountsIDSResponseDTO(BaseResponseDTO):
     ids: list[int]
+
+
+class CreateTelegramAccountRequestDTO(BaseRequestDTO):
+    id: int
