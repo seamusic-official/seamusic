@@ -11,7 +11,6 @@ from src.schemas.spotify import (
     SSpotifyArtistResponse,
     SSpotifySearchResponse,
 )
-from src.repositories.spotify import Spotify
 
 music = APIRouter(prefix="/music", tags=["Spotify"])
 

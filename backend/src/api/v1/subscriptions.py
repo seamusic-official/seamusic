@@ -1,7 +1,7 @@
 from fastapi import APIRouter, status, HTTPException
 
-from dtos.database.subscriptions import TelegramAccountsIDSResponseDTO, STelegramAccountResponse
-from src.repositories.subscriptions import TelegramAccountDAO
+from src.dtos.database.subscriptions import TelegramAccountsIDSResponseDTO
+from src.schemas.subscriptions import STelegramAccountResponse
 
 subscription = APIRouter(
     prefix="/subscription", tags=["Subscription"], include_in_schema=False

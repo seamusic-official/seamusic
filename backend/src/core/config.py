@@ -50,12 +50,16 @@ class AuthSettings(BaseModel):
     JWT_REFRESH_SECRET_KEY: str = os.environ["JWT_REFRESH_SECRET_KEY"]
 
 
+class S3Settings(BaseModel):
+    BUCKET_NAME: str = os.environ["BUCKET_NAME"]
+
 class Settings(BaseSettings):
     root_url: str = os.environ["ROOT_URL"]
     db: DbSettings = DbSettings()
     auth: AuthSettings = AuthSettings()
     spotify: SpotifySettings = SpotifySettings()
     yandex_cloud: YandexCloudSettings = YandexCloudSettings()
+    s3: S3Settings = S3Settings()
 
 
 settings = Settings()

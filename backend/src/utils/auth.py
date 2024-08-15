@@ -6,7 +6,7 @@ from passlib.context import CryptContext
 
 from src.core.config import settings
 from src.models.auth import User as _User
-from src.repositories.auth import UsersDAO
+
 from src.schemas.auth import User
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

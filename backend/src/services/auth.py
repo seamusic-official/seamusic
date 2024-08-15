@@ -4,12 +4,10 @@ from io import BytesIO
 import requests
 
 from src.core.config import settings
-from src.repositories.media.base import S3Repository
+
 from src.enums.auth import Role
 from src.exceptions.services import NotFoundException, NoRightsException, ServerError
 from src.models.auth import User, ArtistProfile, ProducerProfile
-from src.repositories.database.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
-from src.repositories.tags import ListenerTagsDAO, TagsDAO
 from src.utils.auth import create_access_token, create_refresh_token, get_hashed_password
 
 

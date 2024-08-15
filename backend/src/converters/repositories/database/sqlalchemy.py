@@ -1,5 +1,5 @@
 from src.core.database import Base
-from dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from src.dtos.database.base import BaseResponseDTO, BaseDTO, BaseRequestDTO
 
 
 def model_to_response_dto(response_dto: type[BaseResponseDTO], model: Base | None = None) -> BaseResponseDTO | None:

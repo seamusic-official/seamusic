@@ -1,7 +1,7 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.exceptions.api import NoRightsException
-from src.repositories.media.base import S3Repository
+
 from src.schemas.auth import User
 from src.schemas.beats import (
     SBeatResponse,
@@ -14,7 +14,7 @@ from src.schemas.beats import (
     SBeatReleaseResponse,
 )
 from src.schemas.beats import SBeatUpdateRequest, SBeatUpdateResponse
-from src.repositories.beats import BeatsRepository
+
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename
 

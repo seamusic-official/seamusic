@@ -3,8 +3,6 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-# from fastapi_cache import FastAPICache
-# from fastapi_cache.backends.redis import RedisBackend
 from sqladmin import Admin, ModelView
 
 from src.api.v1 import v1
@@ -51,6 +49,20 @@ class BeatpackAdmin(ModelView, model=Beatpack):
 
 @asynccontextmanager
 async def lifespan(application: FastAPI):  # noqa
+
+    yield
+
+
+def create_app() -> FastAPI:
+
+    app = FastAPI(
+        title="SeaMusic",
+        description="High-perfomance musical application",
+        lifespan=lifespan,
+    )
+
+    admin = Admin(app, engine)
+
     admin.add_view(SoundkitAdmin)
     admin.add_view(TagAdmin)
     admin.add_view(SquadAdmin)
@@ -60,28 +72,14 @@ async def lifespan(application: FastAPI):  # noqa
     admin.add_view(ProducerProfileAdmin)
     admin.add_view(ArtistProfileAdmin)
 
-    # redis = Redis(host='localhost', port=6379, decode_responses=True, encoding='utf8')
-    # FastAPIC  ache.init(RedisBackend(redis), prefix="fastapi-cache")
+    origins = ["http://127.0.0.1:5173", "http://localhost:5173"]
 
-    yield
-
-    # await redis.aclose()
-
-
-app = FastAPI(
-    title="SeaMusic",
-    description="High-perfomance musical application",
-    lifespan=lifespan,
-)
-admin = Admin(app, engine)
-
-origins = ["http://127.0.0.1:5173", "http://localhost:5173"]
-
-app.include_router(v1)
-app.add_middleware(
-    CORSMiddleware,  # type: ignore
-    allow_credentials=True,
-    allow_origins=origins,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
+    app.include_router(v1)
+    app.add_middleware(
+        CORSMiddleware,  # type: ignore
+        allow_credentials=True,
+        allow_origins=origins,
+        allow_methods=["*"],
+        allow_headers=["*"],
+    )
+    return app
