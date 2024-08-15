@@ -1,7 +1,5 @@
-import { MainLayout } from '@/shared/layouts';
 import dess from '@/shared/assets/everydesigner.png';
 import { Song } from '@/entities/song';
-import { useAppSelector } from '@/shared/hooks/redux';
 import { KitLink } from '@/shared/ui/links';
 import { AddButtonPlus } from '@/shared/ui/buttons';
 import { DefaultButton } from '@/shared/ui/buttons';
@@ -11,14 +9,14 @@ import { SongLoading } from '@/shared/ui/loading-elements';
 import { LicenseLink } from '@/shared/ui/links';
 
 export function Profile() {
-	const user = useAppSelector((state) => state.auth.user);
+	// const user = useAppSelector((state) => state.auth.user);
 	const [beats, setBeats] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	useEffect(() => {
 		const get_all_beats = async () => {
 			try {
-				const response = await BeatService.my();
+				const response = await BeatService.all();
 				const responseData = response.data;
 				setBeats(responseData);
 				setLoading(false);
@@ -33,13 +31,13 @@ export function Profile() {
 	}, []);
 
 	return (
-		<MainLayout>
+		<>
 			<div className="">
 				<div className="mt-2 flex items-center flex-wrap">
 					<div className="relative">
 						<img
 							id="playlist-thumbnail"
-							src={user.picture_url}
+							src=""
 							alt="alan walker artist"
 							className="w-56 h-56 mr-6 rounded-full border border-neutral-600"
 						/>
@@ -48,10 +46,10 @@ export function Profile() {
 
 					<div className="mt-16">
 						<h2 className="text-gray-50 uppercase text-xs font-semibold tracking-tighter mt-1">
-							{user.role}
+							{/* {user.role} */}
 						</h2>
 						<h1 className="text-white text-6xl tracking-tighter font-extrabold truncate">
-							{user.username}
+							{/* {user.username} */}
 						</h1>
 						<div className="mr-1 mb-4 mt-4">
 							<a
@@ -165,7 +163,7 @@ export function Profile() {
 
 					<div>
 						<h1 className="flex items-center text-white font-extrabold text-2xl mt-6">
-							{user.username}'s kits <AddButtonPlus link="/dashboard" />
+							{/* {user.username}'s kits <AddButtonPlus link="/dashboard" /> */}
 						</h1>
 						<div className="flex overflow-auto justify-start items-center mb-4">
 							<div>
@@ -178,7 +176,7 @@ export function Profile() {
 						</div>
 					</div>
 					<h1 className="flex items-center text-white font-extrabold text-2xl mt-6">
-						{user.username}'s tracks <AddButtonPlus link="/dashboard" />
+						{/* {user.username}'s tracks <AddButtonPlus link="/dashboard" /> */}
 					</h1>
 					<div className="my-1 mx-2 h-72 overflow-y-auto md:h-full md:overflow-hidden">
 						<table className="w-full cursor-default">
@@ -245,6 +243,6 @@ export function Profile() {
 					</div>
 				</div>
 			</div>
-		</MainLayout>
+		</>
 	);
 }
