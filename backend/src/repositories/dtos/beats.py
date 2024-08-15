@@ -21,6 +21,10 @@ class BeatResponseDTO(BaseResponseDTO):
     user_id: int
 
 
+class BeatsResponseDTO(BaseResponseDTO):
+    beats: list[Beat]
+
+
 class CreateBeatRequestDTO(BaseRequestDTO):
     title: str
     description: str

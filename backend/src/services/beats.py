@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from src.core.media import MediaRepository
+from src.repositories.media.base import S3Repository
 from src.exceptions.services import NoRightsException
 from src.models.beats import Beat
 from src.repositories.beats import BeatsRepository
@@ -25,7 +25,7 @@ class BeatsService:
             file_stream: BytesIO,
             user: dict
     ) -> Beat:
-        file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file_stream)
+        file_url = await S3Repository.upload_file("AUDIOFILES", file_info, file_stream)
 
         data = {
             "title": "Unknown title",
@@ -49,7 +49,7 @@ class BeatsService:
         if beat.user_id != user_id:
             raise NoRightsException()
 
-        file_url = await MediaRepository.upload_file("PICTURES", file_info, file_stream)
+        file_url = await S3Repository.upload_file("PICTURES", file_info, file_stream)
 
         data = {"picture_url": file_url}
 

@@ -1,33 +1,34 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
+from repositories.dtos.beats import BeatsResponseDTO
 from src.repositories.dtos.beats import (
     BeatResponseDTO,
     CreateBeatRequestDTO,
     UpdateBeatRequestDTO
-    )
+)
 
 
 @dataclass
 class BaseBeatsRepository(ABC):
     @abstractmethod
-    async def get_user_beats(self, user_id: int) -> list[BeatResponseDTO]:
+    async def get_user_beats(self, user_id: int) -> BeatsResponseDTO:
         ...
 
     @abstractmethod
-    async def all_beats(self) -> list[BeatResponseDTO]:
+    async def all_beats(self) -> BeatsResponseDTO:
         ...
 
     @abstractmethod
-    async def get_one_beat(self, beat_id: int) -> BeatResponseDTO:
+    async def get_one_beat(self, beat_id: int) -> BeatResponseDTO | None:
         ...
 
     @abstractmethod
-    async def create_beat(self, beat: CreateBeatRequestDTO) -> BeatResponseDTO:
+    async def create_beat(self, beat: CreateBeatRequestDTO) -> None:
         ...
 
     @abstractmethod
-    async def update_beat(self, beat: UpdateBeatRequestDTO) -> BeatResponseDTO:
+    async def update_beat(self, beat: UpdateBeatRequestDTO) -> None:
         ...
 
     @abstractmethod

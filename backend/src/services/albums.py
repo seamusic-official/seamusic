@@ -2,8 +2,7 @@ from dataclasses import dataclass
 
 from io import BytesIO
 
-from src.core.database import get_async_session
-from src.core.media import MediaRepository
+from src.repositories.media.base import S3Repository
 from src.exceptions.services import NoRightsException, NotFoundException
 from src.models.albums import Album
 from src.repositories.albums.album import AlbumRepository
@@ -47,7 +46,7 @@ class AlbumService:
         user_id: int,
     ) -> Album:
     
-        file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file_stream)
+        file_url = await S3Repository.upload_file("AUDIOFILES", file_info, file_stream)
 
         album = Album(
             name=title,
@@ -77,7 +76,7 @@ class AlbumService:
         if album.user.id != user_id:
             raise NoRightsException()
     
-        file_url = await MediaRepository.upload_file("PICTURES", file_info, file_stream)
+        file_url = await S3Repository.upload_file("PICTURES", file_info, file_stream)
 
         _album = Album(
             name=album.name,

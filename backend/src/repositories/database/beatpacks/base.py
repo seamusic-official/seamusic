@@ -20,15 +20,15 @@ class BaseBeatpacksRepository(ABC):
         ...
 
     @abstractmethod
-    async def get_one_beatpack(self, beatpack_id: int) -> BeatpackResponseDTO:
+    async def get_one_beatpack(self, beatpack_id: int) -> BeatpackResponseDTO | None:
         ...
 
     @abstractmethod
-    async def add_beatpack(self, album: CreateBeatpackRequestDTO) -> BeatpackResponseDTO:
+    async def add_beatpack(self, beatpack: CreateBeatpackRequestDTO) -> None:
         ...
 
     @abstractmethod
-    async def update_beatpack(self, album: UpdateBeatpackRequestDTO) -> BeatpackResponseDTO:
+    async def update_beatpack(self, beatpack: UpdateBeatpackRequestDTO) -> None:
         ...
 
     @abstractmethod

@@ -1,7 +1,7 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
 from src.exceptions.api import NoRightsException
-from src.core.media import MediaRepository
+from src.repositories.media.base import S3Repository
 from src.schemas.auth import User
 from src.schemas.beats import (
     SBeatResponse,
@@ -70,7 +70,7 @@ async def add_beats(
     file: UploadFile = File(...), user: User = Depends(get_current_user)
 ) -> SCreateBeatResponse:
     file_info = await unique_filename(file) if file else None
-    file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file)
+    file_url = await S3Repository.upload_file("AUDIOFILES", file_info, file)
 
     data = {
         "title": "Unknown title",
@@ -99,7 +99,7 @@ async def update_pic_beats(
         raise NoRightsException()
 
     file_info = await unique_filename(file) if file else None
-    file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
+    file_url = await S3Repository.upload_file("PICTURES", file_info, file)
 
     data = {"picture_url": file_url}
 

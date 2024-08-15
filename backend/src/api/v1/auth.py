@@ -1,17 +1,12 @@
-import requests
 from fastapi import (
     UploadFile,
     File,
     APIRouter,
     Depends,
-    HTTPException,
     Response,
     status,
 )
 from src.services import auth as services
-from src.exceptions.api import NotFoundException, NoRightsException
-from src.core.config import settings
-from src.core.media import MediaRepository
 from src.schemas.auth import (
     SRefreshTokenResponse,
     SSpotifyCallbackResponse,
@@ -41,16 +36,9 @@ from src.schemas.auth import (
     SDeleteProducerResponse,
     SLoginResponse,
 )
-from src.repositories.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
-from src.repositories.tags import ListenerTagsDAO, TagsDAO
 from src.utils.auth import (
-    authenticate_user,
-    create_access_token,
-    create_refresh_token,
-    get_hashed_password,
     get_current_user,
 )
-from src.utils.files import unique_filename
 
 auth = APIRouter(prefix="/auth", tags=["Auth & Users"])
 

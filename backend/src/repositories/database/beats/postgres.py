@@ -1,33 +1,43 @@
 from sqlalchemy import select, delete
 
 from src.models.beats import Beat
-from src.repositories.converters.beats import convert_beat_db_query_result_to_dto
+from src.repositories.converters.sqlalchemy import request_dto_to_model, models_to_dto, model_to_response_dto
 from src.repositories.database.base import SQLAlchemyRepository
 from src.repositories.database.beats.base import BaseBeatsRepository
-from src.repositories.dtos.beats import BeatResponseDTO
+from src.repositories.dtos.beats import (
+    Beat as _Beat,
+    BeatResponseDTO,
+    BeatsResponseDTO,
+    CreateBeatRequestDTO,
+    UpdateBeatRequestDTO
+)
 
 
 class BeatsRepository(BaseBeatsRepository, SQLAlchemyRepository):
-    async def get_user_beats(self, user_id: int) -> list[BeatResponseDTO]:
+    async def get_user_beats(self, user_id: int) -> BeatsResponseDTO:
         query = select(Beat).filter_by(user_id=user_id)
-        beats = await self.session.scalars(query)
+        beats = list(await self.session.scalars(query))
+        return BeatsResponseDTO(beats=models_to_dto(models=beats, dto=_Beat))
 
-        return [convert_beat_db_query_result_to_dto(beat=beat) for beat in beats]
-
-    async def all_beats(self) -> list[BeatResponseDTO]:
+    async def all_beats(self) -> BeatsResponseDTO:
         query = select(Beat)
-        beats = await self.session.scalars(query)
-
-        return [convert_beat_db_query_result_to_dto(beat=beat) for beat in beats]
+        beats = list(await self.session.scalars(query))
+        return BeatsResponseDTO(beats=models_to_dto(models=beats, dto=_Beat))
 
     async def get_one_beat(self, beat_id: int) -> BeatResponseDTO | None:
-        beat = await self.session.get(Beat, beat_id)
+        return model_to_response_dto(
+            model=await self.session.get(Beat, beat_id),
+            response_dto=BeatResponseDTO
+        )
 
-        return convert_beat_db_query_result_to_dto(beat=beat)
+    async def create_beat(self, beat: CreateBeatRequestDTO) -> None:
+        beat = request_dto_to_model(model=Beat, request_dto=beat)
+        self.session.add(beat)
 
-    async def update_beat(self, data: dict) -> None:
-        await self.session.merge(Beat(**data))
+    async def update_beat(self, beat: UpdateBeatRequestDTO) -> None:
+        beat = request_dto_to_model(model=Beat, request_dto=beat)
+        await self.session.merge(beat)
 
     async def delete_beat(self, beat_id: int, user_id: int) -> None:
-        query = delete(Beat).filter_by(beat_id=beat_id, user_id=user_id)
+        query = delete(Beat).filter_by(id=beat_id, user_id=user_id)
         await self.session.execute(query)

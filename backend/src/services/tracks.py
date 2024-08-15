@@ -1,6 +1,6 @@
 from io import BytesIO
 
-from src.core.media import MediaRepository
+from src.repositories.media.base import S3Repository
 from src.enums.type import Type
 from src.exceptions.services import NoRightsException
 from src.models.tracks import Track
@@ -27,7 +27,7 @@ class TracksService:
         file_stream: BytesIO
     ) -> Track:
 
-        file_url = await MediaRepository.upload_file("AUDIOFILES", file_info, file_stream)
+        file_url = await S3Repository.upload_file("AUDIOFILES", file_info, file_stream)
 
         data = {
             "title": "Unknown title",
@@ -52,7 +52,7 @@ class TracksService:
         if track.id != user_id:
             raise NoRightsException()
 
-        file_url = await MediaRepository.upload_file("PICTURES", file_info, file_stream)
+        file_url = await S3Repository.upload_file("PICTURES", file_info, file_stream)
         data = {"picture_url": file_url}
         return await TracksRepository.edit_one(track_id, data)
 

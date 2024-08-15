@@ -1,6 +1,6 @@
 from src.exceptions.services import NotFoundException
 from src.models.tags import Tag
-from src.repositories.auth import ProducerDAO, ArtistDAO
+from src.repositories.database.auth import ProducerDAO, ArtistDAO
 from src.repositories.tags import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
 
 

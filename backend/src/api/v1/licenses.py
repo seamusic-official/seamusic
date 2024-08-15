@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 
 from src.exceptions.api import NoRightsException
 from src.models.auth import User
-from src.schemas.licenses import (
+from src.repositories.dtos.licenses import (
     SLicensesResponse,
     SEditLicensesResponse,
     SLicensesDeleteResponse,

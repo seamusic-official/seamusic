@@ -4,11 +4,11 @@ from io import BytesIO
 import requests
 
 from src.core.config import settings
-from src.core.media import MediaRepository
+from src.repositories.media.base import S3Repository
 from src.enums.auth import Role
 from src.exceptions.services import NotFoundException, NoRightsException, ServerError
 from src.models.auth import User, ArtistProfile, ProducerProfile
-from src.repositories.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
+from src.repositories.database.auth import UsersDAO, ArtistDAO, ProducerDAO, RoleDAO, UserToRoleDAO
 from src.repositories.tags import ListenerTagsDAO, TagsDAO
 from src.utils.auth import create_access_token, create_refresh_token, get_hashed_password
 
@@ -39,7 +39,7 @@ class AuthService:
         if not user:
             raise NotFoundException()
 
-        picture_url = await MediaRepository.upload_file("PICTURES", file_info, file_stream)
+        picture_url = await S3Repository.upload_file("PICTURES", file_info, file_stream)
 
         update_data = {"picture_url": picture_url}
         await UsersDAO.edit_one(user_id, update_data)

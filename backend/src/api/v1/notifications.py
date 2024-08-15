@@ -12,7 +12,7 @@ async def get_spotify_tracks():
 
 @music.get(path="/track/{track_id}", summary="Create new music")
 async def get_spotify_track(track_id: int):
-    return Spotify.track(track_id)
+    return Spotify.get_track(track_id)
 
 
 @music.get(path="/spotify/albums", summary="Create new music")

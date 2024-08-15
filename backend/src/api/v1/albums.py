@@ -1,7 +1,5 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
-from src.exceptions.api import NoRightsException
-from src.core.media import MediaRepository
 from src.schemas.albums import (
     Album,
     SAddAlbumResponse,

@@ -55,7 +55,7 @@ class CreateLicenseRequestDTO(BaseRequestDTO):
     updated_at: datetime
 
 
-class UpdateLicenseRequestDTO(License):
+class UpdateLicenseRequestDTO(BaseRequestDTO):
     title: str | None = None
     description: str | None = None
     price: str | None = None

@@ -1,6 +1,6 @@
 from fastapi import APIRouter, status, HTTPException
 
-from src.schemas.subscriptions import STelegramAccountsIDResponse, STelegramAccountResponse
+from src.repositories.dtos.subscriptions import TelegramAccountsIDSResponseDTO, STelegramAccountResponse
 from src.repositories.subscriptions import TelegramAccountDAO
 
 subscription = APIRouter(
@@ -40,9 +40,9 @@ async def get_telegram_account(telegram_id: int) -> STelegramAccountResponse:
 
 
 @subscription.get(path="/telegram/", summary="Create telegram subscription account")
-async def get_telegram_accounts_ids() -> STelegramAccountsIDResponse:
+async def get_telegram_accounts_ids() -> TelegramAccountsIDSResponseDTO:
     telegram_accounts = TelegramAccountDAO.find_all()
     telegram_ids = [
         telegram_account.telegram_id for telegram_account in telegram_accounts
     ]
-    return STelegramAccountsIDResponse(ids=telegram_ids)
+    return TelegramAccountsIDSResponseDTO(ids=telegram_ids)
