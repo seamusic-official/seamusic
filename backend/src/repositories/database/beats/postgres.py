@@ -1,16 +1,16 @@
 from sqlalchemy import select, delete
 
-from src.models.beats import Beat
-from src.repositories.converters.sqlalchemy import request_dto_to_model, models_to_dto, model_to_response_dto
-from src.repositories.database.base import SQLAlchemyRepository
-from src.repositories.database.beats.base import BaseBeatsRepository
-from src.repositories.dtos.beats import (
+from dtos.database.beats import (
     Beat as _Beat,
     BeatResponseDTO,
     BeatsResponseDTO,
     CreateBeatRequestDTO,
     UpdateBeatRequestDTO
 )
+from src.converters.repositories.database.sqlalchemy import request_dto_to_model, model_to_response_dto, models_to_dto
+from src.models.beats import Beat
+from src.repositories.database.base import SQLAlchemyRepository
+from src.repositories.database.beats.base import BaseBeatsRepository
 
 
 class BeatsRepository(BaseBeatsRepository, SQLAlchemyRepository):

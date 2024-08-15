@@ -2,11 +2,11 @@ from dataclasses import dataclass
 
 from sqlalchemy import select, delete
 
+from src.converters.repositories.database.sqlalchemy import request_dto_to_model, models_to_dto, model_to_response_dto
+from src.dtos.database.tracks import UpdateTrackRequestDTO, TrackResponseDTO, TracksResponseDTO, Track as _Track
 from src.models.tracks import Track
 from src.repositories.database.base import SQLAlchemyRepository
-from src.repositories.converters.sqlalchemy import request_dto_to_model, models_to_dto, model_to_response_dto
 from src.repositories.database.tracks.base import BaseTracksRepository
-from src.repositories.dtos.tracks import UpdateTrackRequestDTO, TrackResponseDTO, TracksResponseDTO, Track as _Track
 
 
 @dataclass

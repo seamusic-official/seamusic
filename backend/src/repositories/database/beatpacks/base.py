@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.repositories.dtos.beatpacks import (
+from src.dtos.database.beatpacks import (
     BeatpackResponseDTO,
     BeatpacksResponseDTO,
     CreateBeatpackRequestDTO,

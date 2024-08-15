@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.repositories.dtos.auth import (
+from src.dtos.database.auth import (
     UserResponseDTO,
     UsersResponseDTO,
     UpdateUserRequestDTO,

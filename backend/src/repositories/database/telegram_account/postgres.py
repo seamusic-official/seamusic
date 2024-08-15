@@ -2,15 +2,15 @@ from dataclasses import dataclass
 
 from sqlalchemy import select
 
-from src.models.subscriptions import TelegramAccount
-from src.repositories.converters.sqlalchemy import request_dto_to_model, model_to_response_dto
-from src.repositories.database.base import SQLAlchemyRepository
-from src.repositories.database.telegram_account.base import BaseTelegramAccountRepository
-from src.repositories.dtos.subscriptions import (
+from src.converters.repositories.database.sqlalchemy import request_dto_to_model, model_to_response_dto
+from src.dtos.database.subscriptions import (
     TelegramAccountResponseDTO,
     TelegramAccountsIDSResponseDTO,
     CreateTelegramAccountRequestDTO
 )
+from src.models.subscriptions import TelegramAccount
+from src.repositories.database.base import SQLAlchemyRepository
+from src.repositories.database.telegram_account.base import BaseTelegramAccountRepository
 
 
 @dataclass

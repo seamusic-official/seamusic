@@ -2,7 +2,7 @@ from datetime import datetime
 
 from pydantic import EmailStr
 
-from src.repositories.dtos.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
 
 
 class Author(BaseDTO):

@@ -3,7 +3,7 @@ from datetime import datetime
 from pydantic import EmailStr, Field
 
 from src.enums.auth import Role
-from src.repositories.dtos.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
 
 
 class User(BaseDTO):

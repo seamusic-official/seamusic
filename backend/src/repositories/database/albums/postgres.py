@@ -2,16 +2,16 @@ from dataclasses import dataclass
 
 from sqlalchemy import select, delete
 
-from src.models.albums import Album
-from src.repositories.converters.sqlalchemy import model_to_response_dto, models_to_dto, request_dto_to_model
-from src.repositories.database.albums.base import BaseAlbumRepository
-from src.repositories.database.base import SQLAlchemyRepository
-from src.repositories.dtos.albums import (
+from src.converters.repositories.database.sqlalchemy import model_to_response_dto, models_to_dto, request_dto_to_model
+from src.dtos.database.albums import (
     AlbumResponseDTO,
     CreateAlbumRequestDTO,
     AlbumsResponseDTO,
     UpdateAlbumRequestDTO
 )
+from src.models.albums import Album
+from src.repositories.database.albums.base import BaseAlbumRepository
+from src.repositories.database.base import SQLAlchemyRepository
 
 
 @dataclass
@@ -34,7 +34,7 @@ class AlbumRepository(SQLAlchemyRepository, BaseAlbumRepository):
         albums = list(await self.session.scalars(query))
         return AlbumsResponseDTO(albums=models_to_dto(models=albums, dto=AlbumResponseDTO))
 
-    async def get_all_user_albums(self, user_id: int) -> AlbumsResponseDTO:
+    async def get_user_albums(self, user_id: int) -> AlbumsResponseDTO:
         query = select(Album).where(Album.user_id == user_id)
         albums = list(await self.session.scalars(query))
         return AlbumsResponseDTO(albums=models_to_dto(models=albums, dto=AlbumResponseDTO))

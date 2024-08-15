@@ -5,7 +5,7 @@ from fastapi import UploadFile, File, APIRouter, Depends, status
 from src.exceptions.api import NoRightsException
 from src.repositories.media.base import S3Repository
 from src.schemas.auth import User
-from src.repositories.dtos.soundkits import (
+from dtos.database import (
     SSoundkitUpdate,
     SSoundkitResponse,
     SSoundkitDeleteResponse,

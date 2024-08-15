@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.repositories.dtos.licenses import (
+from src.dtos.database.licenses import (
     LicensesResponseDTO,
     LicenseResponseDTO,
     CreateLicenseRequestDTO,

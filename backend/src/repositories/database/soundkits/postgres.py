@@ -2,17 +2,17 @@ from dataclasses import dataclass
 
 from sqlalchemy import select, delete
 
-from src.models.soundkits import Soundkit
-from src.repositories.converters.sqlalchemy import request_dto_to_model, model_to_response_dto, models_to_dto
-from src.repositories.database.base import SQLAlchemyRepository
-from src.repositories.database.soundkits.base import BaseSoundkitsRepository
-from src.repositories.dtos.soundkits import (
+from src.converters.repositories.database.sqlalchemy import request_dto_to_model, models_to_dto, model_to_response_dto
+from src.dtos.database.soundkits import (
     Soundkit as _Soundkit,
     SoundkitsResponseDTO,
     SoundkitResponseDTO,
     CreateSoundkitRequestDTO,
     UpdateSoundkitRequestDTO
 )
+from src.models.soundkits import Soundkit
+from src.repositories.database.base import SQLAlchemyRepository
+from src.repositories.database.soundkits.base import BaseSoundkitsRepository
 
 
 @dataclass

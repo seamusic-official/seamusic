@@ -2,11 +2,8 @@ from dataclasses import dataclass
 
 from sqlalchemy import select, delete
 
-from src.models.auth import User, ArtistProfile, ProducerProfile
-from src.repositories.converters.sqlalchemy import model_to_response_dto, models_to_dto, request_dto_to_model
-from src.repositories.database.auth.base import BaseUsersRepository, BaseArtistsRepository, BaseProducersRepository
-from src.repositories.database.base import SQLAlchemyRepository
-from src.repositories.dtos.auth import (
+from src.converters.repositories.database.sqlalchemy import model_to_response_dto, models_to_dto, request_dto_to_model
+from src.dtos.database.auth import (
     User as _User,
     UserResponseDTO,
     UsersResponseDTO,
@@ -19,6 +16,9 @@ from src.repositories.dtos.auth import (
     UpdateProducerRequestDTO,
     CreateUserRequestDTO, Artist, Producer,
 )
+from src.models.auth import User, ArtistProfile, ProducerProfile
+from src.repositories.database.auth.base import BaseUsersRepository, BaseArtistsRepository, BaseProducersRepository
+from src.repositories.database.base import SQLAlchemyRepository
 
 
 @dataclass

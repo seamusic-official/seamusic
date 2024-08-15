@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.repositories.dtos.tags import AddTagRequestDTO, TagsResponseDTO
+from dtos.database.tags import AddTagRequestDTO, TagsResponseDTO
 
 
 @dataclass

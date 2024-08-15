@@ -1,4 +1,4 @@
-from src.repositories.dtos.base import BaseDTO, BaseResponseDTO, BaseRequestDTO
+from dtos.database.base import BaseDTO, BaseResponseDTO, BaseRequestDTO
 
 
 class Beat(BaseDTO):

@@ -2,12 +2,12 @@ from dataclasses import dataclass
 
 from sqlalchemy import select
 
+from src.converters.repositories.database.sqlalchemy import request_dto_to_model, models_to_dto
+from src.dtos.database.tags import AddTagRequestDTO, TagsResponseDTO, Tag as _Tag
 from src.models.auth import User, ArtistProfile, ProducerProfile
 from src.models.tags import Tag
-from src.repositories.converters.sqlalchemy import models_to_dto, request_dto_to_model
 from src.repositories.database.base import SQLAlchemyRepository
 from src.repositories.database.tags.base import BaseTagsRepository
-from src.repositories.dtos.tags import AddTagRequestDTO, TagsResponseDTO, Tag as _Tag
 
 
 @dataclass

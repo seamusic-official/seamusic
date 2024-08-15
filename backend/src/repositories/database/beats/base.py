@@ -1,12 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from repositories.dtos.beats import BeatsResponseDTO
-from src.repositories.dtos.beats import (
-    BeatResponseDTO,
-    CreateBeatRequestDTO,
-    UpdateBeatRequestDTO
-)
+from dtos.database.beats import BeatResponseDTO, CreateBeatRequestDTO, UpdateBeatRequestDTO
+from dtos.database.beats import BeatsResponseDTO
 
 
 @dataclass

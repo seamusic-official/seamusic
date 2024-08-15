@@ -14,7 +14,7 @@ class AlbumService:
     repository: BaseAlbumRepository
 
     async def get_user_albums(self, user_id: int) -> list[Album]:
-        return await self.repository.get_all_user_albums(user_id=user_id)
+        return await self.repository.get_user_albums(user_id=user_id)
 
     async def get_all_albums(self) -> list[Album]:
         albums = await self.repository.get_all_albums()

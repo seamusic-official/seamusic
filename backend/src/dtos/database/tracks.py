@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.repositories.dtos.base import BaseRequestDTO, BaseDTO, BaseResponseDTO
+from dtos.database.base import BaseRequestDTO, BaseDTO, BaseResponseDTO
 
 
 class Track(BaseDTO):

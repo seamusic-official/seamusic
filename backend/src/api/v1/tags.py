@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status
 
 from src.exceptions.api import NotFoundException, UnauthorizedException
 from src.schemas.auth import User
-from src.repositories.dtos.tags import (
+from dtos.database.tags import (
     SAddTagRequest,
     SMyListenerTagsResponse,
     SMyProducerTagsResponse,

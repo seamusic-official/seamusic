@@ -2,7 +2,8 @@ from dataclasses import dataclass
 
 from sqlalchemy import select, delete
 
-from repositories.dtos.licenses import (
+from src.converters.repositories.database.sqlalchemy import request_dto_to_model, model_to_response_dto, models_to_dto
+from src.dtos.database.licenses import (
     License as _License,
     LicensesResponseDTO,
     LicenseResponseDTO,
@@ -10,7 +11,6 @@ from repositories.dtos.licenses import (
     UpdateLicenseRequestDTO
 )
 from src.models.licenses import License
-from src.repositories.converters.sqlalchemy import request_dto_to_model, models_to_dto, model_to_response_dto
 from src.repositories.database.base import SQLAlchemyRepository
 from src.repositories.database.licenses.base import BaseLicensesRepository
 

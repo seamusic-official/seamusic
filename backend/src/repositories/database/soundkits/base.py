@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.repositories.dtos.soundkits import (
+from src.dtos.database.soundkits import (
     SoundkitsResponseDTO,
     SoundkitResponseDTO,
     CreateSoundkitRequestDTO,
