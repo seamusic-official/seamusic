@@ -27,6 +27,10 @@ class SoundkitResponseDTO(BaseResponseDTO):
     updated_at: datetime
 
 
+class SoundkitsResponseDTO(BaseResponseDTO):
+    soundkits: list[Soundkit]
+
+
 class CreateSoundkitRequestDTO(BaseRequestDTO):
     title: str
     picture_url: str | None

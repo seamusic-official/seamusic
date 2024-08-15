@@ -1,23 +1,23 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.models.tags import Tag
+from src.repositories.dtos.tags import AddTagRequestDTO, TagsResponseDTO
 
 
 @dataclass
 class BaseTagsRepository(ABC):
     @abstractmethod
-    async def add_tag(self, name: str) -> None:
+    async def add_tag(self, tag: AddTagRequestDTO) -> None:
         ...
 
     @abstractmethod
-    async def get_my_listener_tags(self, user: dict) -> list[Tag]:
+    async def get_listener_tags(self, user_id: int) -> TagsResponseDTO:
         ...
 
     @abstractmethod
-    async def get_my_producer_tags(self, user: dict) -> list[Tag]:
+    async def get_producer_tags(self, producer_id: int) -> TagsResponseDTO:
         ...
 
     @abstractmethod
-    async def get_my_artist_tags(self, user: dict) -> list[Tag]:
+    async def get_artist_tags(self, artist_id: int) -> TagsResponseDTO:
         ...

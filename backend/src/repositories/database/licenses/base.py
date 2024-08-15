@@ -1,29 +1,34 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.models.licenses import License
+from src.repositories.dtos.licenses import (
+    LicensesResponseDTO,
+    LicenseResponseDTO,
+    CreateLicenseRequestDTO,
+    UpdateLicenseRequestDTO
+)
 
 
 @dataclass
 class BaseLicensesRepository(ABC):
     @abstractmethod
-    async def get_user_licenses(self, user: dict) -> list[License]:
+    async def get_user_licenses(self, user_id: int) -> LicensesResponseDTO:
         ...
 
     @abstractmethod
-    async def get_all_licenses(self) -> list[License]:
+    async def get_all_licenses(self) -> LicensesResponseDTO:
         ...
 
     @abstractmethod
-    async def get_license_by_id(self, license_id: int) -> License | None:
+    async def get_license_by_id(self, license_id: int) -> LicenseResponseDTO | None:
         ...
 
     @abstractmethod
-    async def add_license(self, license_: License) -> None:
+    async def add_license(self, license_: CreateLicenseRequestDTO) -> None:
         ...
 
     @abstractmethod
-    async def update_license(self, license_: License) -> None:
+    async def update_license(self, license_: UpdateLicenseRequestDTO) -> None:
         ...
 
     @abstractmethod

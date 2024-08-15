@@ -1,31 +1,36 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.models.soundkits import Soundkit
+from src.repositories.dtos.soundkits import (
+    SoundkitsResponseDTO,
+    SoundkitResponseDTO,
+    CreateSoundkitRequestDTO,
+    UpdateSoundkitRequestDTO
+)
 
 
 @dataclass
 class BaseSoundkitsRepository(ABC):
     @abstractmethod
-    async def get_user_soundkits(self, user_id: int) -> list[Soundkit]:
+    async def get_user_soundkits(self, user_id: int) -> SoundkitsResponseDTO:
         ...
 
     @abstractmethod
-    async def get_all_soundkits(self) -> list[Soundkit]:
+    async def get_all_soundkits(self) -> SoundkitsResponseDTO:
         ...
 
     @abstractmethod
-    async def get_license_by_id(self, soundkit_id: int) -> Soundkit | None:
+    async def get_soundkit_by_id(self, soundkit_id: int) -> SoundkitResponseDTO | None:
         ...
 
     @abstractmethod
-    async def add_soundkit(self, soundkit: Soundkit) -> None:
+    async def add_soundkit(self, soundkit: CreateSoundkitRequestDTO) -> None:
         ...
 
     @abstractmethod
-    async def update_license(self, soundkit: Soundkit) -> None:
+    async def update_soundkit(self, soundkit: UpdateSoundkitRequestDTO) -> None:
         ...
 
     @abstractmethod
-    async def delete_license(self, soundkit_id: int, user_id: int) -> None:
+    async def delete_soundkit(self, soundkit_id: int, user_id: int) -> None:
         ...
