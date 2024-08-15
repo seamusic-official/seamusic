@@ -71,3 +71,5 @@ next-env.d.ts
 # IDE/editor settings
 .idea/
 .vscode/
+
+#testpush
