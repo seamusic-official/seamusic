@@ -42,3 +42,7 @@ class AlbumRepository(SQLAlchemyRepository, BaseAlbumRepository):
     async def delete_album(self, album_id: int, user_id: int) -> None:
         query = delete(Album).where(Album.id == album_id, Album.user_id == user_id)
         await self.session.execute(query)
+
+
+def init_postgres_repository():
+    return AlbumRepository()

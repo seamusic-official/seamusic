@@ -7,6 +7,6 @@ from src.repositories.media.base import BaseMediaRepository
 
 @dataclass
 class Repositories:
-    database: BaseDatabaseRepository | None
-    media: BaseMediaRepository | None
-    api: BaseAPIRepository | None
+    database: BaseDatabaseRepository | None = None
+    media: BaseMediaRepository | None = None
+    api: BaseAPIRepository | None = None
