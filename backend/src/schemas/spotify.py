@@ -3,12 +3,12 @@ from typing import List, Dict, Union
 
 from pydantic import BaseModel
 
-from src.enums.spotify import SpotifyAlbumType, SpotifyTrackType
+from src.enums.spotify import SpotifyAlbumType, SpotifyType
 
 
 class SpotifyTrack(BaseModel):
     id: str
-    type: SpotifyTrackType
+    type: SpotifyType
     name: str
     preview_url: str
     image_url: str
@@ -57,7 +57,7 @@ class SSpotifyAlbumResponse(BaseModel):
 
 class SpotifyAlbumTrack(BaseModel):
     id: int
-    type: SpotifyTrackType
+    type: SpotifyType
     name: str
     artists: List[SpotifyArtist]
     preview_url: str

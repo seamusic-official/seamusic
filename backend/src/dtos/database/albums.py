@@ -2,7 +2,6 @@ from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
 from src.enums.type import Type
 
 
-
 class Album(BaseDTO):
     name: str
     picture_url: str

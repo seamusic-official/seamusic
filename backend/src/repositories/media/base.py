@@ -13,4 +13,3 @@ class BaseMediaRepository(ABC):
     @abstractmethod
     async def delete_file(self, folder: str, filename: str) -> None:
         ...
-
