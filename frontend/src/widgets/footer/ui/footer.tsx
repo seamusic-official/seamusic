@@ -1,6 +1,8 @@
 import React from 'react';
 
 export function Footer() {
+	const year = new Date().getFullYear();
+	
 	return (
 		<footer className="">
 			<div className=" w-full p-2 py-6 lg:py-8">
@@ -81,12 +83,12 @@ export function Footer() {
 				</div>
 				<hr className="my-6 border-gray-200 sm:mx-auto dark:border-gray-700 lg:my-8" />
 				<div className="sm:flex sm:items-center sm:justify-between">
-					<span className="text-sm text-gray-500 sm:text-center dark:text-gray-400">
-						© 2023{' '}
+					<span className="text-md font-semibold text-white sm:text-center">
 						<a href="https://flowbite.com/" className="hover:underline">
-							Flowbite™
+						© SeaMusic 
 						</a>
-						. All Rights Reserved.
+						{' '}
+						{year}. All Rights Reserved.
 					</span>
 					<div className="flex mt-4 sm:justify-center sm:mt-0">
 						<a

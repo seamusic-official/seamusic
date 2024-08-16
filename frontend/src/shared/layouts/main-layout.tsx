@@ -3,6 +3,7 @@ import React, { useRef } from 'react';
 import { Sidebar } from '@/widgets/sidebar';
 import { NavBar } from '@/widgets/navbar';
 import { Footer } from '@/widgets/footer';
+import { RouterLayoutWithStaticPlayer } from './router-layout';
 
 type MyComponentProps = React.PropsWithChildren;
 
@@ -18,6 +19,7 @@ export function MainLayout({ children }: MyComponentProps) {
 						<Footer />
 					</div>
 				</div>
+				<RouterLayoutWithStaticPlayer auth={true} />
 			</main>
 		</div>
 	);

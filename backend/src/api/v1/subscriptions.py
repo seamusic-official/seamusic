@@ -4,7 +4,7 @@ from src.dtos.database.subscriptions import TelegramAccountsIDSResponseDTO
 from src.schemas.subscriptions import STelegramAccountResponse
 
 subscription = APIRouter(
-    prefix="/subscription", tags=["Subscription"], include_in_schema=False
+    prefix="/subscription", tags=["Subscription"]
 )
 
 
@@ -21,7 +21,7 @@ async def create_telegram_account(telegram_id: int) -> STelegramAccountResponse:
 
 
 @subscription.get(
-    path="/telegram/{id}",
+    path="/telegram/",
     summary="Get telegram subscription account",
     response_model=STelegramAccountResponse,
     responses={status.HTTP_200_OK: {"model": STelegramAccountResponse}},
@@ -39,9 +39,10 @@ async def get_telegram_account(telegram_id: int) -> STelegramAccountResponse:
     return telegram_account
 
 
-@subscription.get(path="/telegram/", summary="Create telegram subscription account")
-async def get_telegram_accounts_ids() -> TelegramAccountsIDSResponseDTO:
-    telegram_accounts = TelegramAccountDAO.find_all()
+@subscription.get(path="/telegram/users", summary="Create telegram subscription account")
+async def get_telegram_accounts_ids() -> STelegramAccountsIDResponse:
+    telegram_accounts = await TelegramAccountDAO.find_all()
+
     telegram_ids = [
         telegram_account.telegram_id for telegram_account in telegram_accounts
     ]
