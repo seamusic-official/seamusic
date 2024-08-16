@@ -1,5 +1,5 @@
 'use client';
-import { AlbumDetail } from '@/pages/albums';
+import { AlbumDetail } from '@/pages/album';
 import { Studio } from '@/pages/dashboard';
 import { Home } from '@/pages/home/ui/home';
 import { Messages } from '@/pages/messages';

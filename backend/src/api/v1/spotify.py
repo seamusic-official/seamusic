@@ -33,7 +33,7 @@ async def get_spotify_tracks() -> SSpotifyTracksResponse:
     responses={status.HTTP_200_OK: {"model": SSpotifyTrackResponse}},
 )
 async def get_spotify_track(music_id: int) -> SSpotifyTrackResponse:
-    return Spotify.track(music_id)
+    return Spotify.get_track(music_id)
 
 
 @music.get(

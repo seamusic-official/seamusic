@@ -1,10 +1,12 @@
 'use client';
 
-import { Montserrat } from 'next/font/google';
+import { Inter } from 'next/font/google';
 import StoreProvider from './store-provider';
+import { HelloLayout } from '@/shared/layouts';
 import './globals.css';
+import Head from 'next/head';
 
-const montserrat = Montserrat({ subsets: ['latin'] });
+const inter = Inter({ subsets: ['latin'] });
 
 const RootLayout = ({
 	children,
@@ -13,7 +15,10 @@ const RootLayout = ({
 }>) => {
 	return (
 		<html lang="ru">
-			<body className={montserrat.className}>
+			<Head>
+				<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400&display=swap" rel="stylesheet" />
+			</Head>
+			<body style={{fontFamily: "Montserrat"}}>
 				<StoreProvider>
 					{children}
 				</StoreProvider>

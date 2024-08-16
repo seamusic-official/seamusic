@@ -9,6 +9,8 @@ services:
     ports:
       - '3000:3000'
     restart: always
+    env_file:
+      - .env
     volumes:
       - ./:/frontend/
     networks:

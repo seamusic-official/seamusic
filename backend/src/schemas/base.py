@@ -1,12 +1,10 @@
-from typing import Optional, Type
-
 from pydantic import BaseModel, ConfigDict
 
 from src.core.database import Base
 
 
 class FromDBModelMixin(BaseModel):
-    _model_type: Type[Base]
+    _model_type: type[Base]
     model_config = ConfigDict(extra="ignore")
 
     @classmethod
@@ -18,4 +16,4 @@ class FromDBModelMixin(BaseModel):
 
 
 class DetailMixin:
-    detail: Optional[str] = None
+    detail: str | None = None

@@ -1,7 +1,5 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
-from src.exceptions.api import NoRightsException
-from src.core.media import MediaRepository
 from src.schemas.albums import (
     Album,
     SAddAlbumResponse,
@@ -15,13 +13,15 @@ from src.schemas.albums import (
     SUpdateAlbumRequest,
     SUpdateAlbumResponse,
 )
-from src.services import albums as services
+
 from src.schemas.auth import User
-from src.repositories.albums import AlbumsRepository
+from src.services.albums import get_album_service, AlbumService
+
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename, get_file_stream
 
 albums = APIRouter(prefix="/albums", tags=["Albums"])
+
 
 
 @albums.get(
@@ -33,9 +33,10 @@ albums = APIRouter(prefix="/albums", tags=["Albums"])
 )
 async def get_my_albums(
     user: User = Depends(get_current_user),
+    service: AlbumService = Depends(get_album_service)
 ) -> SMyAlbumsResponse:
 
-    albums_ = await services.get_user_albums(user_id=user.id)
+    albums_ = await service.get_user_albums(user_id=user.id)
     albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
 
     return SMyAlbumsResponse(albums=albums_)
@@ -44,12 +45,12 @@ async def get_my_albums(
 @albums.get(
     path="/all",
     summary="Get all albums",
-    response_model=SAllAlbumsResponse,
-    responses={status.HTTP_200_OK: {"model": SAllAlbumsResponse}},
+    response_model=dict,
+    responses={status.HTTP_200_OK: {"model": dict}},
 )
-async def all_albums() -> SAllAlbumsResponse:
+async def all_albums(service: AlbumService = Depends(get_album_service)) -> dict:
 
-    albums_ = await services.get_all_albums()
+    albums_ = await service.get_all_albums()
     albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
 
     return SAllAlbumsResponse(albums=albums_)
@@ -61,9 +62,12 @@ async def all_albums() -> SAllAlbumsResponse:
     response_model=SAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SAlbumResponse}},
 )
-async def get_one_album(album_id: int) -> SAlbumResponse:
+async def get_one_album(
+        album_id: int,
+        service: AlbumService = Depends(get_album_service)
+) -> SAlbumResponse:
 
-    album = await services.get_one_album(album_id=album_id)
+    album = await service.get_one_album(album_id=album_id)
     return SAlbumResponse.from_db_model(model=album)
 
 
@@ -75,11 +79,12 @@ async def get_one_album(album_id: int) -> SAlbumResponse:
 )
 async def add_album(
     file: UploadFile = File(...),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    service: AlbumService = Depends(get_album_service)
 ) -> SAddAlbumResponse:
     file_info = unique_filename(file) if file else None
 
-    album = await services.add_album(
+    album = await service.add_album(
         file_stream=await get_file_stream(file=file),
         file_info=file_info,
         prod_by=user.username,
@@ -98,20 +103,18 @@ async def add_album(
 async def update_album_picture(
     album_id: int,
     file: UploadFile = File(...),
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    service: AlbumService = Depends(get_album_service)
 ) -> SUpdateAlbumPictureResponse:
-    album = await AlbumsRepository.find_one_by_id(id_=album_id)
+    file_info = unique_filename(file) if file else None
+    album = await service.update_album_picture(
+        album_id=album_id,
+        file_info=file_info,
+        file_stream=get_file_stream(file),
+        user_id=user.id
+    )
 
-    if album.user.id != user.id:
-        raise NoRightsException()
-
-    file_info = await unique_filename(file) if file else None
-    file_url = await MediaRepository.upload_file("PICTURES", file_info, file)
-
-    data = {"picture_url": file_url}
-
-    response = await AlbumsRepository.edit_one(album_id, data)
-    return SUpdateAlbumPictureResponse.from_db_model(model=response)
+    return SUpdateAlbumPictureResponse.from_db_model(model=album)
 
 
 @albums.post(
@@ -124,20 +127,16 @@ async def release_albums(
     album_id: int,
     albums_data: SReleaseAlbumsRequest,
     user: User = Depends(get_current_user),
+    service: AlbumService = Depends(get_album_service)
 ) -> SReleaseAlbumsResponse:
-    album = await AlbumsRepository.find_one_by_id(id_=album_id)
-
-    if album.user.id != user.id:
-        raise NoRightsException()
-
-    data = {
-        "name": albums_data.title,
-        "description": albums_data.description,
-        "co_prod": albums_data.co_prod,
-    }
-
-    response = await AlbumsRepository.edit_one(album_id, data)
-    return SReleaseAlbumsResponse.from_db_model(model=response)
+    album = await service.release_album(
+        album_id=album_id,
+        name=albums_data.name,
+        description=albums_data.description,
+        co_prod=albums_data.co_prod,
+        user_id=user.id
+    )
+    return SReleaseAlbumsResponse.from_db_model(model=album)
 
 
 @albums.put(
@@ -150,20 +149,17 @@ async def update_album(
     album_id: int,
     albums_data: SUpdateAlbumRequest,
     user: User = Depends(get_current_user),
+    service: AlbumService = Depends(get_album_service)
 ) -> SUpdateAlbumResponse:
-    album = await AlbumsRepository.find_one_by_id(id_=album_id)
+    album = await service.update_album(
+        user_id=user.id,
+        album_id=album_id,
+        title=albums_data.title,
+        description=albums_data.description,
+        prod_by=albums_data.prod_by
 
-    if album.user.id != user.id:
-        raise NoRightsException()
-
-    data = {
-        "name": albums_data.title,
-        "description": albums_data.description,
-        "prod_by": albums_data.prod_by,
-    }
-
-    response = await AlbumsRepository.edit_one(album_id, data)
-    return SUpdateAlbumResponse.from_db_model(model=response)
+    )
+    return SUpdateAlbumResponse.from_db_model(model=album)
 
 
 @albums.delete(
@@ -173,13 +169,10 @@ async def update_album(
     responses={status.HTTP_200_OK: {"model": SDeleteAlbumResponse}},
 )
 async def delete_albums(
-    album_id: int, user: User = Depends(get_current_user)
+    album_id: int,
+    user: User = Depends(get_current_user),
+    service: AlbumService = Depends(get_album_service)
 ) -> SDeleteAlbumResponse:
-    album = await AlbumsRepository.find_one_by_id(id_=album_id)
-
-    if album.user.id != user.id:
-        raise NoRightsException()
-
-    await AlbumsRepository.delete(id_=album_id)
+    await service.delete_albums(album_id=album_id, user_id=user.id)
 
     return SDeleteAlbumResponse()

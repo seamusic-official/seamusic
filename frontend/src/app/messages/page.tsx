@@ -1,5 +1,5 @@
 'use client';
-import { AlbumDetail } from '@/pages/albums';
+import { AlbumDetail } from '@/pages/album';
 import { Messages } from '@/pages/messages';
 import { MainLayout, RouterLayoutWithStaticPlayer } from '@/shared/layouts';
 

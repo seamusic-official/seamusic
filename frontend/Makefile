@@ -19,12 +19,3 @@ stop:
 rm:
 	docker-compose -f docker-compose.$(for).yml rm
 	rm -rf db/
-
-test:
-	docker-compose -f docker-compose.test.yml up --force-recreate --remove-orphans -d
-	python -m pytest
-	docker-compose stop
-
-lint:
-	python -m flake8
-	python -m mypy -p src

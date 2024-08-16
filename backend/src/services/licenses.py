@@ -1,122 +1,72 @@
-from fastapi import APIRouter, Depends, status
-
 from src.exceptions.api import NoRightsException
-from src.models.auth import User
-from src.schemas.licenses import (
-    SLicensesResponse,
-    SEditLicensesResponse,
-    SLicensesDeleteResponse,
-    SMyLicensesResponse,
-    SLicenseResponse,
-    SCreateLicenseRequest,
-    SCreateLicenseResponse,
-    SEditLicenseRequest,
-)
+from src.models.licenses import License
 from src.repositories.licenses import LicensesRepository
-from src.utils.auth import get_current_user
-
-licenses = APIRouter(prefix="/licenses", tags=["Licenses"])
 
 
-@licenses.post(
-    path="/my",
-    summary="Packs by current user",
-    response_model=SMyLicensesResponse,
-    responses={status.HTTP_200_OK: {"model": SMyLicensesResponse}},
-)
-async def get_user_licenses(
-    user: User = Depends(get_current_user),
-) -> SMyLicensesResponse:
-    response = await LicensesRepository.find_all(owner=user)
-    return SMyLicensesResponse(
-        licenses=[
-            SLicensesResponse.from_db_model(model=license_) for license_ in response
-        ]
-    )
+class LicensesService:
+    @staticmethod
+    async def get_user_licenses(user: dict) -> list[License]:
+        return await LicensesRepository.find_all(owner=user)
 
+    @staticmethod
+    async def get_all_licenses() -> list[License]:
+        return await LicensesRepository.find_all()
 
-@licenses.get(
-    path="/all",
-    summary="Get all licenses",
-    response_model=SLicensesResponse,
-    responses={status.HTTP_200_OK: {"model": SLicensesResponse}},
-)
-async def all_licenses() -> SLicensesResponse:
-    response = await LicensesRepository.find_all()
-    return SLicensesResponse(
-        licenses=[
-            SLicensesResponse.from_db_model(model=_license) for _license in response
-        ]
-    )
+    @staticmethod
+    async def get_one(license_id: int) -> License:
+        return await LicensesRepository.find_one_by_id(int(license_id))
 
+    @staticmethod
+    async def add_license(
+        title: str,
+        description: str,
+        price: str,
+        user: dict
+    ) -> License:
 
-@licenses.get(
-    path="/{license_id}",
-    summary="Get license by id",
-    response_model=SLicenseResponse,
-    responses={status.HTTP_200_OK: {"model": SLicenseResponse}},
-)
-async def get_one(license_id: int) -> SLicenseResponse:
-    response = await LicensesRepository.find_one_by_id(int(license_id))
-    return SLicenseResponse.from_db_model(model=response)
+        data = {
+            "title": title,
+            "description": description,
+            "price": price,
+            "user": user
+        }
 
+        return await LicensesRepository.add_one(data=data)
 
-@licenses.post(
-    path="/beatbacks/add",
-    summary="Add a file for new beat",
-    response_model=SCreateLicenseResponse,
-    responses={status.HTTP_200_OK: {"model": SCreateLicenseResponse}},
-)
-async def add_license(
-    data: SCreateLicenseRequest, user: User = Depends(get_current_user)
-) -> SCreateLicenseResponse:
+    @staticmethod
+    async def update_license(
+        license_id: int,
+        user_id: int,
+        title: str,
+        description: str,
+        price: str,
+    ) -> None:
 
-    data = data.model_dump()
-    data["user"] = user
+        license_ = await LicensesRepository.find_one_by_id(id_=license_id)
 
-    response = await LicensesRepository.add_one(data=data)
-    return SCreateLicenseResponse.from_db_model(model=response)
+        if license_.user.id != user_id:
+            raise NoRightsException()
 
+        data = dict()
 
-@licenses.put(
-    path="/update/{license_id}",
-    summary="Edit license by id",
-    response_model=SEditLicensesResponse,
-    responses={status.HTTP_200_OK: {"model": SEditLicensesResponse}},
-)
-async def update_license(
-    license_id: int,
-    licenses_data: SEditLicenseRequest,
-    user: User = Depends(get_current_user),
-) -> SEditLicensesResponse:
-    license_ = await LicensesRepository.find_one_by_id(id_=license_id)
+        if title:
+            data["title"] = title
+        if description:
+            data["description"] = description
+        if price:
+            data["price"] = price
 
-    if license_.user.id != user.id:
-        raise NoRightsException()
+        await LicensesRepository.edit_one(license_id, data)
 
-    data = {
-        "title": licenses_data.title,
-        "description": licenses_data.description,
-    }
+    @staticmethod
+    async def delete_licenses(
+        license_id: int,
+        user_id: int
+    ) -> None:
 
-    await LicensesRepository.edit_one(license_id, data)
-    return SEditLicensesResponse()
+        license_ = await LicensesRepository.find_one_by_id(id_=license_id)
 
+        if license_.user.id != user_id:
+            raise NoRightsException()
 
-@licenses.delete(
-    path="/delete/{license_id}",
-    summary="Create new licenses",
-    response_model=SLicensesDeleteResponse,
-    responses={status.HTTP_200_OK: {"model": SLicensesDeleteResponse}},
-)
-async def delete_licenses(
-    license_id: int, user: User = Depends(get_current_user)
-) -> SLicensesDeleteResponse:
-    license_ = await LicensesRepository.find_one_by_id(id_=license_id)
-
-    if license_.user.id != user.id:
-        raise NoRightsException()
-
-    await LicensesRepository.delete(id_=license_id)
-
-    return SLicensesDeleteResponse()
+        await LicensesRepository.delete(id_=license_id)
