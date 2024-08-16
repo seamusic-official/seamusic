@@ -23,7 +23,7 @@ class SpotifyService():
 
     @staticmethod
     async def get_tracks_from_album(album_id) -> list[dict]:
-        return BaseSpotifyRepository.get_tracks_from_album(album_id)
+        return BaseSpotifyRepository.get_album_tracks_count(album_id)
 
     @staticmethod
     async def get_spotify_artist(artist_id: int) -> dict:

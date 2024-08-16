@@ -1,7 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from dtos.database.tracks import TracksResponseDTO, TrackResponseDTO, UpdateTrackRequestDTO
+from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from src.dtos.database.tracks import TracksResponseDTO, TrackResponseDTO, UpdateTrackRequestDTO
 
 
 @dataclass

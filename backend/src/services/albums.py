@@ -2,11 +2,11 @@ from dataclasses import dataclass
 
 from io import BytesIO
 
-from src.repositories.media.base import S3Repository
+from src.repositories.database.albums.base import BaseAlbumRepository
+from src.repositories.database.albums.postgres import AlbumRepository
+
 from src.exceptions.services import NoRightsException, NotFoundException
 from src.models.albums import Album
-from src.repositories.albums.album import AlbumRepository
-from src.repositories.albums.base import BaseAlbumRepository
 
 
 @dataclass

@@ -1,21 +1,13 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
+from src.dtos.database.tracks import Track
 from src.exceptions.api import NoRightsException
-from src.repositories.media.base import S3Repository
+from src.repositories.database.tracks.postgres import TracksRepository
+
 from src.schemas.auth import User
-from dtos.database.tracks import (
-    Track,
-    STrackResponse,
-    SMyTracksResponse,
-    SAddTracksResponse,
-    SUpdateTrackPictureResponse,
-    SReleaseTrackRequest,
-    SReleaseTrackResponse,
-    SUpdateTrackResponse,
-    SUpdateTrackRequest,
-    SDeleteTrackResponse,
-)
-from src.repositories.tracks import TracksRepository
+from src.schemas.tracks import SMyTracksResponse, STrackResponse, SAddTracksResponse, SUpdateTrackPictureResponse, \
+    SReleaseTrackResponse, SReleaseTrackRequest, SUpdateTrackResponse, SUpdateTrackRequest, SDeleteTrackResponse
+
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename
 

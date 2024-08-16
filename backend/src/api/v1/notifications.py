@@ -27,7 +27,7 @@ async def get_spotify_album(album_id):
 
 @music.get(path="/spotify/tracks_from_album", summary="Create new music")
 async def get_tracks_from_album(album_id):
-    return Spotify.get_tracks_from_album(album_id)
+    return Spotify.get_album_tracks_count(album_id)
 
 
 @music.get(path="/spotify/artist", summary="Create new music")

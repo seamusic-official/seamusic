@@ -2,17 +2,10 @@ from fastapi import APIRouter, Depends, status
 
 from src.exceptions.api import NoRightsException
 from src.models.auth import User
-from dtos.database import (
-    SLicensesResponse,
-    SEditLicensesResponse,
-    SLicensesDeleteResponse,
-    SMyLicensesResponse,
-    SLicenseResponse,
-    SCreateLicenseRequest,
-    SCreateLicenseResponse,
-    SEditLicenseRequest,
-)
-from src.repositories.licenses import LicensesRepository
+from src.repositories.database.licenses.postgres import LicensesRepository
+from src.schemas.licenses import SMyLicensesResponse, SLicensesResponse, SLicenseResponse, SCreateLicenseResponse, \
+    SCreateLicenseRequest, SEditLicensesResponse, SLicensesDeleteResponse, SEditLicenseRequest
+
 from src.utils.auth import get_current_user
 
 licenses = APIRouter(prefix="/licenses", tags=["Licenses"])

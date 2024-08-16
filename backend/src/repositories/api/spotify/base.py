@@ -1,37 +1,40 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from spotipy import Spotify
+from src.dtos.api.spotify import SearchResponseDTO
+from src.dtos.database.albums import AlbumsResponseDTO, AlbumResponseDTO
+from src.dtos.database.auth import ArtistResponseDTO
+from src.dtos.database.tracks import TracksResponseDTO, TrackResponseDTO
+from src.enums.spotify import SpotifyType
 
 
 @dataclass
 class BaseSpotifyRepository(ABC):
-    client: Spotify
+    base_url = 'https://api.spotify.com/v1'
 
     @abstractmethod
-    def get_tracks(self, artist_id: int) -> list[dict]:
+    async def get_tracks(self, artist_id: int) -> TracksResponseDTO:
         ...
 
     @abstractmethod
-    def get_tracks_from_album(self, album_id: int) -> list[dict]:
+    async def get_album_tracks_count(self, album_id: int) -> int:
         ...
 
     @abstractmethod
-    def get_track(self, track_id: int) -> str:
+    async def get_track(self, track_id: int) -> TrackResponseDTO | None:
         ...
 
     @abstractmethod
-    def get_albums(self, artist_id: int) -> list:
+    async def get_albums(self, artist_id: int) -> AlbumsResponseDTO:
         ...
 
     @abstractmethod
-    def get_album(self, album_id: int) -> dict:
+    async def get_album(self, album_id: int) -> AlbumResponseDTO | None:
+        ...
+
+    async def get_artist(self, artist_id: int) -> ArtistResponseDTO | None:
         ...
 
     @abstractmethod
-    def get_artist(self, artist_id: int) -> dict:
-        ...
-
-    @abstractmethod
-    def search(self, query: str) -> list[dict]:
+    async def search(self, query: str, type_: SpotifyType) -> SearchResponseDTO:
         ...

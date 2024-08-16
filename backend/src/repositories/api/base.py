@@ -20,6 +20,6 @@ class RequestsRepository(BaseAPIRepository):
 @dataclass
 class AiohttpRepositpry(BaseAPIRepository):
     @property
-    async def session(self):
+    async def session(self) -> aiohttp.ClientSession:
         async with aiohttp.ClientSession() as session_:
             yield session_

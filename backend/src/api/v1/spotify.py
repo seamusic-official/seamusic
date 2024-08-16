@@ -11,7 +11,6 @@ from src.schemas.spotify import (
     SSpotifyArtistResponse,
     SSpotifySearchResponse,
 )
-from src.repositories.spotify import Spotify
 
 music = APIRouter(prefix="/music", tags=["Spotify"])
 
@@ -63,7 +62,7 @@ async def get_spotify_album(album_id: int) -> SSpotifyAlbumResponse:
     responses={status.HTTP_200_OK: {"model": SSpotifyAlbumTracksResponse}},
 )
 async def get_tracks_from_album(album_id) -> SSpotifyAlbumTracksResponse:
-    return Spotify.get_tracks_from_album(album_id)
+    return Spotify.get_album_tracks_count(album_id)
 
 
 @music.get(

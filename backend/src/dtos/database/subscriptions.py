@@ -1,4 +1,4 @@
-from dtos.database.base import BaseResponseDTO, BaseDTO, BaseRequestDTO
+from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
 
 
 class TelegramAccount(BaseDTO):

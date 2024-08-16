@@ -1,4 +1,4 @@
-from dtos.database.base import BaseDTO, BaseResponseDTO, BaseRequestDTO
+from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
 
 
 class Tag(BaseDTO):

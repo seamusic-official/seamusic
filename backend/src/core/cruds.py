@@ -9,7 +9,7 @@ class SQLAlchemyRepository:
     model = None
 
     @classmethod
-    async def add_one(cls, data: dict) -> Any:
+    async def add_one(cls, data: dict) -> object:
         async with async_session_maker() as session:
             stmt = insert(cls.model).values(**data).returning(cls.model)
             result = await session.execute(stmt)
@@ -17,7 +17,7 @@ class SQLAlchemyRepository:
         return result.scalar()
 
     @classmethod
-    async def edit_one(cls, id_: int, data: dict) -> Any:
+    async def edit_one(cls, id_: int, data: dict) -> object:
         async with async_session_maker() as session:
             stmt = (
                 update(cls.model).values(**data).filter_by(id=id_).returning(cls.model)
@@ -27,14 +27,14 @@ class SQLAlchemyRepository:
         return result.scalar_one_or_none()
 
     @classmethod
-    async def find_one_by_id(cls, id_: int) -> Any:
+    async def find_one_by_id(cls, id_: int) -> object:
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(id=id_)
             result = await session.execute(query)
         return result.scalar_one_or_none()
 
     @classmethod
-    async def find_one_or_none(cls, **filter_by) -> Any:
+    async def find_one_or_none(cls, **filter_by) -> object:
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
@@ -48,7 +48,7 @@ class SQLAlchemyRepository:
             await session.commit()
 
     @classmethod
-    async def find_all(cls, **filter_by) -> list:
+    async def find_all(cls, **filter_by) -> list[object]:
         async with async_session_maker() as session:
             query = select(cls.model).filter_by(**filter_by)
             result = await session.execute(query)
