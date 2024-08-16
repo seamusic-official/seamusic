@@ -28,11 +28,14 @@ coverage.xml
 # pyenv
 .python-version
 
+# poetry
+poetry.lock
+
 # Environments
 .env
 .env.production
 .env*.local
-.venv
+.venv/
 
 # mypy
 .mypy_cache/
@@ -40,8 +43,8 @@ coverage.xml
 dmypy.json
 
 # dependencies
-/node_modules
-/.pnp
+node_modules/
+.pnp/
 .pnp.js
 .yarn/install-state.gz
 
