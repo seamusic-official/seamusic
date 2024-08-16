@@ -13,6 +13,7 @@ from src.api.v1.squads import squads
 from src.api.v1.subscriptions import subscription
 from src.api.v1.tags import tags
 from src.api.v1.tracks import tracks
+from src.api.v1.inspiration import inspiration
 
 router = APIRouter(prefix="/v1", tags=["v1"])
 
@@ -29,3 +30,4 @@ router.include_router(subscription)
 router.include_router(tags)
 router.include_router(squads)
 router.include_router(comments)
+router.include_router(inspiration)
