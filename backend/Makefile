@@ -19,16 +19,16 @@ stop:
 
 rm:
 	poetry run docker-compose -f docker-compose.$(for).yml rm
-	sudo rm -rf db/
+	sudo rm -rf db
 
 revision:
-    poetry run alembic revision --autogenerate -m $(name)
+	poetry run alembic revision --autogenerate -m $(name)
 
 upgrade:
-    poetry run alembic upgrade $(revision)
+	poetry run alembic upgrade $(revision)
 
 downgrade:
-    poetry run alembic downgrade $(revision)
+	poetry run alembic downgrade $(revision)
 
 test:
 	poetry run docker-compose -f docker-compose.test.yml up --force-recreate --remove-orphans -d
