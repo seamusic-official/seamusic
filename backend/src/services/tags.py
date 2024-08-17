@@ -1,34 +1,45 @@
+from src.dtos.database.tags import AddTagRequestDTO, TagsResponseDTO
 from src.exceptions.services import NotFoundException
 from src.models.tags import Tag
-from src.repositories.database.auth import ProducerDAO, ArtistDAO
-from src.repositories.tags import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
+from src.repositories import Repositories, BaseMediaRepository
+from src.repositories.database.tags.base import BaseTagsRepository
 
+
+class TrackRepositories(Repositories):
+    database: BaseTagsRepository
+    media: BaseMediaRepository
 
 class TagsService:
-    @staticmethod
-    async def add_tag(name: str) -> Tag:
-        return await TagsDAO.add_one({"name": name})
+    repositories: TrackRepositories
 
-    @staticmethod
+
+    async def add_tag(self, name: str) -> None:
+        tag = AddTagRequestDTO(name=name)
+
+        return await self.repositories.database.add_tag(tag=tag)
+
+
     async def get_my_listener_tags(
-        user: dict
-    ) -> list[Tag]:
-        return await ListenerTagsDAO.find_all(listener_profile=user)
+        self,
+        user_id: int
+    ) -> list[TagsResponseDTO]:
+        return await self.repositories.database.get_listener_tags(user_id=user_id)
 
-    @staticmethod
-    async def get_my_producer_tags(user: dict) -> list[Tag]:
-        producer_profile = await ProducerDAO.find_one_or_none(producer_profile=user)
+
+    async def get_my_producer_tags(self, user_id: int) -> list[TagsResponseDTO]:
+        producer_profile = await self.repositories.database.get_producer_tags(producer_id=user_id)
 
         if not producer_profile:
             raise NotFoundException("You don't have a producer profile")
 
-        return await ProducerTagsDAO.find_all(producer_profile=producer_profile)
+        return producer_profile
 
-    @staticmethod
-    async def get_my_artist_tags(user: dict) -> list[Tag]:
-        artist_profile = await ArtistDAO.find_one_or_none(artist_profile=user)
+
+    async def get_my_artist_tags(self, user_id: int) -> list[TagsResponseDTO]:
+        artist_profile = await self.repositories.database.get_artist_tags(artist_id=user_id)
 
         if not artist_profile:
             raise NotFoundException("You don't have an artist profile")
 
-        return await ArtistTagsDAO.find_all(user=user)
+        return artist_profile
+

@@ -3,7 +3,8 @@ from dataclasses import dataclass
 from sqlalchemy import select, delete
 
 from src.converters.repositories.database.sqlalchemy import request_dto_to_model, models_to_dto, model_to_response_dto
-from src.dtos.database.tracks import UpdateTrackRequestDTO, TrackResponseDTO, TracksResponseDTO, Track as _Track
+from src.dtos.database.tracks import UpdateTrackRequestDTO, TrackResponseDTO, TracksResponseDTO, Track as _Track, \
+    CreateTrackRequestDTO
 from src.models.tracks import Track
 from src.repositories.database.base import SQLAlchemyRepository
 from src.repositories.database.tracks.base import BaseTracksRepository
@@ -11,6 +12,12 @@ from src.repositories.database.tracks.base import BaseTracksRepository
 
 @dataclass
 class TracksRepository(SQLAlchemyRepository, BaseTracksRepository):
+
+    async def create_track(self, track: CreateTrackRequestDTO) -> TracksResponseDTO:
+        track = request_dto_to_model(model=Track, request_dto=track)
+        self.session.add(track)
+        await self.session.flush()
+
     async def get_user_tracks(self, user_id: int) -> TracksResponseDTO:
         query = select(Track).filter_by(user_id=user_id)
         tracks = list(await self.session.scalars(query))

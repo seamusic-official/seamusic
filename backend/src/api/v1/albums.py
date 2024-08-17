@@ -45,10 +45,10 @@ async def get_my_albums(
 @albums.get(
     path="/all",
     summary="Get all albums",
-    response_model=dict,
-    responses={status.HTTP_200_OK: {"model": dict}},
+    response_model=SAllAlbumsResponse,
+    responses={status.HTTP_200_OK: {"model": SAllAlbumsResponse}},
 )
-async def all_albums(service: AlbumService = Depends(get_album_service)) -> dict:
+async def all_albums(service: AlbumService = Depends(get_album_service)) -> SAllAlbumsResponse:
 
     albums_ = await service.get_all_albums()
     albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))

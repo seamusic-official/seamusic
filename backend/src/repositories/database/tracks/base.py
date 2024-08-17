@@ -1,11 +1,16 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from dtos.database.tracks import TracksResponseDTO, TrackResponseDTO, UpdateTrackRequestDTO
+from src.dtos.database.tracks import TracksResponseDTO, TrackResponseDTO, UpdateTrackRequestDTO, CreateTrackRequestDTO
 
 
 @dataclass
 class BaseTracksRepository(ABC):
+
+    @abstractmethod
+    async def create_track(self, track: CreateTrackRequestDTO) -> TracksResponseDTO:
+        ...
+
     @abstractmethod
     async def get_user_tracks(self, user_id: int) -> TracksResponseDTO:
         ...
