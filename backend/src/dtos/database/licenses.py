@@ -40,7 +40,6 @@ class LicensesResponseDTO(BaseResponseDTO):
 
 
 class CreateLicenseRequestDTO(BaseRequestDTO):
-    id: int
     title: str
     picture_url: str | None = None
     description: str | None = None

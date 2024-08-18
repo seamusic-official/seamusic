@@ -1,6 +1,7 @@
 from datetime import date
 
-from dtos.database.base import BaseDTO, BaseResponseDTO
+from src.dtos.database.base import BaseDTO, BaseResponseDTO
+from src.schemas.auth import Artist
 
 
 class SpotifyImage(BaseDTO):
@@ -100,4 +101,47 @@ class SpotifyAlbumResponseDTO(BaseResponseDTO):
 
 
 class SpotifyAlbumsResponseDTO(BaseResponseDTO):
-    albums: list[SpotifyAlbum]
+    href: str
+    limit: int
+    next: str
+    offset: int
+    previous: str
+    total: int
+    items: list[SpotifyAlbum]
+
+
+class SearchTracks(BaseDTO):
+    id: str
+    type: str
+    name: str
+    preview_url: str
+    images: list[SpotifyImage]
+    external_urls: dict[str, str]
+
+
+class SearchArtists(BaseDTO):
+    id: str
+    type: str
+    name: str
+    artists: list[Artist]
+    preview_url: str
+    external_urls: dict[str, str]
+    duration_ms: int
+
+
+class SearchAlbums(BaseDTO):
+    id: str
+    name: str
+    images: list[SpotifyImage]
+    external_urls: dict[str, str]
+    release_date: str
+    artists: list[Artist]
+    uri: str
+    album_type: str
+    total_tracks: int
+
+
+class SearchResponseDTO(BaseResponseDTO):
+    tracks: list[SpotifyTrack] | None = None
+    artists: list[SpotifyTrack] | None = None
+    albums: list[SpotifyAlbum] | None = None

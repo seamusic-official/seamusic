@@ -12,7 +12,7 @@ from src.dtos.database.licenses import (
 @dataclass
 class BaseLicensesRepository(ABC):
     @abstractmethod
-    async def get_user_licenses(self, user_id: int) -> LicensesResponseDTO:
+    async def get_user_licenses(self, user_id: int) -> list[LicensesResponseDTO]:
         ...
 
     @abstractmethod

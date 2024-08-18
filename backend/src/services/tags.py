@@ -1,16 +1,16 @@
 from src.dtos.database.tags import AddTagRequestDTO, TagsResponseDTO
 from src.exceptions.services import NotFoundException
-from src.models.tags import Tag
+
 from src.repositories import Repositories, BaseMediaRepository
 from src.repositories.database.tags.base import BaseTagsRepository
 
 
-class TrackRepositories(Repositories):
+class TagsRepositories(Repositories):
     database: BaseTagsRepository
     media: BaseMediaRepository
 
 class TagsService:
-    repositories: TrackRepositories
+    repositories: TagsRepositories
 
 
     async def add_tag(self, name: str) -> None:
