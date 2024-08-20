@@ -10,4 +10,4 @@ RUN pip install --upgrade pip
 RUN pip install poetry
 RUN poetry install
 
-CMD ["poetry", "run", "mypy", "-p", "src"]
+CMD ["make", "run"]
