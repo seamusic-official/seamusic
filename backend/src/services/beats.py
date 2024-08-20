@@ -1,122 +1,142 @@
+from dataclasses import dataclass
 from io import BytesIO
 
-from src.repositories.media.base import S3Repository
+from src.dtos.database.auth import User
+from src.dtos.database.beats import BeatsResponseDTO, CreateBeatRequestDTO, UpdateBeatRequestDTO
+from src.enums.type import Type
 from src.exceptions.services import NoRightsException
 from src.models.beats import Beat
-from src.repositories.beats import BeatsRepository
+from src.repositories import DatabaseRepositories, Repositories
+from src.repositories.database.beats.base import BaseBeatsRepository
+from src.repositories.database.beats.postgres import init_postgres_repository
+from src.repositories.media.base import BaseMediaRepository
+from src.repositories.media.s3 import init_s3_repository
+from src.services.base import BaseService
 
 
-class BeatsService:
-    @staticmethod
-    async def get_user_beats(user: dict) -> list[Beat]:
-        return await BeatsRepository.find_all(user=user)
+@dataclass
+class BeatsDatabaseRepositories(DatabaseRepositories):
+    beats: BaseBeatsRepository
 
-    @staticmethod
-    async def all_beats() -> list[Beat]:
-        return await BeatsRepository.find_all()
 
-    @staticmethod
-    async def get_one_beat(beat_id: int) -> Beat:
-        return await BeatsRepository.find_one_by_id(beat_id)
+@dataclass
+class BeatsRepositories(Repositories):
+    database: BeatsDatabaseRepositories
+    media: BaseMediaRepository
 
-    @staticmethod
+
+@dataclass
+class BeatsService(BaseService):
+    repositories: BeatsRepositories
+
+    async def get_user_beats(self, user_id: int) -> BeatsResponseDTO:
+        return await self.repositories.database.beats.get_user_beats(user_id=user_id)
+
+    async def get_all_beats(self) -> BeatsResponseDTO:
+        return await self.repositories.database.beats.all_beats()
+
+    async def get_one_beat(self, beat_id: int) -> Beat:
+        return await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
+
     async def add_beats(
-            file_info: str | None,
-            file_stream: BytesIO,
-            user: dict
-    ) -> Beat:
-        file_url = await S3Repository.upload_file("AUDIOFILES", file_info, file_stream)
+        self,
+        file_info: str | None,
+        file_stream: BytesIO,
+        user: User
+    ) -> int:
 
-        data = {
-            "title": "Unknown title",
-            "file_url": file_url,
-            "prod_by": user["username"],
-            "user_id": user["id"],
-            "type": "beat",
-        }
+        file_url = await self.repositories.media.upload_file("AUDIOFILES", file_info, file_stream)
 
-        return await BeatsRepository.add_one(data)
+        beat = CreateBeatRequestDTO(
+            title="Unknown title",
+            description="",
+            picture_url=None,
+            file_url=file_url,
+            co_prod=user.username,
+            type=Type.beat,
+            user_id=user.id
+        )
 
-    @staticmethod
+        return await self.repositories.database.beats.create_beat(beat=beat)
+
     async def update_pic_beats(
+        self,
+        beat_id: int,
+        user_id: int,
+        file_info: str | None,
+        file_stream: BytesIO
+    ) -> int:
+
+        beat = await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
+
+        if beat.user_id != user_id:
+            raise NoRightsException()
+
+        file_url = await self.repositories.media.upload_file("PICTURES", file_info, file_stream)
+        beat = UpdateBeatRequestDTO(picture_url=file_url)
+        return await self.repositories.database.beats.update_beat(beat=beat)
+
+    async def release_beat(
+        self,
+        beat_id: int,
+        user_id: int,
+        title: str | None = None,
+        description: str | None = None,
+        co_prod: str | None = None,
+        prod_by: str | None = None
+    ) -> int:
+        beat = await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
+
+        if beat.user_id != user_id:
+            raise NoRightsException()
+
+        beat = UpdateBeatRequestDTO(
+            title=title,
+            description=description,
+            co_prod=co_prod,
+            prod_by=prod_by,
+            type=Type.beat,
+            user_id=user_id
+        )
+
+        return await self.repositories.database.beats.update_beat(beat=beat)
+
+    async def update_beat(
+            self,
             beat_id: int,
             user_id: int,
-            file_info: str | None,
-            file_stream: BytesIO
-    ) -> Beat:
-        beat = await BeatsRepository.find_one_by_id(id_=beat_id)
+            title: str | None = None,
+            description: str | None = None,
+            co_prod: str | None = None,
+            prod_by: str | None = None
+    ) -> int:
+        beat = await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
 
         if beat.user_id != user_id:
             raise NoRightsException()
 
-        file_url = await S3Repository.upload_file("PICTURES", file_info, file_stream)
+        beat = UpdateBeatRequestDTO(
+            title=title,
+            description=description,
+            co_prod=co_prod,
+            prod_by=prod_by,
+            type=Type.beat,
+            user_id=user_id
+        )
 
-        data = {"picture_url": file_url}
+        return await self.repositories.database.beats.update_beat(beat=beat)
 
-        return await BeatsRepository.edit_one(beat_id, data)
-
-    @staticmethod
-    async def release_beats(
-            beat_id: int,
-            user_id: int,
-            title: str | None,
-            description: str | None,
-            co_prod: str | None,
-            prod_by: str | None
-    ) -> Beat:
-        beat = await BeatsRepository.find_one_by_id(id_=beat_id)
+    async def delete_beats(self, beat_id: int, user_id: int) -> None:
+        beat = await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
 
         if beat.user_id != user_id:
             raise NoRightsException()
 
-        update_data = dict()
+        await self.repositories.database.beats.delete_beat(beat_id=beat_id, user_id=user_id)
 
-        if title:
-            update_data["title"] = title
-        if description:
-            update_data["description"] = description
-        if co_prod:
-            update_data["co_prod"] = co_prod
-        if prod_by:
-            update_data["prod_by"] = prod_by
 
-        return await BeatsRepository.edit_one(beat_id, update_data)
-
-    @staticmethod
-    async def update_beats(
-            beat_id: int,
-            user_id: int,
-            title: str | None,
-            description: str | None,
-            picture_url: str | None,
-            co_prod: str | None,
-            prod_by: str | None
-    ) -> Beat:
-        beat = await BeatsRepository.find_one_by_id(id_=beat_id)
-
-        if beat.user_id != user_id:
-            raise NoRightsException()
-
-        update_data = {}
-
-        if title:
-            update_data["title"] = title
-        if description:
-            update_data["description"] = description
-        if picture_url:
-            update_data["picture_url"] = picture_url
-        if co_prod:
-            update_data["co_prod"] = co_prod
-        if prod_by:
-            update_data["prod_by"] = prod_by
-
-        return await BeatsRepository.edit_one(beat_id, update_data)
-
-    @staticmethod
-    async def delete_beats(beat_id: int, user_id: int) -> None:
-        beat = await BeatsRepository.find_one_by_id(id_=beat_id)
-
-        if beat.user_id != user_id:
-            raise NoRightsException()
-
-        await BeatsRepository.delete(id_=beat_id)
+def get_beats_service() -> BeatsService:
+    return BeatsService(repositories=BeatsRepositories(
+        database=BeatsDatabaseRepositories(beats=init_postgres_repository()),
+        media=init_s3_repository()
+    ))

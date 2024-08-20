@@ -3,7 +3,7 @@ from fastapi import UploadFile, File, APIRouter, Depends, status
 from src.exceptions.api import NoRightsException
 from src.repositories.media.base import S3Repository
 from src.schemas.auth import User
-from dtos.database.tracks import (
+from src.schemas.tracks import (
     Track,
     STrackResponse,
     SMyTracksResponse,

@@ -1,13 +1,13 @@
 from sqlalchemy import select, delete
 
-from dtos.database.beats import (
+from src.converters.repositories.database.sqlalchemy import request_dto_to_model, model_to_response_dto, models_to_dto
+from src.dtos.database.beats import (
     Beat as _Beat,
     BeatResponseDTO,
     BeatsResponseDTO,
     CreateBeatRequestDTO,
     UpdateBeatRequestDTO
 )
-from src.converters.repositories.database.sqlalchemy import request_dto_to_model, model_to_response_dto, models_to_dto
 from src.models.beats import Beat
 from src.repositories.database.base import SQLAlchemyRepository
 from src.repositories.database.beats.base import BaseBeatsRepository
@@ -30,14 +30,20 @@ class BeatsRepository(BaseBeatsRepository, SQLAlchemyRepository):
             response_dto=BeatResponseDTO
         )
 
-    async def create_beat(self, beat: CreateBeatRequestDTO) -> None:
+    async def create_beat(self, beat: CreateBeatRequestDTO) -> int:
         beat = request_dto_to_model(model=Beat, request_dto=beat)
         self.session.add(beat)
+        return beat.id
 
-    async def update_beat(self, beat: UpdateBeatRequestDTO) -> None:
+    async def update_beat(self, beat: UpdateBeatRequestDTO) -> int:
         beat = request_dto_to_model(model=Beat, request_dto=beat)
         await self.session.merge(beat)
+        return beat.id
 
     async def delete_beat(self, beat_id: int, user_id: int) -> None:
         query = delete(Beat).filter_by(id=beat_id, user_id=user_id)
         await self.session.execute(query)
+
+
+def init_postgres_repository() -> BeatsRepository:
+    return BeatsRepository()

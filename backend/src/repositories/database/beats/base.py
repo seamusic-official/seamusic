@@ -1,8 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from dtos.database.beats import BeatResponseDTO, CreateBeatRequestDTO, UpdateBeatRequestDTO
-from dtos.database.beats import BeatsResponseDTO
+from src.dtos.database.beats import BeatResponseDTO, CreateBeatRequestDTO, UpdateBeatRequestDTO
+from src.dtos.database.beats import BeatsResponseDTO
 
 
 @dataclass
@@ -20,11 +20,11 @@ class BaseBeatsRepository(ABC):
         ...
 
     @abstractmethod
-    async def create_beat(self, beat: CreateBeatRequestDTO) -> None:
+    async def create_beat(self, beat: CreateBeatRequestDTO) -> int:
         ...
 
     @abstractmethod
-    async def update_beat(self, beat: UpdateBeatRequestDTO) -> None:
+    async def update_beat(self, beat: UpdateBeatRequestDTO) -> int:
         ...
 
     @abstractmethod

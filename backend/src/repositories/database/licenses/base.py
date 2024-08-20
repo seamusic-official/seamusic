@@ -24,11 +24,11 @@ class BaseLicensesRepository(ABC):
         ...
 
     @abstractmethod
-    async def add_license(self, license_: CreateLicenseRequestDTO) -> None:
+    async def add_license(self, license_: CreateLicenseRequestDTO) -> int:
         ...
 
     @abstractmethod
-    async def update_license(self, license_: UpdateLicenseRequestDTO) -> None:
+    async def update_license(self, license_: UpdateLicenseRequestDTO) -> int:
         ...
 
     @abstractmethod

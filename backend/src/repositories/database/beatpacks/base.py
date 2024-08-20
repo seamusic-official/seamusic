@@ -24,11 +24,11 @@ class BaseBeatpacksRepository(ABC):
         ...
 
     @abstractmethod
-    async def add_beatpack(self, beatpack: CreateBeatpackRequestDTO) -> None:
+    async def add_beatpack(self, beatpack: CreateBeatpackRequestDTO) -> int:
         ...
 
     @abstractmethod
-    async def update_beatpack(self, beatpack: UpdateBeatpackRequestDTO) -> None:
+    async def update_beatpack(self, beatpack: UpdateBeatpackRequestDTO) -> int:
         ...
 
     @abstractmethod

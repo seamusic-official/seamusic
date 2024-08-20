@@ -24,11 +24,11 @@ class BaseSoundkitsRepository(ABC):
         ...
 
     @abstractmethod
-    async def add_soundkit(self, soundkit: CreateSoundkitRequestDTO) -> None:
+    async def add_soundkit(self, soundkit: CreateSoundkitRequestDTO) -> int:
         ...
 
     @abstractmethod
-    async def update_soundkit(self, soundkit: UpdateSoundkitRequestDTO) -> None:
+    async def update_soundkit(self, soundkit: UpdateSoundkitRequestDTO) -> int:
         ...
 
     @abstractmethod

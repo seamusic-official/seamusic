@@ -31,13 +31,15 @@ class SounkitsReporitory(SQLAlchemyRepository, BaseSoundkitsRepository):
         soundkit = await self.session.get(Soundkit, soundkit_id)
         return model_to_response_dto(model=soundkit, response_dto=SoundkitResponseDTO)
 
-    async def add_soundkit(self, soundkit: CreateSoundkitRequestDTO) -> None:
+    async def add_soundkit(self, soundkit: CreateSoundkitRequestDTO) -> int:
         soundkit = request_dto_to_model(model=Soundkit, request_dto=soundkit)
         self.session.add(soundkit)
+        return soundkit.id
 
-    async def update_soundkit(self, soundkit: UpdateSoundkitRequestDTO) -> None:
+    async def update_soundkit(self, soundkit: UpdateSoundkitRequestDTO) -> int:
         soundkit = request_dto_to_model(model=Soundkit, request_dto=soundkit)
         await self.session.merge(soundkit)
+        return soundkit.id
 
     async def delete_soundkit(self, soundkit_id: int, user_id: int) -> None:
         query = delete(Soundkit).filter_by(id=soundkit_id, user_id=user_id)

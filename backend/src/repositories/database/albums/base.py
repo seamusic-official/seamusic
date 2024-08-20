@@ -20,11 +20,11 @@ class BaseAlbumRepository(ABC):
         ...
 
     @abstractmethod
-    async def create_album(self, album: CreateAlbumRequestDTO) -> None:
+    async def create_album(self, album: CreateAlbumRequestDTO) -> int:
         ...
 
     @abstractmethod
-    async def edit_album(self, album: UpdateAlbumRequestDTO) -> None:
+    async def edit_album(self, album: UpdateAlbumRequestDTO) -> int:
         ...
 
     @abstractmethod

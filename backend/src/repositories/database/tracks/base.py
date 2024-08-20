@@ -8,7 +8,7 @@ from src.dtos.database.tracks import TracksResponseDTO, TrackResponseDTO, Update
 class BaseTracksRepository(ABC):
 
     @abstractmethod
-    async def create_track(self, track: CreateTrackRequestDTO) -> TracksResponseDTO:
+    async def create_track(self, track: CreateTrackRequestDTO) -> int:
         ...
 
     @abstractmethod
@@ -24,7 +24,7 @@ class BaseTracksRepository(ABC):
         ...
 
     @abstractmethod
-    async def update_track(self, track: UpdateTrackRequestDTO) -> None:
+    async def update_track(self, track: UpdateTrackRequestDTO) -> int:
         ...
 
     @abstractmethod

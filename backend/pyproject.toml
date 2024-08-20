@@ -6,7 +6,6 @@ authors = ["Maxim Kolyadin <koladinmaksim246@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.11"
 aiohttp = "^3.10.3"
 alembic = "^1.13.2"
 asyncpg = "^0.29.0"
@@ -18,9 +17,11 @@ google-auth-oauthlib = "^1.2.1"
 hiredis = "^3.0.0"
 jmespath = "^1.0.1"
 mutagen = "^1.47.0"
+passlib = "^1.7.4"
 pydantic = "^2.8.2"
 pydantic-settings = "^2.4.0"
 pyjwt = "^2.9.0"
+python = "^3.11"
 python-dotenv = "^1.0.1"
 redis = "^5.0.8"
 requests = "^2.32.3"
@@ -39,6 +40,7 @@ pytest = "^8.3.2"
 pytest-asyncio = "^0.23.8"
 python-dateutil = "^2.9.0.post0"
 pytest-dependency = "^0.6.0"
+python-jose="^3.3.0"
 pytest-mock = "^3.14.0"
 
 [build-system]

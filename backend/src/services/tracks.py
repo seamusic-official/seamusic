@@ -1,42 +1,37 @@
 from io import BytesIO
 
-from src.dtos.database.tracks import TracksResponseDTO, CreateTrackRequestDTO, UpdateTrackRequestDTO
+from src.dtos.database.tracks import TracksResponseDTO, CreateTrackRequestDTO, UpdateTrackRequestDTO, TrackResponseDTO
+from src.exceptions.services import NoRightsException
 from src.repositories import Repositories, BaseMediaRepository
 from src.repositories.database.tracks.base import BaseTracksRepository
 
-
-from src.exceptions.services import NoRightsException
-from src.models.tracks import Track
 
 class TrackRepositories(Repositories):
     database: BaseTracksRepository
     media: BaseMediaRepository
 
+
 class TracksService:
     repositories: TrackRepositories
 
-
-    async def get_my_tracks(self, user_id: int) -> list[TracksResponseDTO]:
+    async def get_my_tracks(self, user_id: int) -> TracksResponseDTO:
         return await self.repositories.database.get_user_tracks(user_id=user_id)
 
-
-    async def all_tracks(self) -> list[TracksResponseDTO]:
+    async def all_tracks(self) -> TracksResponseDTO:
         return await self.repositories.database.get_all_tracks()
 
-
-    async def get_one_track(self, track_id: int) -> TracksResponseDTO:
+    async def get_one_track(self, track_id: int) -> TrackResponseDTO:
         return await self.repositories.database.get_track_by_id(track_id=track_id)
 
-
     async def add_track(
-        self,
-        username: str,
+            self,
+            username: str,
             track_title: str,
             description: str,
-        user_id: int,
-        file_info: str | None,
-        file_stream: BytesIO
-    ) -> Track:
+            user_id: int,
+            file_info: str | None,
+            file_stream: BytesIO
+    ) -> int:
 
         file_url = await self.repositories.media.upload_file("AUDIOFILES", file_info, file_stream)
 
@@ -50,14 +45,13 @@ class TracksService:
 
         return await self.repositories.database.create_track(track=track)
 
-
     async def update_pic_tracks(
-        self,
-        track_id: int,
-        user_id: int,
-        file_info: str | None,
-        file_stream: BytesIO,
-    ) -> Track:
+            self,
+            track_id: int,
+            user_id: int,
+            file_info: str | None,
+            file_stream: BytesIO,
+    ) -> int:
         file_url = await self.repositories.media.upload_file("PICTURES", file_info, file_stream)
 
         track = await self.repositories.database.get_track_by_id(track_id=track_id)
@@ -72,25 +66,23 @@ class TracksService:
         )
         return await self.repositories.database.update_track(track=track)
 
-
     async def release_track(
-        self,
-        track_id: int,
-        user_id: int,
-        title: str,
-        picture_url: str | None,
-        description: str | None,
-        co_prod: str | None,
-        prod_by: str | None,
-        playlist_id: int | None,
-        track_pack_id: int | None,
-    ) -> Track:
+            self,
+            track_id: int,
+            user_id: int,
+            title: str,
+            picture_url: str | None,
+            description: str | None,
+            co_prod: str | None,
+            prod_by: str | None,
+            playlist_id: int | None,
+            track_pack_id: int | None,
+    ) -> int:
 
         track = await self.repositories.database.get_track_by_id(track_id=track_id)
 
         if track.user_id != user_id:
             raise NoRightsException()
-
 
         track = UpdateTrackRequestDTO(
             title=title,
@@ -105,19 +97,18 @@ class TracksService:
 
         return await self.repositories.database.update_track(track=track)
 
-
     async def update_track(
-        self,
-        track_id: int,
-        user_id: int,
-        title: str,
-        description: str | None,
-        prod_by: str | None,
-        picture_url: str | None,
-        file_path: str,
-        co_prod: str | None,
-        playlist_id: int | None,
-        track_pack_id: int | None,
+            self,
+            track_id: int,
+            user_id: int,
+            title: str,
+            description: str | None,
+            prod_by: str | None,
+            picture_url: str | None,
+            file_path: str,
+            co_prod: str | None,
+            playlist_id: int | None,
+            track_pack_id: int | None,
     ) -> None:
 
         track = await self.repositories.database.get_track_by_id(track_id=track_id)
@@ -138,7 +129,6 @@ class TracksService:
         )
 
         await self.repositories.database.update_track(track=track)
-
 
     async def delete_track(self, track_id: int, user_id: int) -> None:
         track = await self.repositories.database.get_track_by_id(track_id=track_id)

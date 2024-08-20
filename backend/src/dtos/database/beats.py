@@ -1,4 +1,4 @@
-from dtos.database.base import BaseDTO, BaseResponseDTO, BaseRequestDTO
+from src.dtos.database.base import BaseDTO, BaseResponseDTO, BaseRequestDTO
 
 
 class Beat(BaseDTO):
@@ -28,7 +28,7 @@ class BeatsResponseDTO(BaseResponseDTO):
 class CreateBeatRequestDTO(BaseRequestDTO):
     title: str
     description: str
-    picture_url: str
+    picture_url: str | None = None
     file_url: str
     co_prod: str
     type: str
@@ -40,6 +40,7 @@ class UpdateBeatRequestDTO(BaseRequestDTO):
     description: str | None = None
     picture_url: str | None = None
     file_url: str | None = None
+    prod_by: str | None = None
     co_prod: str | None = None
     type: str | None = None
     user_id: int | None = None

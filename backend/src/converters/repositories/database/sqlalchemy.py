@@ -1,5 +1,5 @@
 from src.core.database import Base
-from dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
 
 
 def model_to_response_dto(response_dto: type[BaseResponseDTO], model: Base | None = None) -> BaseResponseDTO | None:
@@ -11,4 +11,5 @@ def models_to_dto(models: list[Base], dto: type[BaseDTO]) -> list[BaseDTO]:
 
 
 def request_dto_to_model(request_dto: BaseRequestDTO, model: type[Base]):
-    return model(**request_dto.model_dump())
+    request_dto = dict(filter(lambda item: item is not None, request_dto.model_dump().items()))
+    return model(**request_dto)

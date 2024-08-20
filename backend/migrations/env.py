@@ -8,16 +8,7 @@ from sqlalchemy.ext.asyncio import async_engine_from_config
 
 from src.core.config import settings
 from src.core.database import Base
-from src.models.albums import Album, album_track_association, artist_profile_album_association  # noqa 401
-from src.models.auth import User, ProducerProfile, ArtistProfile, Role, user_to_roles_association  # noqa 401
-from src.models.beatpacks import Beatpack  # noqa 401
-from src.models.beats import Beat  # noqa 401
-from src.models.comments import BaseComment  # noqa 401
-from src.models.licenses import License  # noqa 401
-from src.models.soundkits import Soundkit  # noqa 401
-from src.models.subscriptions import TelegramAccount, OnlyTelegramSubscribeMonth, OnlyTelegramSubscribeYear  # noqa 401
-from src.models.tags import Tag  # noqa 401
-from src.models.tracks import Track  # noqa 401
+from src.models import *  # noqa: F401
 
 config = context.config
 

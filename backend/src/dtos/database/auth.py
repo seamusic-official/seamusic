@@ -1,9 +1,9 @@
-from datetime import datetime
+from datetime import datetime, date
 
 from pydantic import EmailStr, Field
 
-from src.enums.auth import Role
-from dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from src.enums.auth import Role, AccessLevel
 
 
 class User(BaseDTO):
@@ -33,15 +33,20 @@ class UsersResponseDTO(BaseResponseDTO):
 class CreateUserRequestDTO(BaseRequestDTO):
     username: str
     email: EmailStr
-    password: str
-    picture_url: str
+    password: str | None
+    picture_url: str | None = None
+    roles: list[Role]
+    birthday: date
+    tags: list[str]
+    access_level: AccessLevel
 
 
 class UpdateUserRequestDTO(BaseRequestDTO):
-    name: str | None = None
     username: str | None = None
     picture_url: str | None = None
     description: str | None = None
+    artist_profile_id: int | None = None
+    producer_profile_id: int | None = None
 
 
 class Artist(BaseDTO):
@@ -65,6 +70,7 @@ class CreateArtistRequestDTO(BaseRequestDTO):
 
 class UpdateArtistRequestDTO(BaseRequestDTO):
     description: str | None = Field(max_length=255)
+    is_available: bool | None = None
 
 
 class Producer(BaseDTO):
@@ -88,3 +94,4 @@ class CreateProducerRequestDTO(BaseRequestDTO):
 
 class UpdateProducerRequestDTO(BaseRequestDTO):
     description: str | None = Field(max_length=255)
+    is_available: bool | None = None

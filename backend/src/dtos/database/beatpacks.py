@@ -1,6 +1,6 @@
-from dtos.database.auth import User
-from dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
-from dtos.database.beats import Beat
+from src.dtos.database.auth import User
+from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from src.dtos.database.beats import Beat
 
 
 class Beatpack(BaseDTO):
