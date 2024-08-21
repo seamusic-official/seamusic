@@ -9,8 +9,9 @@ from src.schemas.beatpacks import (
     SMyBeatpacksResponse,
     SBeatpacksResponse,
     SCreateBeatpackResponse,
-    SEditBeatpackRequest,
+    SEditBeatpackRequest, Beatpack,
 )
+from src.schemas.beats import Beat
 from src.services.beatpacks import BeatpackService, get_beatpack_service
 from src.utils.auth import get_current_user
 
@@ -23,13 +24,46 @@ beatpacks = APIRouter(prefix="/beatpacks", tags=["Beatpacks"])
     response_model=SMyBeatpacksResponse,
     responses={status.HTTP_200_OK: {"model": SMyBeatpacksResponse}},
 )
-async def get_user_beatpacks(
+async def get_my_beatpacks(
     user: User = Depends(get_current_user),
     service: BeatpackService = Depends(get_beatpack_service)
 ) -> SMyBeatpacksResponse:
-    beatpacks = await service.get_user_beatpacks(user_id=user.id)
 
-    return SMyBeatpacksResponse(beatpacks=beatpacks)
+    beatpacks_ = list(map(
+        lambda beatpack: Beatpack(
+            title=beatpack.title,
+            description=beatpack.description,
+            users=list(map(
+                lambda user_: User(
+                    id=user_.id,
+                    username=user_.username,
+                    email=user_.email,
+                    picture_url=user_.picture_url,
+                    birthday=user_.birthday,
+                ),
+                beatpack.users
+            )),
+            beats=list(map(
+                lambda beat: Beat(
+                    id=beat.id,
+                    title=beat.title,
+                    description=beat.description,
+                    picture_url=beat.picture_url,
+                    file_url=beat.file_url,
+                    co_prod=beat.co_prod,
+                    prod_by=beat.prod_by,
+                    user_id=beat.user_id,
+                    is_available=beat.is_available,
+                    created_at=beat.created_at,
+                    updated_at=beat.updated_at,
+                ),
+                beatpack.beats
+            )),
+        ),
+        await service.get_user_beatpacks(user_id=user.id)
+    ))
+
+    return SMyBeatpacksResponse(beatpacks=beatpacks_)
 
 
 @beatpacks.get(
@@ -39,12 +73,42 @@ async def get_user_beatpacks(
     responses={status.HTTP_200_OK: {"model": SBeatpacksResponse}},
 )
 async def all_beatpacks(service: BeatpackService = Depends(get_beatpack_service)) -> SBeatpacksResponse:
-    beatpacks = await service.get_all_beatpacks()
-    return SBeatpacksResponse(
-        beatpacks=[
-            SBeatpackResponse.from_db_model(model=beatpack) for beatpack in beatpacks
-        ]
-    )
+
+    beatpacks_ = list(map(
+        lambda beatpack: Beatpack(
+            title=beatpack.title,
+            description=beatpack.description,
+            users=list(map(
+                lambda user_: User(
+                    id=user_.id,
+                    username=user_.username,
+                    email=user_.email,
+                    picture_url=user_.picture_url,
+                    birthday=user_.birthday,
+                ),
+                beatpack.users
+            )),
+            beats=list(map(
+                lambda beat: Beat(
+                    id=beat.id,
+                    title=beat.title,
+                    description=beat.description,
+                    picture_url=beat.picture_url,
+                    file_url=beat.file_url,
+                    co_prod=beat.co_prod,
+                    prod_by=beat.prod_by,
+                    user_id=beat.user_id,
+                    is_available=beat.is_available,
+                    created_at=beat.created_at,
+                    updated_at=beat.updated_at,
+                ),
+                beatpack.beats
+            )),
+        ),
+        await service.get_all_beatpacks()
+    ))
+
+    return SBeatpacksResponse(beatpacks=beatpacks_)
 
 
 @beatpacks.get(
@@ -54,56 +118,87 @@ async def all_beatpacks(service: BeatpackService = Depends(get_beatpack_service)
     responses={status.HTTP_200_OK: {"model": SBeatpackResponse}},
 )
 async def get_one(
-        beatpack_id: int,
-        service: BeatpackService = Depends(get_beatpack_service)
+    beatpack_id: int,
+    service: BeatpackService = Depends(get_beatpack_service)
 ):
     beatpack = await service.get_one_beatpack(beatpack_id=beatpack_id)
 
-    return SBeatpackResponse.from_db_model(model=beatpack)
+    return SBeatpackResponse(
+        title=beatpack.title,
+        description=beatpack.description,
+        users=list(map(
+            lambda user_: User(
+                id=user_.id,
+                username=user_.username,
+                email=user_.email,
+                picture_url=user_.picture_url,
+                birthday=user_.birthday,
+            ),
+            beatpack.users
+        )),
+        beats=list(map(
+            lambda beat: Beat(
+                id=beat.id,
+                title=beat.title,
+                description=beat.description,
+                picture_url=beat.picture_url,
+                file_url=beat.file_url,
+                co_prod=beat.co_prod,
+                prod_by=beat.prod_by,
+                user_id=beat.user_id,
+                is_available=beat.is_available,
+                created_at=beat.created_at,
+                updated_at=beat.updated_at,
+            ),
+            beatpack.beats
+        ))
+    )
 
 
 @beatpacks.post(
-    path="/add",
+    path="/new",
     summary="Add a file for new beat",
     response_model=SCreateBeatpackResponse,
     responses={status.HTTP_200_OK: {"model": SCreateBeatpackResponse}},
 )
 async def add_beatpack(
-        data: SCreateBeatpackRequest,
-        service: BeatpackService = Depends(get_beatpack_service)
+    data: SCreateBeatpackRequest,
+    service: BeatpackService = Depends(get_beatpack_service)
 ) -> SCreateBeatpackResponse:
-    beatpack = await service.add_beatpack(
+
+    beatpack_id: int = await service.add_beatpack(
         title=data.title,
         description=data.description
     )
-    return SCreateBeatpackResponse.from_db_model(model=beatpack)
+    return SCreateBeatpackResponse(id=beatpack_id)
 
 
 @beatpacks.put(
-    path="/update/{beatpack_id}",
+    path="/{beatpack_id}/update",
     summary="Edit beat pack",
     response_model=SEditBeatpackResponse,
     responses={status.HTTP_200_OK: {"model": SEditBeatpackResponse}},
 )
 async def update_beatpacks(
     beatpack_id: int,
-    beatpacks_data: SEditBeatpackRequest,
+    data: SEditBeatpackRequest,
     user: User = Depends(get_current_user),
     service: BeatpackService = Depends(get_beatpack_service)
 ) -> SEditBeatpackResponse:
-    beatpack = await service.update_beatpack(
+
+    beatpack_id = await service.update_beatpack(
+        title=data.title,
+        description=data.description,
         beatpack_id=beatpack_id,
+        beats=data.beats,
         user_id=user.id,
-        title=beatpacks_data.title,
-        description=beatpacks_data.description
     )
 
-    return SEditBeatpackResponse()
-
+    return SEditBeatpackResponse(id=beatpack_id)
 
 
 @beatpacks.delete(
-    path="/delete/{beatpack_id}",
+    path="/{beatpack_id}/delete",
     summary="Delete beat pack",
     response_model=SDeleteBeatpackResponse,
     responses={status.HTTP_200_OK: {"model": SDeleteBeatpackResponse}},
@@ -113,9 +208,6 @@ async def delete_beatpacks(
     user: User = Depends(get_current_user),
     service: BeatpackService = Depends(get_beatpack_service)
 ) -> SDeleteBeatpackResponse:
-    await service.delete_beatpack(
-        beatpack_id=beatpack_id,
-        user_id=user.id
-    )
-    return SDeleteBeatpackResponse()
 
+    await service.delete_beatpack(beatpack_id=beatpack_id, user_id=user.id)
+    return SDeleteBeatpackResponse()

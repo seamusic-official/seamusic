@@ -1,6 +1,11 @@
 from dataclasses import dataclass
 
-from src.dtos.database.licenses import LicensesResponseDTO, CreateLicenseRequestDTO, UpdateLicenseRequestDTO
+from src.dtos.database.licenses import (
+    LicensesResponseDTO,
+    CreateLicenseRequestDTO,
+    UpdateLicenseRequestDTO,
+    LicenseResponseDTO
+)
 from src.exceptions.api import NoRightsException
 from src.repositories import Repositories, DatabaseRepositories, BaseMediaRepository
 from src.repositories.database.licenses.base import BaseLicensesRepository
@@ -26,10 +31,10 @@ class LicensesService:
     async def get_user_licenses(self, user_id: int) -> list[LicensesResponseDTO]:
         return await self.repositories.database.licenses.get_user_licenses(user_id=user_id)
 
-    async def get_all_licenses(self) -> list[LicensesResponseDTO]:
+    async def get_all_licenses(self) -> LicensesResponseDTO:
         return await self.repositories.database.licenses.get_all_licenses()
 
-    async def get_one(self, license_id: int) -> LicensesResponseDTO:
+    async def get_one(self, license_id: int) -> LicenseResponseDTO | None:
         return await self.repositories.database.licenses.get_license_by_id(license_id=license_id)
 
     async def add_license(

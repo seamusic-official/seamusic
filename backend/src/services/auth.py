@@ -1,3 +1,4 @@
+from dataclasses import dataclass
 from datetime import date, datetime
 from io import BytesIO
 
@@ -11,25 +12,30 @@ from src.dtos.database.auth import (
     Producer,
     ProducerResponseDTO,
     ProducersResponseDTO,
-    User,
     UserResponseDTO,
     UsersResponseDTO,
     UpdateArtistRequestDTO,
     UpdateProducerRequestDTO,
-    UpdateUserRequestDTO,
+    UpdateUserRequestDTO, User,
 )
 from src.dtos.database.tags import AddTagsRequestDTO, Tag
 from src.enums.auth import Role, AccessLevel
-from src.exceptions.services import NotFoundException, ServerError
+from src.exceptions.services import NotFoundException, ServerError, NoRightsException
 from src.repositories import Repositories, DatabaseRepositories, BaseMediaRepository
 from src.repositories.api.spotify.base import BaseSpotifyRepository
 from src.repositories.database.auth.base import BaseUsersRepository, BaseProducersRepository, BaseArtistsRepository
+from src.repositories.database.auth.postgres import (
+    init_users_postgres_repository,
+    init_artists_postgres_repository,
+    init_producers_postgres_repository, )
 from src.repositories.database.tags.base import BaseTagsRepository
-from src.repositories.media.s3 import S3Repository
+from src.repositories.database.tags.postgres import init_postgres_repository as init_tags_postgres_repository
+from src.repositories.media.s3 import S3Repository, init_s3_repository
 from src.services.base import BaseService
-from src.utils.auth import create_access_token, create_refresh_token, get_hashed_password
+from src.utils.auth import create_access_token, create_refresh_token, get_hashed_password, authenticate_user
 
 
+@dataclass
 class UsersDatabaseRepositories(DatabaseRepositories):
     users: BaseUsersRepository
     tags: BaseTagsRepository
@@ -37,18 +43,22 @@ class UsersDatabaseRepositories(DatabaseRepositories):
     producers: BaseProducersRepository
 
 
+@dataclass
 class ArtistsDatabaseRepositories(DatabaseRepositories):
     artists: BaseArtistsRepository
 
 
+@dataclass
 class ProducersDatabaseRepositories(DatabaseRepositories):
     producers: BaseProducersRepository
 
 
+@dataclass
 class AuthDatabaseRepositories(DatabaseRepositories):
     users: BaseUsersRepository
 
 
+@dataclass
 class BaseAuthRepositories(Repositories):
     database: UsersDatabaseRepositories | ArtistsDatabaseRepositories | ProducersDatabaseRepositories | AuthDatabaseRepositories
     media: BaseMediaRepository
@@ -75,6 +85,7 @@ class AuthRepositories(BaseAuthRepositories):
     api: BaseSpotifyRepository
 
 
+@dataclass
 class UsersService(BaseService):
     repositories: UsersRepositories
 
@@ -86,33 +97,35 @@ class UsersService(BaseService):
         roles: list[Role],
         birthday: date,
         tags: list[str],
-    ) -> None:
+    ) -> int:
+
+        existing_user: UserResponseDTO | None = await self.repositories.database.users.get_user_by_email(email=email)
+        if existing_user:
+            raise NoRightsException
 
         superuser = await self.repositories.database.users.get_user_by_id(user_id=1)
-
         if not superuser:
             access_level = AccessLevel.superuser
         else:
             access_level = AccessLevel.user
 
-        hashed_password = get_hashed_password(password)
-
         user = CreateUserRequestDTO(
             username=username,
             email=email,
-            password=hashed_password,
+            password=get_hashed_password(password),
             access_level=access_level,
             roles=roles,
             birthday=birthday,
             tags=tags,
         )
-        await self.repositories.database.users.create_user(user=user)
+        user_id: int = await self.repositories.database.users.create_user(user=user)
         await self.repositories.database.tags.add_tags(tags=AddTagsRequestDTO(tags=list(map(lambda name: Tag(name=name), tags))))
 
         artist_profile_id: int = await self.repositories.database.artists.update_artist(UpdateArtistRequestDTO(description="Hi, I'm an artist", is_available=False))
         await self.repositories.database.users.update_user(UpdateUserRequestDTO(artist_profile_id=artist_profile_id))
         producer_profile_id: int = await self.repositories.database.producers.update_producer(UpdateProducerRequestDTO(description="Hi, I'm a producer", is_available=False))
         await self.repositories.database.users.update_user(UpdateUserRequestDTO(producer_profile_id=producer_profile_id))
+        return user_id
 
     async def get_user_by_id(self, user_id: int) -> UserResponseDTO:
         user: UserResponseDTO | None = await self.repositories.database.users.get_user_by_id(user_id=user_id)
@@ -122,11 +135,18 @@ class UsersService(BaseService):
 
         return user
 
-    async def get_all_users(self) -> list[User]:
-        users: UsersResponseDTO = await self.repositories.database.users.get_users()
-        return users.users
+    async def get_user_by_email(self, email: EmailStr) -> UserResponseDTO:
+        user: UserResponseDTO | None = await self.repositories.database.users.get_user_by_email(email=email)
 
-    async def update_current_user_picture(
+        if not user:
+            raise NotFoundException()
+
+        return user
+
+    async def get_all_users(self) -> UsersResponseDTO:
+        return await self.repositories.database.users.get_users()
+
+    async def update_user_picture(
         self,
         file_stream: BytesIO,
         file_info: str,
@@ -143,7 +163,7 @@ class UsersService(BaseService):
         updated_user = UpdateUserRequestDTO(picture_url=picture_url)
         await self.repositories.database.users.update_user(user=updated_user)
 
-    async def update_current_user(
+    async def update_user(
         self,
         username: str | None,
         description: str | None,
@@ -173,6 +193,14 @@ class UsersService(BaseService):
 class ArtistsService(BaseService):
     repositories: ArtistsRepositories
 
+    async def get_artist_id_by_user_id(self, user_id: int) -> int:
+        artist_id: int | None = await self.repositories.database.artists.get_artist_id_by_user_id(user_id=user_id)
+
+        if not artist_id:
+            raise NotFoundException
+
+        return artist_id
+
     async def get_artist_by_id(self, artist_id: int) -> ArtistResponseDTO:
         artist: ArtistResponseDTO | None = await self.repositories.database.artists.get_artist_by_id(artist_id=artist_id)
 
@@ -185,7 +213,7 @@ class ArtistsService(BaseService):
         artists: ArtistsResponseDTO = await self.repositories.database.artists.get_artists()
         return artists.artists
 
-    async def update_current_artist(self, artist_id: int, description: str) -> None:
+    async def update_artist(self, artist_id: int, description: str) -> None:
         artist: ArtistResponseDTO | None = await self.repositories.database.artists.get_artist_by_id(artist_id=artist_id)
 
         if not artist:
@@ -207,6 +235,14 @@ class ArtistsService(BaseService):
 class ProducersService(BaseService):
     repositories: ProducersRepositories
 
+    async def get_producer_id_by_user_id(self, user_id: int) -> int:
+        producer_id: int | None = await self.repositories.database.producers.get_producer_id_by_user_id(user_id=user_id)
+
+        if not producer_id:
+            raise NotFoundException
+
+        return producer_id
+
     async def get_producer_by_id(self, producer_id: int) -> ProducerResponseDTO:
         producer: ProducerResponseDTO | None = await self.repositories.database.producers.get_producer_by_id(producer_id=producer_id)
 
@@ -219,7 +255,7 @@ class ProducersService(BaseService):
         producers: ProducersResponseDTO = await self.repositories.database.producers.get_producers()
         return producers.producers
 
-    async def update_one_producer(self, producer_id: int, description: str) -> None:
+    async def update_producer(self, producer_id: int, description: str) -> None:
         producer: ProducerResponseDTO | None = await self.repositories.database.producers.get_producer_by_id(producer_id=producer_id)
 
         if not producer:
@@ -242,12 +278,16 @@ class AuthService(BaseService):
     repositories: AuthRepositories
 
     @staticmethod
-    async def login(user_id: int) -> tuple[str, str]:
+    async def login(email: EmailStr, password: str) -> tuple[str, str, User]:
 
-        access_token = create_access_token({"sub": str(user_id)})
-        refresh_token_ = create_refresh_token({"sub": str(user_id)})
+        user = await authenticate_user(email=email, password=password)
+        if not user:
+            raise NotFoundException
 
-        return access_token, refresh_token_
+        access_token = create_access_token({"sub": str(user.id)})
+        refresh_token_ = create_refresh_token({"sub": str(user.id)})
+
+        return access_token, refresh_token_, user
 
     @staticmethod
     async def refresh_token(user_id: int) -> tuple[str, str]:
@@ -289,3 +329,52 @@ class AuthService(BaseService):
 
         else:
             raise ServerError("Failed to obtain access token")
+
+
+def get_users_repositories() -> UsersRepositories:
+    return UsersRepositories(
+        database=UsersDatabaseRepositories(
+            users=init_users_postgres_repository(),
+            tags=init_tags_postgres_repository(),
+            artists=init_artists_postgres_repository(),
+            producers=init_producers_postgres_repository()
+        ),
+        media=init_s3_repository()
+    )
+
+
+def get_users_service() -> UsersService:
+    return UsersService(repositories=get_users_repositories())
+
+
+def get_artists_repositories() -> ArtistsRepositories:
+    return ArtistsRepositories(
+        database=ArtistsDatabaseRepositories(artists=init_artists_postgres_repository()),
+        media=init_s3_repository()
+    )
+
+
+def get_artists_service() -> ArtistsService:
+    return ArtistsService(repositories=get_artists_repositories())
+
+
+def get_producers_repositories() -> ProducersRepositories:
+    return ProducersRepositories(
+        database=ProducersDatabaseRepositories(producers=init_producers_postgres_repository()),
+        media=init_s3_repository()
+    )
+
+
+def get_producers_service() -> ProducersService:
+    return ProducersService(repositories=get_producers_repositories())
+
+
+def get_auth_repositories() -> AuthRepositories:
+    return AuthRepositories(
+        database=AuthDatabaseRepositories(users=init_users_postgres_repository()),
+        media=init_s3_repository()
+    )
+
+
+def get_auth_service() -> AuthService:
+    return AuthService(repositories=get_auth_repositories())

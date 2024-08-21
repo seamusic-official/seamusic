@@ -1,34 +1,38 @@
 from datetime import date, datetime
-from typing import Optional, List
 
 from pydantic import BaseModel, EmailStr, Field
 
 from src.enums.auth import Role
-from src.models.auth import User as _User
-from src.schemas.base import FromDBModelMixin, DetailMixin
+from src.schemas.base import DetailMixin
 
 
-class User(FromDBModelMixin):
+class User(BaseModel):
     id: int
     username: str
     email: str
-    password: str
+    password: str | None = None
     picture_url: str
     birthday: datetime
 
-    _model_type = _User
+
+class SUserResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    picture_url: str
+    birthday: datetime
 
 
-class SUserResponse(User, FromDBModelMixin):
-    pass
-
-
-class SMeResponse(SUserResponse):
-    pass
+class SMeResponse(BaseModel):
+    id: int
+    username: str
+    email: str
+    picture_url: str
+    birthday: datetime
 
 
 class SUsersResponse(BaseModel):
-    users: List[User]
+    users: list[User]
 
 
 class SUpdateUserPictureResponse(BaseModel, DetailMixin):
@@ -36,92 +40,98 @@ class SUpdateUserPictureResponse(BaseModel, DetailMixin):
 
 
 class SUpdateUserRequest(BaseModel):
-    name: Optional[str]
-    username: Optional[str]
-    picture_url: Optional[str]
-    description: Optional[str]
+    name: str | None = None
+    username: str | None = None
+    description: str | None = None
 
 
 class SUpdateUserResponse(BaseModel):
-    name: str
-    username: str
-    picture_url: str
-    description: str
+    id: int
 
 
 class SDeleteUserResponse(BaseModel, DetailMixin):
     detail: str = "User deleted."
 
 
-class Artist(FromDBModelMixin):
+class Artist(BaseModel):
+    id: int
     user: User
-    description: Optional[str] = "Description not found"
+    description: str | None = None
 
 
-class SArtistResponse(Artist):
-    pass
+class SArtistResponse(BaseModel):
+    id: int
+    user: User
+    description: str | None = None
 
 
-class SMeAsArtistResponse(SMeResponse):
-    pass
+class SMeAsArtistResponse(BaseModel):
+    id: int
+    user: User
+    description: str | None = None
 
 
 class SArtistsResponse(BaseModel):
-    artists: List[Artist]
+    artists: list[Artist]
 
 
 class SUpdateArtistRequest(BaseModel):
-    description: Optional[str] = Field(max_length=255)
+    description: str | None = Field(max_length=255)
 
 
 class SUpdateArtistResponse(BaseModel):
-    description: str = Field(max_length=255)
+    id: int
 
 
 class SDeleteArtistResponse(BaseModel, DetailMixin):
-    detail: str = "Artist deleted."
+    detail: str = "Artist deleted"
 
 
-class Producer(FromDBModelMixin):
+class Producer(BaseModel):
+    id: int
     user: User
-    description: Optional[str] = "Description not found"
+    description: str | None = None
 
 
-class SProducerResponse(Producer):
-    pass
+class SProducerResponse(BaseModel):
+    id: int
+    user: User
+    description: str | None = None
 
 
-class SMeAsProducerResponse(SProducerResponse):
-    pass
+class SMeAsProducerResponse(BaseModel):
+    id: int
+    user: User
+    description: str | None = None
 
 
 class SProducersResponse(BaseModel):
-    producers: List[Producer]
+    producers: list[Producer]
 
 
 class SUpdateProducerRequest(BaseModel):
-    description: Optional[str] = Field(max_length=255)
+    description: str | None = Field(max_length=255)
 
 
 class SUpdateProducerResponse(BaseModel):
-    description: str
+    id: int
 
 
 class SDeleteProducerResponse(BaseModel, DetailMixin):
-    detail: str = "Producer deleted."
+    detail: str = "Producer deleted"
 
 
 class SRegisterUserRequest(BaseModel):
     username: str = Field(min_length=3, max_length=25)
     password: str = Field(min_length=5)
     email: EmailStr
-    roles: List[Role]
-    birthday: Optional[date]
-    tags: Optional[List[str]]
+    roles: list[Role]
+    birthday: date
+    tags: list[str] = list()
 
 
 class SRegisterUserResponse(BaseModel, DetailMixin):
-    detail: str = "User created."
+    id: int
 
 
 class SLoginRequest(BaseModel):

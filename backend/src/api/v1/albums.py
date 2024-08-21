@@ -1,5 +1,6 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
+from src.enums.type import Type
 from src.schemas.albums import (
     Album,
     SAddAlbumResponse,
@@ -21,27 +22,38 @@ from src.utils.files import unique_filename, get_file_stream
 albums = APIRouter(prefix="/albums", tags=["Albums"])
 
 
-
 @albums.get(
     path="/my",
-    summary="albums by current user",
+    summary="Get current user's albums",
     response_model=SMyAlbumsResponse,
     status_code=status.HTTP_200_OK,
     responses={status.HTTP_200_OK: {"model": SMyAlbumsResponse}},
 )
 async def get_my_albums(
-    user: User = Depends(get_current_user),
-    service: AlbumService = Depends(get_album_service)
+    service: AlbumService = Depends(get_album_service),
+    user: User | None = Depends(get_current_user),
 ) -> SMyAlbumsResponse:
 
-    albums_ = await service.get_user_albums(user_id=user.id)
-    albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
+    albums_ = list(map(
+        lambda album: Album(
+            id=album.id,
+            created_at=album.created_at,
+            updated_at=album.updated_at,
+            is_available=album.is_available,
+            title=album.title,
+            picture_url=album.picture_url,
+            description=album.description,
+            co_prod=album.co_prod,
+            type=Type.album,
+        ),
+        await service.get_user_albums(user_id=user.id)
+    ))
 
     return SMyAlbumsResponse(albums=albums_)
 
 
 @albums.get(
-    path="/all",
+    path="/",
     summary="Get all albums",
     response_model=SAllAlbumsResponse,
     responses={status.HTTP_200_OK: {"model": SAllAlbumsResponse}},
@@ -55,14 +67,14 @@ async def all_albums(service: AlbumService = Depends(get_album_service)) -> SAll
 
 
 @albums.get(
-    path="/get_one/{album_id}",
-    summary="Get one album by id",
+    path="/{album_id}",
+    summary="Get one album by its ID",
     response_model=SAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SAlbumResponse}},
 )
 async def get_one_album(
-        album_id: int,
-        service: AlbumService = Depends(get_album_service)
+    album_id: int,
+    service: AlbumService = Depends(get_album_service)
 ) -> SAlbumResponse:
 
     album = await service.get_one_album(album_id=album_id)
@@ -70,8 +82,8 @@ async def get_one_album(
 
 
 @albums.post(
-    path="/add",
-    summary="Init a album with file",
+    path="/new",
+    summary="Create an album",
     response_model=SAddAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SAddAlbumResponse}},
 )
@@ -80,20 +92,19 @@ async def add_album(
     user: User = Depends(get_current_user),
     service: AlbumService = Depends(get_album_service)
 ) -> SAddAlbumResponse:
-    file_info = unique_filename(file) if file else None
 
-    album = await service.add_album(
-        file_stream=await get_file_stream(file=file),
-        file_info=file_info,
+    album_id = await service.add_album(
         prod_by=user.username,
-        user_id=user.id
+        user_id=user.id,
+        file_info=unique_filename(file),
+        file_stream=await get_file_stream(file=file),
     )
 
-    return SAddAlbumResponse.from_db_model(album)
+    return SAddAlbumResponse(id=album_id)
 
 
 @albums.post(
-    path="/picture/{albums_id}",
+    path="/{albums_id}/picture",
     summary="Update a picture for one album by id",
     response_model=SUpdateAlbumPictureResponse,
     responses={status.HTTP_200_OK: {"model": SUpdateAlbumPictureResponse}},
@@ -104,19 +115,19 @@ async def update_album_picture(
     user: User = Depends(get_current_user),
     service: AlbumService = Depends(get_album_service)
 ) -> SUpdateAlbumPictureResponse:
-    file_info = unique_filename(file) if file else None
-    album = await service.update_album_picture(
+
+    album_id = await service.update_album_picture(
         album_id=album_id,
-        file_info=file_info,
-        file_stream=get_file_stream(file),
-        user_id=user.id
+        user_id=user.id,
+        file_info=unique_filename(file),
+        file_stream=await get_file_stream(file),
     )
 
-    return SUpdateAlbumPictureResponse.from_db_model(model=album)
+    return SUpdateAlbumPictureResponse(id=album_id)
 
 
 @albums.post(
-    path="/release/{album_id}",
+    path="/{album_id}/release",
     summary="Release one album by id",
     response_model=SReleaseAlbumsResponse,
     responses={status.HTTP_200_OK: {"model": SReleaseAlbumsResponse}},
@@ -127,41 +138,44 @@ async def release_albums(
     user: User = Depends(get_current_user),
     service: AlbumService = Depends(get_album_service)
 ) -> SReleaseAlbumsResponse:
-    album = await service.release_album(
+
+    album_id = await service.release_album(
         album_id=album_id,
         name=albums_data.name,
         description=albums_data.description,
         co_prod=albums_data.co_prod,
         user_id=user.id
     )
-    return SReleaseAlbumsResponse.from_db_model(model=album)
+
+    return SReleaseAlbumsResponse(id=album_id)
 
 
 @albums.put(
-    path="/update/{album_id}",
+    path="/{album_id}/update",
     summary="Edit album (title, description, prod_by) by id",
     response_model=SUpdateAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SUpdateAlbumResponse}},
 )
 async def update_album(
     album_id: int,
-    albums_data: SUpdateAlbumRequest,
+    data: SUpdateAlbumRequest,
     user: User = Depends(get_current_user),
     service: AlbumService = Depends(get_album_service)
 ) -> SUpdateAlbumResponse:
-    album = await service.update_album(
+
+    album_id = await service.update_album(
         user_id=user.id,
         album_id=album_id,
-        title=albums_data.title,
-        description=albums_data.description,
-        prod_by=albums_data.prod_by
-
+        title=data.title,
+        co_prod=data.co_prod,
+        description=data.description,
     )
-    return SUpdateAlbumResponse.from_db_model(model=album)
+
+    return SUpdateAlbumResponse(id=album_id)
 
 
 @albums.delete(
-    path="/delete/{album_id}",
+    path="/{album_id}/delete",
     summary="Delete album by id",
     response_model=SDeleteAlbumResponse,
     responses={status.HTTP_200_OK: {"model": SDeleteAlbumResponse}},
@@ -171,6 +185,7 @@ async def delete_albums(
     user: User = Depends(get_current_user),
     service: AlbumService = Depends(get_album_service)
 ) -> SDeleteAlbumResponse:
-    await service.delete_albums(album_id=album_id, user_id=user.id)
+
+    await service.delete_album(album_id=album_id, user_id=user.id)
 
     return SDeleteAlbumResponse()

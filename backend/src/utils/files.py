@@ -5,7 +5,11 @@ from io import BytesIO
 from fastapi import HTTPException, UploadFile
 
 
-def unique_filename(file: UploadFile) -> str:
+def unique_filename(file: UploadFile | None = None) -> str | None:
+
+    if not file:
+        return
+
     try:
         file_name, file_extension = os.path.splitext(file.filename)
         return f'track-{file_name.replace(" ", "-")}_{uuid.uuid4()}{file_extension}'

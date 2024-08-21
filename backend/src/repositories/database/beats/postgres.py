@@ -24,7 +24,7 @@ class BeatsRepository(BaseBeatsRepository, SQLAlchemyRepository):
         beats = list(await self.session.scalars(query))
         return BeatsResponseDTO(beats=models_to_dto(models=beats, dto=_Beat))
 
-    async def get_one_beat(self, beat_id: int) -> BeatResponseDTO | None:
+    async def get_beat_by_id(self, beat_id: int) -> BeatResponseDTO | None:
         return model_to_response_dto(
             model=await self.session.get(Beat, beat_id),
             response_dto=BeatResponseDTO

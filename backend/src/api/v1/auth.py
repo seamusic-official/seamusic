@@ -34,262 +34,359 @@ from src.schemas.auth import (
     SUpdateProducerRequest,
     SUpdateProducerResponse,
     SDeleteProducerResponse,
-    SLoginResponse,
+    SLoginResponse, Artist,
 )
-from src.services import auth as services
-from src.utils.auth import (
-    get_current_user,
+from src.services.auth import (
+    AuthService,
+    ArtistsService,
+    ProducersService,
+    UsersService,
+    get_users_service,
+    get_artists_service,
+    get_producers_service,
+    get_auth_service
 )
+from src.utils.auth import get_current_user
+from src.utils.files import unique_filename, get_file_stream
 
-auth = APIRouter(prefix="/auth", tags=["Auth & Users"])
+auth_v1 = APIRouter(prefix='/v1/auth')  # included directly in main app to avoid using ExceptionMiddleware
+
+users = APIRouter(prefix='/auth/users', tags=['Users'])
+artists = APIRouter(prefix='/auth/artists', tags=['Artists'])
+producers = APIRouter(prefix='/auth/producers', tags=['Producers'])
 
 
-"""
-Users routes
-"""
-
-
-@auth.get(
-    path="/users/me",
+@users.get(
+    path='/me',
     response_model=SMeResponse,
-    summary="Get details of currently logged in user",
+    summary='Get details of currently logged in user',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SMeResponse}},
+    responses={status.HTTP_200_OK: {'model': SMeResponse}},
 )
 async def get_me(user: User = Depends(get_current_user)) -> SMeResponse:
-    return SMeResponse(**user.model_dump())
+    return SMeResponse(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        picture_url=user.picture_url,
+        birthday=user.birthday
+    )
 
 
-@auth.get(
-    path="/users",
+@users.get(
+    path='/',
     response_model=SUsersResponse,
-    summary="Get all users",
+    summary='Get all users',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SUsersResponse}},
+    responses={status.HTTP_200_OK: {'model': SUsersResponse}},
 )
-async def get_users() -> SUsersResponse:
-    users = await services.get_all_users()
-    return SUsersResponse(users=[User.from_db_model(model=user) for user in users])
+async def get_users(service: UsersService = Depends(get_users_service)) -> SUsersResponse:
+
+    users_: list[User] = list(map(
+        lambda user: User(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            picture_url=user.picture_url,
+            birthday=user.birthday,
+        ),
+        await service.get_all_users()
+    ))
+
+    return SUsersResponse(users=users_)
 
 
-@auth.get(
-    path="/users/{user_id}",
+@users.get(
+    path='/{user_id}',
     response_model=SUserResponse,
-    summary="Get a user by ID",
+    summary='Get a user by ID',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SUserResponse}},
+    responses={status.HTTP_200_OK: {'model': SUserResponse}},
 )
-async def get_one(user_id: int) -> SUserResponse:
-    user = await services.get_user_by_id(user_id=user_id)
+async def get_one(
+    user_id: int,
+    service: UsersService = Depends(get_users_service)
+) -> SUserResponse:
 
-    return SUserResponse.from_db_model(model=user)
+    user = await service.get_user_by_id(user_id=user_id)
+    return SUserResponse(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        picture_url=user.picture_url,
+        birthday=user.birthday
+    )
 
 
-@auth.put(
-    path="/users/picture/{user_id}",
-    summary="Update image info by id",
+@users.put(
+    path='/{user_id}/picture',
+    summary='Update image info by id',
     response_model=SUpdateUserPictureResponse,
-    responses={status.HTTP_200_OK: {"model": SUpdateUserPictureResponse}},
+    responses={status.HTTP_200_OK: {'model': SUpdateUserPictureResponse}},
 )
 async def update_user_picture(
-        file: UploadFile = File(...),
-        user: User = Depends(get_current_user)
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    service: UsersService = Depends(get_users_service)
 ) -> SUpdateUserPictureResponse:
-    await services.update_current_user_picture(user_id=user.id, file=file)
+
+    await service.update_user_picture(
+        user_id=user.id,
+        file_info=unique_filename(file),
+        file_stream=await get_file_stream(file)
+    )
 
     return SUpdateUserPictureResponse()
 
 
-@auth.put(
-    path="/users/{user_id}",
-    summary="Update user info by id",
+@users.put(
+    path='/{user_id}',
+    summary='Update user info by id',
     response_model=SUpdateUserResponse,
-    responses={status.HTTP_200_OK: {"model": SUpdateUserResponse}},
+    responses={status.HTTP_200_OK: {'model': SUpdateUserResponse}},
 )
 async def update_user(
     data: SUpdateUserRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    service: UsersService = Depends(get_users_service)
 ) -> SUpdateUserResponse:
-    update_data = await services.update_current_user(user_id=user.id, data=data)
-    return SUpdateUserResponse(**update_data)
+
+    user_id = await service.update_user(
+        username=data.username,
+        description=data.description,
+        user_id=user.id,
+    )
+    return SUpdateUserResponse(id=user_id)
 
 
-@auth.delete(
-    path="/users/{user_id}",
-    summary="Delete user by id",
+@users.delete(
+    path='/{user_id}',
+    summary='Delete user by id',
     response_model=SDeleteUserResponse,
-    responses={status.HTTP_200_OK: {"model": SDeleteUserResponse}},
+    responses={status.HTTP_200_OK: {'model': SDeleteUserResponse}},
 )
 async def delete_users(
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    service: UsersService = Depends(get_users_service)
 ) -> SDeleteUserResponse:
-    await services.delete_current_user(user_id=user.id)
+
+    await service.delete_user(user_id=user.id)
 
     return SDeleteUserResponse()
 
 
-"""
-Artists routes
-"""
-
-
-@auth.get(
-    path="/users/artists/me",
-    summary="Get my artist profile",
+@artists.get(
+    path='/me',
+    summary='Get my artist profile',
     status_code=status.HTTP_200_OK,
     response_model=SMeAsArtistResponse,
-    responses={status.HTTP_200_OK: {"model": SMeAsArtistResponse}},
+    responses={status.HTTP_200_OK: {'model': SMeAsArtistResponse}},
 )
 async def get_me_as_artist(
     user: User = Depends(get_current_user),
+    service: ArtistsService = Depends(get_artists_service)
 ) -> SMeAsArtistResponse:
-    artist = await services.get_artist_by_id(artist_id=user.id)
 
-    return SMeAsArtistResponse.from_db_model(artist)
+    artist_id: int = await service.get_artist_id_by_user_id(user_id=user.id)
+    artist = await service.get_artist_by_id(artist_id=artist_id)
+
+    return SMeAsArtistResponse(
+        description=artist.description,
+        user=artist.user
+    )
 
 
-@auth.get(
-    path="/users/artists",
+@artists.get(
+    path='/',
     response_model=SArtistsResponse,
-    summary="Get all artists",
+    summary='Get all artists',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SArtistsResponse}},
+    responses={status.HTTP_200_OK: {'model': SArtistsResponse}},
 )
-async def get_artists() -> SArtistsResponse:
-    artists = await services.get_all_artists()
-    return SArtistsResponse(artists=artists)
+async def get_artists(service: ArtistsService = Depends(get_artists_service)) -> SArtistsResponse:
+    artists_: list[Artist] = list(map(
+        lambda artist: Artist(
+            id=artist.id,
+            user=artist.user,
+            description=artist.user
+        ),
+        await service.get_all_artists()
+    ))
+
+    return SArtistsResponse(artists=artists_)
 
 
-@auth.get(
-    path="/users/artists/{artist_id}",
+@artists.get(
+    path='/{artist_id}',
     response_model=SArtistResponse,
-    summary="Get one artists by id",
+    summary='Get one artists by id',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SArtistResponse}},
+    responses={status.HTTP_200_OK: {'model': SArtistResponse}},
 )
-async def get_one_artist(artist_id: int) -> SArtistResponse:
-    artist = await services.get_artist_by_id(artist_id=artist_id)
-    return SArtistResponse.from_db_model(artist)
+async def get_one_artist(
+    artist_id: int,
+    service: ArtistsService = Depends(get_artists_service)
+) -> SArtistResponse:
+
+    artist = await service.get_artist_by_id(artist_id=artist_id)
+    return SArtistResponse(
+        id=artist.id,
+        description=artist.description,
+        user=artist.user,
+    )
 
 
-@auth.put(
-    path="/users/artists/{artist_id}",
+@artists.put(
+    path='/{artist_id}',
     response_model=SUpdateArtistResponse,
-    summary="Update artist by id",
+    summary='Update artist by id',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SUpdateArtistResponse}},
+    responses={status.HTTP_200_OK: {'model': SUpdateArtistResponse}},
 )
 async def update_artist(
     data: SUpdateArtistRequest,
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    service: ArtistsService = Depends(get_artists_service)
 ) -> SUpdateArtistResponse:
-    await services.update_current_artist(artist_id=user.id, description=data.description)
 
-    return SUpdateArtistResponse()
+    artist_id = await service.update_artist(
+        artist_id=await service.get_artist_id_by_user_id(user_id=user.id),
+        description=data.description
+    )
+
+    return SUpdateArtistResponse(id=artist_id)
 
 
-@auth.delete(
-    path="/users/artists/{artist_id}",
-    summary="Deactivate artist profile by id",
+@artists.delete(
+    path='/{artist_id}',
+    summary='Deactivate artist profile by id',
     response_model=SDeleteArtistResponse,
-    responses={status.HTTP_200_OK: {"model": SDeleteArtistResponse}},
+    responses={status.HTTP_200_OK: {'model': SDeleteArtistResponse}},
 )
-async def deactivate_artists(user: User = Depends(get_current_user)):
-    await services.deactivate_artist(artist_id=user.id)
+async def deactivate_artists(
+    user: User = Depends(get_current_user),
+    service: ArtistsService = Depends(get_artists_service)
+) -> SDeleteArtistResponse:
 
+    artist_id = await service.get_artist_id_by_user_id(user_id=user.id)
+    await service.deactivate_artist(artist_id=artist_id)
     return SDeleteArtistResponse()
 
 
-"""
-Producers routes
-"""
-
-
-@auth.get(
-    path="/users/producers/me",
-    summary="Get my producer profile",
+@producers.get(
+    path='/me',
+    summary='Get my producer profile',
     status_code=status.HTTP_200_OK,
     response_model=SMeAsProducerResponse,
-    responses={status.HTTP_200_OK: {"model": SMeAsProducerResponse}},
+    responses={status.HTTP_200_OK: {'model': SMeAsProducerResponse}},
 )
 async def get_me_as_producer(
     user: User = Depends(get_current_user),
+    service: ProducersService = Depends(get_producers_service)
 ) -> SMeAsProducerResponse:
-    producer_profile = await services.get_producer_by_id(producer_id=user.id)
 
-    return SMeAsProducerResponse.from_db_model(producer_profile)
+    producer_id = await service.get_producer_id_by_user_id(user_id=user.id)
+    producer = await service.get_producer_by_id(producer_id=producer_id)
+
+    return SMeAsProducerResponse(
+        id=producer.id,
+        user=producer.user,
+        description=producer.description
+    )
 
 
-@auth.get(
-    path="/users/producers",
-    summary="Get all producers",
+@producers.get(
+    path='/',
+    summary='Get all producers',
     status_code=status.HTTP_200_OK,
     response_model=SProducersResponse,
-    responses={status.HTTP_200_OK: {"model": SProducersResponse}},
+    responses={status.HTTP_200_OK: {'model': SProducersResponse}},
 )
-async def get_all_producers() -> SProducersResponse:
-    response = await services.get_all_producers()
-    producers = list(map(lambda producer: Producer.from_db_model(producer), response))
+async def get_all_producers(service: ProducersService = Depends(get_producers_service)) -> SProducersResponse:
 
-    return SProducersResponse(producers=producers)
+    producers_ = list(map(
+        lambda producer: Producer(
+            id=producer.id,
+            description=producer.description,
+            user=producer.user
+        ),
+        await service.get_all_producers()
+    ))
+
+    return SProducersResponse(producers=producers_)
 
 
-@auth.get(
-    path="/users/producers/{producer_id}",
+@producers.get(
+    path='/{producer_id}',
     response_model=SProducerResponse,
-    summary="Get one producer by id",
+    summary='Get one producer by id',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SProducerResponse}},
+    responses={status.HTTP_200_OK: {'model': SProducerResponse}},
 )
-async def get_one_producer(producer_id: int) -> SProducerResponse:
-    response = await services.get_producer_by_id(producer_id=producer_id)
+async def get_one_producer(
+    producer_id: int,
+    service: ProducersService = Depends(get_producers_service)
+) -> SProducerResponse:
 
-    return SProducerResponse.from_db_model(response)
+    producer = await service.get_producer_by_id(producer_id=producer_id)
+
+    return SProducerResponse(
+        id=producer.id,
+        description=producer.description,
+        user=producer.user
+    )
 
 
-@auth.put(
-    path="/users/producers/{producer_id}",
+@producers.put(
+    path='/{producer_id}',
     response_model=SUpdateProducerResponse,
-    summary="Update producer by id",
+    summary='Update producer by id',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SUpdateProducerResponse}},
+    responses={status.HTTP_200_OK: {'model': SUpdateProducerResponse}},
 )
 async def update_one_producer(
     data: SUpdateProducerRequest,
     user: User = Depends(get_current_user),
+    service: ProducersService = Depends(get_producers_service)
 ) -> SUpdateProducerResponse:
-    await services.update_one_producer(producer_id=user.id, description=data.description)
 
-    return SUpdateProducerResponse()
+    producer_id = await service.update_producer(
+        producer_id=await service.get_producer_id_by_user_id(user_id=user.id),
+        description=data.description
+    )
+
+    return SUpdateProducerResponse(id=producer_id)
 
 
-@auth.post(
-    path="/users/producers/{producer_id}",
-    summary="Deactivate artist profile by id",
+@producers.post(
+    path='/{producer_id}',
+    summary='Deactivate artist profile by id',
     response_model=SDeleteProducerResponse,
-    responses={status.HTTP_200_OK: {"model": SDeleteProducerResponse}},
+    responses={status.HTTP_200_OK: {'model': SDeleteProducerResponse}},
 )
 async def deactivate_one_producer(
-    user: User = Depends(get_current_user)
+    user: User = Depends(get_current_user),
+    service: ProducersService = Depends(get_producers_service)
 ) -> SDeleteProducerResponse:
-    await services.deactivate_one_producer(producer_id=user.id)
+
+    producer_id = await service.get_producer_id_by_user_id(user_id=user.id)
+    await service.deactivate_one_producer(producer_id=producer_id)
 
     return SDeleteProducerResponse()
 
 
-"""
-Auth routes
-"""
-
-
-@auth.post(
-    path="/register",
-    summary="Create new user",
+@auth_v1.post(
+    path='/register',
+    summary='Create new user',
     response_model=SRegisterUserResponse,
-    responses={status.HTTP_201_CREATED: {"model": SRegisterUserResponse}},
+    responses={status.HTTP_201_CREATED: {'model': SRegisterUserResponse}},
 )
-async def register(user: SRegisterUserRequest) -> SRegisterUserResponse:
-    await services.create_new_user(
+async def register(
+    user: SRegisterUserRequest,
+    service: UsersService = Depends(get_users_service)
+) -> SRegisterUserResponse:
+
+    user_id = await service.create_new_user(
         username=user.username,
         password=user.password,
         email=user.email,
@@ -298,40 +395,77 @@ async def register(user: SRegisterUserRequest) -> SRegisterUserResponse:
         tags=user.tags
     )
 
-    return SRegisterUserResponse()
+    return SRegisterUserResponse(id=user_id)
 
 
-@auth.post(
-    path="/login",
-    summary="Signin",
+@auth_v1.post(
+    path='/login',
+    summary='Signin',
     response_model=SLoginResponse,
-    responses={status.HTTP_200_OK: {"model": SLoginResponse}},
+    responses={status.HTTP_200_OK: {'model': SLoginResponse}},
 )
-async def login(user: SLoginRequest, response: Response) -> SLoginResponse:
-    return await services.login(
-        email=user.email,
-        password=user.password,
-        response=response
+async def login(
+    data: SLoginRequest,
+    response: Response,
+    service: AuthService = Depends(get_auth_service)
+) -> SLoginResponse:
+
+    access_token, refresh_token_, user = await service.login(
+        email=data.email,
+        password=data.password,
+    )
+
+    response.set_cookie('accessToken', access_token)
+    response.set_cookie('refreshToken', refresh_token_)
+
+    return SLoginResponse(
+        access_token=access_token,
+        refresh_token=refresh_token_,
+        user=User(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            picture_url=user.picture_url,
+            birthday=user.birthday
+        )
     )
 
 
-
-@auth.post(
-    path="/refresh",
+@auth_v1.post(
+    path='/refresh',
     response_model=SRefreshTokenResponse,
-    summary="Refresh auth token",
+    summary='Refresh auth token',
     status_code=status.HTTP_200_OK,
-    responses={status.HTTP_200_OK: {"model": SRefreshTokenResponse}},
+    responses={status.HTTP_200_OK: {'model': SRefreshTokenResponse}},
 )
 async def refresh_token(
     user: User = Depends(get_current_user),
+    service: AuthService = Depends(get_auth_service)
 ) -> SRefreshTokenResponse:
-    return await services.refresh_token(user_id=user.id)
+
+    access_token, refresh_token_ = await service.refresh_token(user_id=user.id)
+    return SRefreshTokenResponse(
+        accessToken=access_token,
+        refreshToken=refresh_token_
+    )
 
 
-@auth.post(path="/callback", response_model=SSpotifyCallbackResponse)
-async def spotify_callback(code, response: Response) -> SSpotifyCallbackResponse:
-    await services.spotify_callback(
-        code=code,
-        response=response
+@auth_v1.post(
+    path='/callback',
+    response_model=SSpotifyCallbackResponse,
+    status_code=status.HTTP_200_OK,
+    responses={status.HTTP_200_OK: {'model': SSpotifyCallbackResponse}},
+)
+async def spotify_callback(
+    code,
+    user: User = Depends(get_current_user),
+    service: AuthService = Depends(get_auth_service)
+) -> SSpotifyCallbackResponse:
+
+    access_token, refresh_token_ = await service.spotify_callback(code=code)
+
+    return SSpotifyCallbackResponse(
+        access_token=access_token,
+        refresh_token=access_token,
+        user=user
     )

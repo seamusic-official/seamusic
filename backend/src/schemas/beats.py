@@ -1,71 +1,82 @@
 from datetime import datetime
-from typing import Optional, List
 
 from pydantic import BaseModel
 
-from src.models.beats import Beat as _Beat
-from src.schemas.base import FromDBModelMixin, DetailMixin
+from src.dtos.database.base import BaseRequestDTO
+from src.schemas.base import DetailMixin
 
 
-class Beat(FromDBModelMixin):
+class Beat(BaseModel):
     id: int
     title: str
-    description: Optional[str] = None
-    picture_url: Optional[str] = None
+    description: str | None = None
+    picture_url: str | None = None
     file_url: str
-    co_prod: Optional[str] = None
-    prod_by: Optional[str] = None
+    co_prod: str | None = None
+    prod_by: str | None = None
     user_id: int
     is_available: bool
     created_at: datetime
     updated_at: datetime
 
-    _model_type = _Beat
+
+class SCreateBeatRequest(BaseRequestDTO):
+    title: str
+    description: str | None = None
+    co_prod: str | None = None
 
 
 class SBeatResponse(Beat):
-    pass
+    id: int
+    title: str
+    description: str | None = None
+    picture_url: str | None = None
+    file_url: str
+    co_prod: str | None = None
+    prod_by: str | None = None
+    user_id: int
+    is_available: bool
+    created_at: datetime
+    updated_at: datetime
 
 
 class SBeatsResponse(BaseModel):
-    beats: List[Beat]
+    beats: list[Beat]
 
 
-class SMyBeatsResponse(SBeatsResponse):
-    pass
+class SMyBeatsResponse(BaseModel):
+    beats: list[Beat]
 
 
-class SCreateBeatResponse(Beat):
-    pass
+class SCreateBeatResponse(BaseModel):
+    id: int
 
 
-class SUpdateBeatPictureResponse(Beat):
-    pass
+class SUpdateBeatPictureResponse(BaseModel):
+    id: int
 
 
-class SBeatReleaseRequest(FromDBModelMixin):
-    title: Optional[str]
-    description: Optional[str]
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-
-    _model_type = _Beat
+class SBeatReleaseRequest(BaseModel):
+    title: str | None = None
+    description: str | None = None
+    co_prod: str | None = None
+    prod_by: str | None = None
 
 
-class SBeatReleaseResponse(Beat):
-    pass
+class SBeatReleaseResponse(BaseModel):
+    id: int
 
 
 class SBeatUpdateRequest(BaseModel):
-    title: Optional[str]
-    description: Optional[str]
-    picture_url: Optional[str]
-    co_prod: Optional[str]
-    prod_by: Optional[str]
+    title: str | None
+    description: str | None
+    picture_url: str | None
+    co_prod: str | None
+    prod_by: str | None
 
 
-class SBeatUpdateResponse(Beat):
-    pass
+class SBeatUpdateResponse(BaseModel):
+    id: int
 
 
 class SDeleteBeatResponse(BaseModel, DetailMixin):
