@@ -6,7 +6,7 @@ from fastapi import (
     Response,
     status,
 )
-from src.services import auth as services
+
 from src.schemas.auth import (
     SRefreshTokenResponse,
     SSpotifyCallbackResponse,
@@ -36,6 +36,7 @@ from src.schemas.auth import (
     SDeleteProducerResponse,
     SLoginResponse,
 )
+from src.services import auth as services
 from src.utils.auth import (
     get_current_user,
 )

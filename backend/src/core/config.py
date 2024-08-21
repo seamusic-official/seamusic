@@ -53,6 +53,7 @@ class AuthSettings(BaseModel):
 class S3Settings(BaseModel):
     BUCKET_NAME: str = os.environ["BUCKET_NAME"]
 
+
 class Settings(BaseSettings):
     root_url: str = os.environ["ROOT_URL"]
     db: DbSettings = DbSettings()

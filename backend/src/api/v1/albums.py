@@ -13,10 +13,8 @@ from src.schemas.albums import (
     SUpdateAlbumRequest,
     SUpdateAlbumResponse,
 )
-
 from src.schemas.auth import User
 from src.services.albums import get_album_service, AlbumService
-
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename, get_file_stream
 

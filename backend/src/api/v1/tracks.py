@@ -1,4 +1,5 @@
 from fastapi import UploadFile, File, APIRouter, Depends, status
+from src.repositories.tracks import TracksRepository
 
 from src.exceptions.api import NoRightsException
 from src.repositories.media.base import S3Repository
@@ -15,7 +16,6 @@ from src.schemas.tracks import (
     SUpdateTrackRequest,
     SDeleteTrackResponse,
 )
-from src.repositories.tracks import TracksRepository
 from src.utils.auth import get_current_user
 from src.utils.files import unique_filename
 

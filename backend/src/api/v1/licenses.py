@@ -5,7 +5,6 @@ from src.models.auth import User
 from src.repositories.database.licenses.postgres import LicensesRepository
 from src.schemas.licenses import SMyLicensesResponse, SLicensesResponse, SLicenseResponse, SCreateLicenseResponse, \
     SCreateLicenseRequest, SEditLicensesResponse, SLicensesDeleteResponse, SEditLicenseRequest
-
 from src.utils.auth import get_current_user
 
 licenses = APIRouter(prefix="/licenses", tags=["Licenses"])

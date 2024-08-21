@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Depends, status
+from src.repositories.tags import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
 
-from src.exceptions.api import NotFoundException, UnauthorizedException
-from src.schemas.auth import User
 from src.dtos.database.tags import (
     SAddTagRequest,
     SMyListenerTagsResponse,
@@ -9,8 +8,9 @@ from src.dtos.database.tags import (
     SMyArtistTagsResponse,
     SAddTagResponse,
 )
+from src.exceptions.api import NotFoundException, UnauthorizedException
 from src.repositories.database.auth import ProducerDAO, ArtistDAO
-from src.repositories.tags import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
+from src.schemas.auth import User
 from src.utils.auth import get_current_user
 
 tags = APIRouter(prefix="/tags", tags=["All tags"])

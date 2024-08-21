@@ -1,7 +1,5 @@
 from fastapi import APIRouter, Depends, status
 
-from src.exceptions.api import NoRightsException
-
 from src.schemas.auth import User
 from src.schemas.beatpacks import (
     SBeatpackResponse,
@@ -9,14 +7,12 @@ from src.schemas.beatpacks import (
     SEditBeatpackResponse,
     SDeleteBeatpackResponse,
     SMyBeatpacksResponse,
-    Beatpack,
     SBeatpacksResponse,
     SCreateBeatpackResponse,
     SEditBeatpackRequest,
 )
 from src.services.beatpacks import BeatpackService, get_beatpack_service
 from src.utils.auth import get_current_user
-
 
 beatpacks = APIRouter(prefix="/beatpacks", tags=["Beatpacks"])
 

@@ -1,5 +1,5 @@
-from src.enums.type import Type
 from src.dtos.database.base import BaseResponseDTO, BaseRequestDTO, BaseDTO
+from src.enums.type import Type
 
 
 class Album(BaseDTO):
