@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from src.dtos.database.base import BaseResponseDTO, BaseDTO, BaseRequestDTO
 
 
 class License(BaseDTO):
@@ -40,7 +40,6 @@ class LicensesResponseDTO(BaseResponseDTO):
 
 
 class CreateLicenseRequestDTO(BaseRequestDTO):
-    id: int
     title: str
     picture_url: str | None = None
     description: str | None = None

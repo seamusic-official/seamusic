@@ -1,13 +1,17 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from dtos.database.tags import AddTagRequestDTO, TagsResponseDTO
+from src.dtos.database.tags import AddTagRequestDTO, TagsResponseDTO, AddTagsRequestDTO
 
 
 @dataclass
 class BaseTagsRepository(ABC):
     @abstractmethod
-    async def add_tag(self, tag: AddTagRequestDTO) -> None:
+    async def add_tag(self, tag: AddTagRequestDTO) -> int:
+        ...
+
+    @abstractmethod
+    async def add_tags(self, tags: AddTagsRequestDTO) -> None:
         ...
 
     @abstractmethod

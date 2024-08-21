@@ -21,6 +21,17 @@ class SpotifyArtist(BaseDTO):
     uri: str
 
 
+class SpotifyArtistResponseDTO(BaseResponseDTO):
+    external_urls: dict[str, str]
+    images: list[SpotifyImage]
+    genres: list[str]
+    href: str
+    id: str
+    name: str
+    type: str
+    uri: str
+
+
 class SpotifyAlbumTrack(BaseDTO):
     href: str
     next: str
@@ -28,6 +39,10 @@ class SpotifyAlbumTrack(BaseDTO):
     popularity: int
     items: list['SpotifyTrack']
     total: int
+
+
+class SpotifyAlbumTracksResponseDTO(BaseResponseDTO):
+    tracks: list[SpotifyAlbumTrack]
 
 
 class SpotifyAlbum(BaseDTO):
@@ -80,7 +95,7 @@ class SpotifyTrackResponseDTO(BaseResponseDTO):
     uri: str
 
 
-class SpotifyTracksResponse(BaseResponseDTO):
+class SpotifyTracksResponseDTO(BaseResponseDTO):
     tracks: list[SpotifyTrack]
 
 

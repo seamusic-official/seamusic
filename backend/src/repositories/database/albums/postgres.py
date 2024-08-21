@@ -16,18 +16,19 @@ from src.repositories.database.base import SQLAlchemyRepository
 
 @dataclass
 class AlbumRepository(SQLAlchemyRepository, BaseAlbumRepository):
-    async def create_album(self, album: CreateAlbumRequestDTO) -> None:
+    async def create_album(self, album: CreateAlbumRequestDTO) -> int:
         album = request_dto_to_model(model=Album, request_dto=album)
         self.session.add(album)
-        await self.session.flush()
+        return album.id
 
     async def get_album_by_id(self, album_id: int) -> AlbumResponseDTO | None:
         album = await self.session.get(Album, album_id)
         return model_to_response_dto(response_dto=AlbumResponseDTO, model=album)
 
-    async def edit_album(self, album: UpdateAlbumRequestDTO) -> None:
+    async def edit_album(self, album: UpdateAlbumRequestDTO) -> int:
         album = request_dto_to_model(model=Album, request_dto=album)
         await self.session.merge(album)
+        return album.id
 
     async def get_all_albums(self) -> AlbumsResponseDTO:
         query = select(Album)
@@ -42,3 +43,7 @@ class AlbumRepository(SQLAlchemyRepository, BaseAlbumRepository):
     async def delete_album(self, album_id: int, user_id: int) -> None:
         query = delete(Album).where(Album.id == album_id, Album.user_id == user_id)
         await self.session.execute(query)
+
+
+def init_postgres_repository():
+    return AlbumRepository()

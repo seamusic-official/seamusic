@@ -1,31 +1,41 @@
 install:
-	pip install -r requirements/dev.txt
+	poetry install
 
 run:
-	python -m alembic upgrade head
-	python -m uvicorn --factory src.api.app:create_app --host 0.0.0.0 --port 8000 --reload --reload-dir . --log-config=log_config.ini --log-level=debug
+	poetry run alembic upgrade head
+	poetry run uvicorn src.api.app:app --host 0.0.0.0 --port 8000 --reload --reload-dir . --log-config=log_config.ini --log-level=debug
 
 build:
-	docker-compose -f docker-compose.$(for).yml build
+	poetry run docker-compose -f docker-compose.$(for).yml build
 
 start:
-	docker-compose -f docker-compose.$(for).yml up --force-recreate --remove-orphans
+	poetry run docker-compose -f docker-compose.$(for).yml up --force-recreate --remove-orphans
 
 up:
-	docker-compose -f docker-compose.$(for).yml up --force-recreate --remove-orphans -d
+	poetry run docker-compose -f docker-compose.$(for).yml up --force-recreate --remove-orphans -d
 
 stop:
-	docker-compose -f docker-compose.$(for).yml stop
+	poetry run docker-compose -f docker-compose.$(for).yml stop
 
 rm:
-	docker-compose -f docker-compose.$(for).yml rm
-	rm -rf db/
+	poetry run docker-compose -f docker-compose.$(for).yml rm
+	sudo rm -rf db
+
+revision:
+	poetry run alembic revision --autogenerate -m $(name)
+
+upgrade:
+	poetry run alembic upgrade $(revision)
+
+downgrade:
+	poetry run alembic downgrade $(revision)
 
 test:
-	docker-compose -f docker-compose.test.yml up --force-recreate --remove-orphans -d
-	python -m pytest
-	docker-compose stop
+	poetry run docker-compose -f docker-compose.test.yml up --force-recreate --remove-orphans -d
+	poetry run alembic upgrade head
+	poetry run pytest
+	poetry run docker-compose stop
 
 lint:
-	python -m flake8
-	python -m mypy -p src
+	poetry run flake8
+	poetry run mypy -p src --ignore-missing-imports

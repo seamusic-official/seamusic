@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
+from pydantic import EmailStr
+
 from src.dtos.database.auth import (
     UserResponseDTO,
     UsersResponseDTO,
@@ -22,15 +24,19 @@ class BaseUsersRepository(ABC):
         ...
 
     @abstractmethod
+    async def get_user_by_email(self, email: EmailStr) -> UserResponseDTO | None:
+        ...
+
+    @abstractmethod
     async def get_users(self) -> UsersResponseDTO:
         ...
 
     @abstractmethod
-    async def create_user(self, user: CreateUserRequestDTO) -> None:
+    async def create_user(self, user: CreateUserRequestDTO) -> int:
         ...
 
     @abstractmethod
-    async def update_user(self, user: UpdateUserRequestDTO) -> None:
+    async def update_user(self, user: UpdateUserRequestDTO) -> int:
         ...
 
     @abstractmethod
@@ -49,7 +55,7 @@ class BaseArtistsRepository(ABC):
         ...
 
     @abstractmethod
-    async def update_artist(self, artist: UpdateArtistRequestDTO):
+    async def update_artist(self, artist: UpdateArtistRequestDTO) -> int:
         ...
 
 
@@ -64,5 +70,5 @@ class BaseProducersRepository(ABC):
         ...
 
     @abstractmethod
-    async def update_producer(self, producer: UpdateProducerRequestDTO) -> None:
+    async def update_producer(self, producer: UpdateProducerRequestDTO) -> int:
         ...

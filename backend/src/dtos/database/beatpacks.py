@@ -1,5 +1,5 @@
 from src.dtos.database.auth import User
-from src.dtos.database.base import BaseDTO, BaseResponseDTO, BaseRequestDTO
+from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
 from src.dtos.database.beats import Beat
 
 
@@ -24,7 +24,7 @@ class BeatpacksResponseDTO(BaseResponseDTO):
 class CreateBeatpackRequestDTO(BaseRequestDTO):
     title: str
     description: str
-    beats: list
+    beats: list[Beat]
 
 
 class UpdateBeatpackRequestDTO(BaseRequestDTO):

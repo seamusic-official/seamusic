@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from src.dtos.database.albums import CreateAlbumRequestDTO, AlbumResponseDTO, AlbumsResponseDTO
+from src.dtos.database.albums import CreateAlbumRequestDTO, AlbumResponseDTO, AlbumsResponseDTO, UpdateAlbumRequestDTO
 
 
 @dataclass
@@ -20,11 +20,11 @@ class BaseAlbumRepository(ABC):
         ...
 
     @abstractmethod
-    async def create_album(self, album: CreateAlbumRequestDTO) -> None:
+    async def create_album(self, album: CreateAlbumRequestDTO) -> int:
         ...
 
     @abstractmethod
-    async def edit_album(self, album: CreateAlbumRequestDTO) -> None:
+    async def edit_album(self, album: UpdateAlbumRequestDTO) -> int:
         ...
 
     @abstractmethod

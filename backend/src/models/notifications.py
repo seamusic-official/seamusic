@@ -1,15 +1,10 @@
-import datetime
+from sqlalchemy.orm import Mapped, mapped_column
 
-from sqlalchemy.orm import Mapped, mapped_column, DeclarativeBase
-
-
-class Base(DeclarativeBase):
-    pass
+from src.core.database import Base
 
 
 class Notification(Base):
     __tablename__ = "notifications"
 
     name: Mapped[str] = mapped_column(nullable=False)
-    description: Mapped[str] = mapped_column()
-    created_at: datetime.datetime
+    description: Mapped[str] = mapped_column(nullable=True)

@@ -6,13 +6,13 @@ from passlib.context import CryptContext
 
 from src.core.config import settings
 from src.models.auth import User as _User
-
+from src.repositories.database.auth import UsersDAO
 from src.schemas.auth import User
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
-REFRESH_TOKEN_EXPIRE_MINUTES = (60 * 24 * 7) * 2
+REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 14  # 14 days
 ALGORITHM = "HS256"
 JWT_SECRET_KEY = settings.auth.JWT_SECRET_KEY
 JWT_REFRESH_SECRET_KEY = settings.auth.JWT_REFRESH_SECRET_KEY

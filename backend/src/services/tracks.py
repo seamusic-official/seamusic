@@ -1,130 +1,139 @@
 from io import BytesIO
 
-from src.repositories.media.base import S3Repository
-from src.enums.type import Type
+from src.dtos.database.tracks import TracksResponseDTO, CreateTrackRequestDTO, UpdateTrackRequestDTO, TrackResponseDTO
 from src.exceptions.services import NoRightsException
-from src.models.tracks import Track
-from src.repositories.tracks import TracksRepository
+from src.repositories import Repositories, BaseMediaRepository
+from src.repositories.database.tracks.base import BaseTracksRepository
+
+
+class TrackRepositories(Repositories):
+    database: BaseTracksRepository
+    media: BaseMediaRepository
 
 
 class TracksService:
-    @staticmethod
-    async def get_my_tracks(user: dict) -> list[Track]:
-        return await TracksRepository.find_all(user=user)
+    repositories: TrackRepositories
 
-    @staticmethod
-    async def all_tracks() -> list[Track]:
-        return await TracksRepository.find_all()
+    async def get_my_tracks(self, user_id: int) -> TracksResponseDTO:
+        return await self.repositories.database.get_user_tracks(user_id=user_id)
 
-    @staticmethod
-    async def get_one_track(track_id: int) -> Track:
-        return await TracksRepository.find_one_by_id(track_id)
+    async def all_tracks(self) -> TracksResponseDTO:
+        return await self.repositories.database.get_all_tracks()
 
-    @staticmethod
+    async def get_one_track(self, track_id: int) -> TrackResponseDTO:
+        return await self.repositories.database.get_track_by_id(track_id=track_id)
+
     async def add_track(
-        user: dict,
-        file_info: str | None,
-        file_stream: BytesIO
-    ) -> Track:
+            self,
+            username: str,
+            track_title: str,
+            description: str,
+            user_id: int,
+            file_info: str | None,
+            file_stream: BytesIO
+    ) -> int:
 
-        file_url = await S3Repository.upload_file("AUDIOFILES", file_info, file_stream)
+        file_url = await self.repositories.media.upload_file("AUDIOFILES", file_info, file_stream)
 
-        data = {
-            "title": "Unknown title",
-            "file_url": file_url,
-            "prod_by": user["username"],
-            "user_id": user["id"],
-            "type": Type.track
-        }
+        track = CreateTrackRequestDTO(
+            title=track_title,
+            description=description,
+            file_path=file_url,
+            prod_by=username,
+            user_id=user_id
+        )
 
-        return await TracksRepository.add_one(data)
+        return await self.repositories.database.create_track(track=track)
 
-    @staticmethod
     async def update_pic_tracks(
-        track_id: int,
-        user_id: int,
-        file_info: str | None,
-        file_stream: BytesIO,
-    ) -> Track:
+            self,
+            track_id: int,
+            user_id: int,
+            file_info: str | None,
+            file_stream: BytesIO,
+    ) -> int:
+        file_url = await self.repositories.media.upload_file("PICTURES", file_info, file_stream)
 
-        track = await TracksRepository.find_one_by_id(id_=track_id)
+        track = await self.repositories.database.get_track_by_id(track_id=track_id)
 
-        if track.id != user_id:
+        if track.user_id != user_id:
             raise NoRightsException()
 
-        file_url = await S3Repository.upload_file("PICTURES", file_info, file_stream)
-        data = {"picture_url": file_url}
-        return await TracksRepository.edit_one(track_id, data)
+        track = UpdateTrackRequestDTO(
+            title=track.name,
+            file_path=file_url,
+            user_id=user_id
+        )
+        return await self.repositories.database.update_track(track=track)
 
-    @staticmethod
     async def release_track(
-        track_id: int,
-        user_id: int,
-        title: str,
-        picture_url: str | None,
-        description: str | None,
-        co_prod: str | None,
-        prod_by: str | None,
-        playlist_id: int | None,
-        track_pack_id: int | None,
-    ) -> Track:
+            self,
+            track_id: int,
+            user_id: int,
+            title: str,
+            picture_url: str | None,
+            description: str | None,
+            co_prod: str | None,
+            prod_by: str | None,
+            playlist_id: int | None,
+            track_pack_id: int | None,
+    ) -> int:
 
-        track = await TracksRepository.find_one_by_id(id_=track_id)
+        track = await self.repositories.database.get_track_by_id(track_id=track_id)
 
-        if track.id != user_id:
+        if track.user_id != user_id:
             raise NoRightsException()
 
-        data = {
-            "name": title,
-            "description": description,
-            "co_prod": co_prod,
-            "prod_by": prod_by,
-            "playlist_id": playlist_id,
-            "picture_url": picture_url,
-            "user_id": user_id,
-            "track_pack_id": track_pack_id,
-        }
+        track = UpdateTrackRequestDTO(
+            title=title,
+            picture_url=picture_url,
+            description=description,
+            co_prod=co_prod,
+            prod_by=prod_by,
+            playlist_id=playlist_id,
+            user_id=user_id,
+            track_pack_id=track_pack_id
+        )
 
-        return await TracksRepository.edit_one(track_id, data)
+        return await self.repositories.database.update_track(track=track)
 
-    @staticmethod
     async def update_track(
-        track_id: int,
-        user_id: int,
-        title: str,
-        description: str | None,
-        prod_by: str | None,
-        picture: str | None,
-        file_path: str,
-        co_prod: str | None,
-        playlist_id: int | None,
-        track_pack_id: int | None,
+            self,
+            track_id: int,
+            user_id: int,
+            title: str,
+            description: str | None,
+            prod_by: str | None,
+            picture_url: str | None,
+            file_path: str,
+            co_prod: str | None,
+            playlist_id: int | None,
+            track_pack_id: int | None,
     ) -> None:
 
-        track = await TracksRepository.find_one_by_id(id_=track_id)
+        track = await self.repositories.database.get_track_by_id(track_id=track_id)
 
-        if track.id != user_id:
+        if track.user_id != user_id:
             raise NoRightsException()
 
-        data = {
-            "name": title,
-            "description": description,
-            "prod_by": prod_by,
-            "picture": picture,
-            "file_path": file_path,
-            "co_prod": co_prod,
-            "playlist_id": playlist_id,
-            "track_pack_id": track_pack_id
-        }
+        track = UpdateTrackRequestDTO(
+            title=title,
+            picture_url=picture_url,
+            file_path=file_path,
+            description=description,
+            co_prod=co_prod,
+            prod_by=prod_by,
+            playlist_id=playlist_id,
+            user_id=user_id,
+            track_pack_id=track_pack_id
+        )
 
-        await TracksRepository.edit_one(track_id, data)
+        await self.repositories.database.update_track(track=track)
 
-    @staticmethod
-    async def delete_track(track_id: int, user_id: int) -> None:
+    async def delete_track(self, track_id: int, user_id: int) -> None:
+        track = await self.repositories.database.get_track_by_id(track_id=track_id)
 
-        track = await TracksRepository.find_one_by_id(id_=track_id)
-
-        if track.id != user_id:
+        if track.user_id != user_id:
             raise NoRightsException()
 
-        await TracksRepository.delete(id_=track_id)
+        await self.repositories.database.delete_track(track_id=track_id, user_id=user_id)

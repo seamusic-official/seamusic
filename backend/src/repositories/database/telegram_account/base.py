@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 
-from dtos.database.subscriptions import (
+from src.dtos.database.subscriptions import (
     TelegramAccountResponseDTO,
     TelegramAccountsIDSResponseDTO,
     CreateTelegramAccountRequestDTO
@@ -11,7 +11,7 @@ from dtos.database.subscriptions import (
 @dataclass
 class BaseTelegramAccountRepository(ABC):
     @abstractmethod
-    async def add_one(self, telegram_account: CreateTelegramAccountRequestDTO) -> None:
+    async def add_one(self, telegram_account: CreateTelegramAccountRequestDTO) -> int:
         ...
 
     @abstractmethod

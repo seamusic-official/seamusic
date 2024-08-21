@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
+from src.dtos.database.base import BaseDTO, BaseResponseDTO, BaseRequestDTO
 
 
 class Soundkit(BaseDTO):

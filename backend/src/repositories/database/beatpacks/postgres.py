@@ -33,14 +33,20 @@ class BeatpacksRepository(BaseBeatpacksRepository, SQLAlchemyRepository):
             response_dto=BeatpackResponseDTO
         )
 
-    async def add_beatpack(self, beatpack: CreateBeatpackRequestDTO) -> None:
+    async def add_beatpack(self, beatpack: CreateBeatpackRequestDTO) -> int:
         beatpack = request_dto_to_model(model=Beatpack, request_dto=beatpack)
         self.session.add(beatpack)
+        return beatpack.id
 
-    async def update_beatpack(self, beatpack: UpdateBeatpackRequestDTO) -> None:
+    async def update_beatpack(self, beatpack: UpdateBeatpackRequestDTO) -> int:
         beatpack = request_dto_to_model(model=Beatpack, request_dto=beatpack)
         await self.session.merge(beatpack)
+        return beatpack.id
 
     async def delete_beatpack(self, beatpack_id: int, user_id: int) -> None:
         query = delete(Beatpack).filter_by(id=beatpack_id, user_id=user_id)
         await self.session.execute(query)
+
+
+def init_postgres_repository() -> BeatpacksRepository:
+    return BeatpacksRepository()
