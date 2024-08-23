@@ -15,7 +15,9 @@ from src.dtos.database.auth import (
     ProducerResponseDTO,
     ProducersResponseDTO,
     UpdateProducerRequestDTO,
-    CreateUserRequestDTO, Artist, Producer,
+    CreateUserRequestDTO,
+    Artist,
+    Producer,
 )
 from src.models.auth import User, ArtistProfile, ProducerProfile
 from src.repositories.database.auth.base import BaseUsersRepository, BaseArtistsRepository, BaseProducersRepository
@@ -55,6 +57,10 @@ class UsersRepository(BaseUsersRepository, SQLAlchemyRepository):
 
 @dataclass
 class ArtistsRepository(BaseArtistsRepository, SQLAlchemyRepository):
+    async def get_artist_id_by_user_id(self, user_id) -> int | None:
+        query = select(User).filter_by(id=user_id).column(column='artist_profile')
+        return await self.session.scalar(query)
+
     async def get_artist_by_id(self, artist_id: int) -> ArtistResponseDTO | None:
         artist_id = await self.session.get(ArtistProfile, artist_id)
         return model_to_response_dto(model=artist_id, response_dto=ArtistResponseDTO)
@@ -72,6 +78,10 @@ class ArtistsRepository(BaseArtistsRepository, SQLAlchemyRepository):
 
 @dataclass
 class ProducersRepository(BaseProducersRepository, SQLAlchemyRepository):
+    async def get_producer_id_by_user_id(self, user_id) -> int | None:
+        query = select(User).filter_by(id=user_id).column(column='producer_profile')
+        return await self.session.scalar(query)
+
     async def get_producer_by_id(self, producer_id: int) -> ProducerResponseDTO | None:
         producer_id = await self.session.get(ProducerProfile, producer_id)
         return model_to_response_dto(model=producer_id, response_dto=ProducerResponseDTO)

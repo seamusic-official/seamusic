@@ -3,11 +3,11 @@ from typing import List
 
 from pydantic import BaseModel
 
-from src.models.albums import Album as _Album
-from src.schemas.base import FromDBModelMixin, DetailMixin
+from src.enums.type import Type
+from src.schemas.base import DetailMixin
 
 
-class Album(FromDBModelMixin):
+class Album(BaseModel):
     id: int
     created_at: datetime.datetime
     updated_at: datetime.datetime
@@ -16,9 +16,7 @@ class Album(FromDBModelMixin):
     picture_url: str
     description: str
     co_prod: str
-    type: str = "album"
-
-    _model_type = _Album
+    type: Type = Type.album
 
 
 class SMyAlbumsResponse(BaseModel):
@@ -29,16 +27,24 @@ class SAllAlbumsResponse(BaseModel):
     albums: List[Album]
 
 
-class SAlbumResponse(Album):
-    pass
+class SAlbumResponse(BaseModel):
+    id: int
+    created_at: datetime.datetime
+    updated_at: datetime.datetime
+    is_available: bool
+    title: str
+    picture_url: str
+    description: str
+    co_prod: str
+    type: Type = Type.album
 
 
-class SAddAlbumResponse(Album):
-    pass
+class SAddAlbumResponse(BaseModel):
+    id: int
 
 
-class SUpdateAlbumPictureResponse(Album):
-    pass
+class SUpdateAlbumPictureResponse(BaseModel):
+    id: int
 
 
 class SReleaseAlbumsRequest(BaseModel):
@@ -50,21 +56,20 @@ class SReleaseAlbumsRequest(BaseModel):
     type: str = "album"
 
 
-class SReleaseAlbumsResponse(Album):
-    pass
+class SReleaseAlbumsResponse(BaseModel):
+    id: int
 
 
 class SUpdateAlbumRequest(BaseModel):
     title: str
-    picture_url: str
     description: str
     co_prod: str
     prod_by: str
     type: str = "album"
 
 
-class SUpdateAlbumResponse(Album):
-    pass
+class SUpdateAlbumResponse(BaseModel):
+    id: int
 
 
 class SDeleteAlbumResponse(BaseModel, DetailMixin):

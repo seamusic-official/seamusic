@@ -1,85 +1,176 @@
-from typing import List
+from fastapi import APIRouter, status, Depends
 
-from fastapi import APIRouter, status
-
+from src.enums.spotify import SpotifyType
 from src.schemas.spotify import (
     SSpotifyTracksResponse,
-    SSpotifyAlbumResponse,
+    SpotifyTrack,
     SSpotifyTrackResponse,
     SSpotifyAlbumsResponse,
-    SSpotifyAlbumTracksResponse,
+    SpotifyAlbum,
+    SSpotifyAlbumResponse,
+    SSpotifyAlbumTracksCountResponse,
     SSpotifyArtistResponse,
     SSpotifySearchResponse,
 )
+from src.services.spotify import SpotifyService, get_spotify_service
 
-music = APIRouter(prefix="/music", tags=["Spotify"])
+
+spotify = APIRouter(prefix="/inspiration", tags=["Music & Albums"])
 
 
-@music.get(
+@spotify.get(
     path="/tracks",
-    summary="Get music from spotify",
-    response_model=List[SSpotifyTracksResponse],
-    responses={status.HTTP_200_OK: {"model": List[SSpotifyTracksResponse]}},
+    summary="Get Spotify tracks by specified artist",
+    response_model=SSpotifyTracksResponse,
+    status_code=status.HTTP_200_OK,
 )
-async def get_spotify_tracks() -> SSpotifyTracksResponse:
-    return Spotify.get_tracks()
+async def get_spotify_artist_tracks(
+    spotify_artist_id: str,
+    service: SpotifyService = Depends(get_spotify_service),
+) -> SSpotifyTracksResponse:
+
+    tracks = list(map(
+        lambda track: SpotifyTrack(
+            id=track.id,
+            type=SpotifyType.track,
+            name=track.name,
+            preview_url=track.preview_url,
+            image_url=track.image_url,
+            spotify_url=track.href,
+        ),
+        await service.get_spotify_tracks(artist_id=spotify_artist_id)
+    ))
+
+    return SSpotifyTracksResponse(tracks=tracks)
 
 
-@music.get(
-    path="/track/{music_id}",
-    summary="Create new music",
-    response_model=SSpotifyTrackResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyTrackResponse}},
+@spotify.get(
+    path="/tracks/{track_id}",
+    summary="Get spotify track",
+    status_code=status.HTTP_200_OK,
+    response_model=SSpotifyTracksResponse,
 )
-async def get_spotify_track(music_id: int) -> SSpotifyTrackResponse:
-    return Spotify.get_track(music_id)
+async def get_spotify_track(
+    track_id: str,
+    service: SpotifyService = Depends(get_spotify_service),
+) -> SSpotifyTrackResponse:
+
+    track = await service.get_spotify_track(track_id=track_id)
+
+    return SSpotifyTrackResponse(
+        id=track.id,
+        type=track.type,
+        name=track.name,
+        preview_url=track.preview_url,
+        image_url=track.image_url,
+        spotify_url=track.href,
+    )
 
 
-@music.get(
-    path="/spotify/albums",
-    summary="Get albums from spotify",
+@spotify.get(
+    path="/albums",
+    summary="Get Spotify albums by artist",
     response_model=SSpotifyAlbumsResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyAlbumsResponse}},
+    status_code=status.HTTP_200_OK,
 )
-async def get_spotify_albums() -> SSpotifyAlbumsResponse:
-    return Spotify.get_albums()
+async def get_spotify_albums(
+    artist_id: str,
+    service: SpotifyService = Depends(get_spotify_service),
+) -> SSpotifyAlbumsResponse:
+
+    albums = list(map(
+        lambda album: SpotifyAlbum(
+            id=album.id,
+            name=album.name,
+            image_url=album.image_url,
+            spotify_url=album.spotify_url,
+        ),
+        await service.get_spotify_albums(artist_id=artist_id)
+    ))
+
+    return SSpotifyAlbumsResponse(albums=albums)
 
 
-@music.get(
-    path="/spotify/album",
-    summary="Get an album from spotify",
+@spotify.get(
+    path="/album/{album_id}",
+    summary="Get Spotify album by ID",
+    status_code=status.HTTP_200_OK,
     response_model=SSpotifyAlbumResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyAlbumResponse}},
 )
-async def get_spotify_album(album_id: int) -> SSpotifyAlbumResponse:
-    return Spotify.get_album(album_id)
+async def get_spotify_album(
+    album_id: str,
+    service: SpotifyService = Depends(get_spotify_service),
+) -> SSpotifyAlbumResponse:
+
+    album = await service.get_spotify_album(album_id=album_id)
+
+    return SSpotifyAlbumResponse(
+        id=album.id,
+        name=album.name,
+        image_url=album.image_url,
+        spotify_url=album.spotify_url,
+        release_date=album.release_date,
+        artists=album.artists,
+        external_urls=album.external_urls,
+        uri=album.uri,
+        album_type=album.album_type,
+        total_tracks=album.total_tracks,
+    )
 
 
-@music.get(
-    path="/spotify/tracks_from_album",
-    summary="Create new music",
-    response_model=SSpotifyAlbumTracksResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyAlbumTracksResponse}},
+@spotify.get(
+    path="/album/{album_id}/tracks",
+    summary="Get amount of tracks in album",
+    status_code=status.HTTP_200_OK,
+    response_model=SSpotifyAlbumTracksCountResponse,
 )
-async def get_tracks_from_album(album_id) -> SSpotifyAlbumTracksResponse:
-    return Spotify.get_album_tracks_count(album_id)
+async def get_album_tracks_count(
+    album_id: str,
+    service: SpotifyService = Depends(get_spotify_service)
+) -> SSpotifyAlbumTracksCountResponse:
+
+    return SSpotifyAlbumTracksCountResponse(count=await service.get_album_tracks_count(album_id=album_id))
 
 
-@music.get(
-    path="/spotify/artist",
-    summary="Create new music",
+@spotify.get(
+    path="/artist/{artist_id}",
+    summary="Get Spotify artist by ID",
+    status_code=status.HTTP_200_OK,
     response_model=SSpotifyArtistResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifyArtistResponse}},
 )
-async def get_spotify_artist(artist_id) -> SSpotifyArtistResponse:
-    return Spotify.get_artist(artist_id)
+async def get_spotify_artist(
+    artist_id: str,
+    service: SpotifyService = Depends(get_spotify_service)
+) -> SSpotifyArtistResponse:
+
+    artist = await service.get_spotify_artist(artist_id=artist_id)
+
+    return SSpotifyArtistResponse(
+        id=artist.id,
+        external_urls=artist.external_urls,
+        type=artist.type,
+        name=artist.name,
+        image_url=artist.image_url,
+        popularity=artist.popularity,
+    )
 
 
-@music.get(
+@spotify.get(
     path="/spotify/search",
     summary="Search in spotify",
+    status_code=status.HTTP_200_OK,
     response_model=SSpotifySearchResponse,
-    responses={status.HTTP_200_OK: {"model": SSpotifySearchResponse}},
 )
-async def get_spotify_search(query: str) -> SSpotifySearchResponse:
-    return Spotify.search(query)
+async def search(
+    query: str,
+    type_: SpotifyType,
+    service: SpotifyService = Depends(get_spotify_service),
+) -> SSpotifySearchResponse:
+
+    result = await service.get_spotify_search(query=query, type_=type_)
+
+    return SSpotifySearchResponse(
+        tracks=result.tracks,
+        artists=result.artists,
+        albums=result.albums,
+    )

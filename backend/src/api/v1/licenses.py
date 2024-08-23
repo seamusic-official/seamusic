@@ -2,10 +2,20 @@ from fastapi import APIRouter, Depends, status
 
 from src.exceptions.api import NoRightsException
 from src.models.auth import User
-from src.repositories.database.licenses.postgres import LicensesRepository
-from src.schemas.licenses import SMyLicensesResponse, SLicensesResponse, SLicenseResponse, SCreateLicenseResponse, \
-    SCreateLicenseRequest, SEditLicensesResponse, SLicensesDeleteResponse, SEditLicenseRequest
+from src.schemas.licenses import (
+    License,
+    SMyLicensesResponse,
+    SLicensesResponse,
+    SLicenseResponse,
+    SCreateLicenseResponse,
+    SCreateLicenseRequest,
+    SEditLicensesResponse,
+    SLicensesDeleteResponse,
+    SEditLicenseRequest,
+)
+from src.services.licenses import LicensesService, get_licenses_service
 from src.utils.auth import get_current_user
+
 
 licenses = APIRouter(prefix="/licenses", tags=["Licenses"])
 
@@ -16,30 +26,60 @@ licenses = APIRouter(prefix="/licenses", tags=["Licenses"])
     response_model=SMyLicensesResponse,
     responses={status.HTTP_200_OK: {"model": SMyLicensesResponse}},
 )
-async def get_user_licenses(
+async def get_my_licenses(
     user: User = Depends(get_current_user),
+    service: LicensesService = Depends(get_licenses_service),
 ) -> SMyLicensesResponse:
-    response = await LicensesRepository.find_all(owner=user)
-    return SMyLicensesResponse(
-        licenses=[
-            SLicensesResponse.from_db_model(model=license_) for license_ in response
-        ]
-    )
+
+    licenses_ = list(map(
+        lambda license_: License(
+            id=license_.id,
+            title=license_.title,
+            picture_url=license_.picture_url,
+            description=license_.description,
+            file_path=license_.file_path,
+            co_prod=license_.co_prod,
+            prod_by=license_.prod_by,
+            playlist_id=license_.playlist_id,
+            user_id=license_.user_id,
+            beat_pack_id=license_.beat_pack_id,
+            price=license_.price,
+            created_at=license_.created_at,
+            updated_at=license_.updated_at,
+        ),
+        await service.get_user_licenses(user_id=user.id)
+    ))
+
+    return SMyLicensesResponse(licenses=licenses_)
 
 
 @licenses.get(
-    path="/all",
+    path="/",
     summary="Get all licenses",
     response_model=SLicensesResponse,
     responses={status.HTTP_200_OK: {"model": SLicensesResponse}},
 )
-async def all_licenses() -> SLicensesResponse:
-    response = await LicensesRepository.find_all()
-    return SLicensesResponse(
-        licenses=[
-            SLicensesResponse.from_db_model(model=_license) for _license in response
-        ]
-    )
+async def all_licenses(service: LicensesService = Depends(get_licenses_service)) -> SLicensesResponse:
+
+    licenses_ = list(map(
+        lambda license_: License(
+            id=license_.id,
+            title=license_.title,
+            picture_url=license_.picture_url,
+            description=license_.description,
+            file_path=license_.file_path,
+            co_prod=license_.co_prod,
+            prod_by=license_.prod_by,
+            playlist_id=license_.playlist_id,
+            user_id=license_.user_id,
+            beat_pack_id=license_.beat_pack_id,
+            price=license_.price,
+            created_at=license_.created_at,
+            updated_at=license_.updated_at,
+        ),
+        await service.get_all_licenses()
+    ))
+    return SLicensesResponse(licenses=licenses_)
 
 
 @licenses.get(
@@ -48,67 +88,98 @@ async def all_licenses() -> SLicensesResponse:
     response_model=SLicenseResponse,
     responses={status.HTTP_200_OK: {"model": SLicenseResponse}},
 )
-async def get_one(license_id: int) -> SLicenseResponse:
-    response = await LicensesRepository.find_one_by_id(int(license_id))
-    return SLicenseResponse.from_db_model(model=response)
+async def get_one(
+    license_id: int,
+    service: LicensesService = Depends(get_licenses_service),
+) -> SLicenseResponse:
+
+    license_ = await service.get_one(license_id=license_id)
+
+    return SLicenseResponse(
+        id=license_.id,
+        title=license_.title,
+        picture_url=license_.picture_url,
+        description=license_.description,
+        file_path=license_.file_path,
+        co_prod=license_.co_prod,
+        prod_by=license_.prod_by,
+        playlist_id=license_.playlist_id,
+        user_id=license_.user_id,
+        beat_pack_id=license_.beat_pack_id,
+        price=license_.price,
+        created_at=license_.created_at,
+        updated_at=license_.updated_at,
+    )
 
 
 @licenses.post(
-    path="/beatbacks/add",
+    path="/new",
     summary="Add a file for new beat",
     response_model=SCreateLicenseResponse,
     responses={status.HTTP_200_OK: {"model": SCreateLicenseResponse}},
 )
 async def add_license(
-    data: SCreateLicenseRequest, user: User = Depends(get_current_user)
+    data: SCreateLicenseRequest,
+    user: User = Depends(get_current_user),
+    service: LicensesService = Depends(get_licenses_service),
 ) -> SCreateLicenseResponse:
 
-    data = data.model_dump()
-    data["user"] = user
+    license_id = await service.add_license(
+        title=data.title,
+        price=data.price,
+        user_id=user.id,
+        description=data.description,
+    )
 
-    response = await LicensesRepository.add_one(data=data)
-    return SCreateLicenseResponse.from_db_model(model=response)
+    return SCreateLicenseResponse(id=license_id)
 
 
 @licenses.put(
-    path="/update/{license_id}",
+    path="/{license_id}/update",
     summary="Edit license by id",
     response_model=SEditLicensesResponse,
     responses={status.HTTP_200_OK: {"model": SEditLicensesResponse}},
 )
 async def update_license(
     license_id: int,
-    licenses_data: SEditLicenseRequest,
+    data: SEditLicenseRequest,
     user: User = Depends(get_current_user),
+    service: LicensesService = Depends(get_licenses_service),
 ) -> SEditLicensesResponse:
-    license_ = await LicensesRepository.find_one_by_id(id_=license_id)
 
-    if license_.user.id != user.id:
+    license_ = await service.get_one(license_id=license_id)
+
+    if license_.user_id != user.id:
         raise NoRightsException()
 
-    data = {
-        "title": licenses_data.title,
-        "description": licenses_data.description,
-    }
+    license_id = await service.update_license(
+        license_id=license_id,
+        user_id=user.id,
+        title=data.title,
+        description=data.description,
+        price=data.price,
+    )
 
-    await LicensesRepository.edit_one(license_id, data)
-    return SEditLicensesResponse()
+    return SEditLicensesResponse(id=license_id)
 
 
 @licenses.delete(
-    path="/delete/{license_id}",
+    path="/{license_id}/delete",
     summary="Create new licenses",
     response_model=SLicensesDeleteResponse,
     responses={status.HTTP_200_OK: {"model": SLicensesDeleteResponse}},
 )
 async def delete_licenses(
-    license_id: int, user: User = Depends(get_current_user)
+    license_id: int,
+    user: User = Depends(get_current_user),
+    service: LicensesService = Depends(get_licenses_service)
 ) -> SLicensesDeleteResponse:
-    license_ = await LicensesRepository.find_one_by_id(id_=license_id)
 
-    if license_.user.id != user.id:
+    license_ = await service.get_one(license_id=license_id)
+
+    if license_.user_id != user.id:
         raise NoRightsException()
 
-    await LicensesRepository.delete(id_=license_id)
+    await service.delete_license(license_id=license_id, user_id=user.id)
 
     return SLicensesDeleteResponse()

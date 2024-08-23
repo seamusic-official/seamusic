@@ -1,13 +1,11 @@
 from datetime import datetime
-from typing import Optional, List
 
 from pydantic import BaseModel
 
-from src.models.tracks import Track
 from src.schemas.base import DetailMixin
 
 
-class STrack(BaseModel):
+class Track(BaseModel):
     id: int
     name: str
     prod_by: str
@@ -21,15 +19,13 @@ class STrack(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    _model_type = Track
-
 
 class SMyTracksResponse(BaseModel):
-    tracks: List[STrack]
+    tracks: list[Track]
 
 
 class SAllTracksResponse(BaseModel):
-    tracks: List[STrack]
+    tracks: list[Track]
 
 
 class STrackResponse(BaseModel):
@@ -46,8 +42,6 @@ class STrackResponse(BaseModel):
     created_at: datetime
     updated_at: datetime
 
-    _model_type = Track
-
 
 class SAddTracksResponse(BaseModel):
     title: str
@@ -56,43 +50,63 @@ class SAddTracksResponse(BaseModel):
     user_id: int
     type: str
 
-    _model_type = Track
 
-
-class SUpdateTrackPictureResponse(STrackResponse):
-    pass
+class SUpdateTrackPictureResponse(BaseModel):
+    id: int
+    name: str
+    prod_by: str
+    description: str
+    co_prod: str
+    type: str
+    user_id: int
+    is_available: bool
+    file_url: str
+    picture_url: str
+    created_at: datetime
+    updated_at: datetime
 
 
 class SReleaseTrackRequest(BaseModel):
     title: str
-    picture: Optional[str]
-    description: Optional[str]
+    picture: str | None = None
+    description: str | None = None
     file_path: str
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-    playlist_id: Optional[int]
+    co_prod: str | None = None
+    prod_by: str | None = None
+    playlist_id: int | None = None
     user_id: int
-    Track_pack_id: Optional[int]
+    Track_pack_id: int | None = None
 
 
-class SReleaseTrackResponse(STrackResponse):
-    pass
+class SReleaseTrackResponse(BaseModel):
+    id: int
+    name: str
+    prod_by: str
+    description: str
+    co_prod: str
+    type: str
+    user_id: int
+    is_available: bool
+    file_url: str
+    picture_url: str
+    created_at: datetime
+    updated_at: datetime
 
 
 class SUpdateTrackRequest(BaseModel):
     title: str
-    picture: Optional[str]
-    description: Optional[str]
+    picture: str | None = None
+    description: str | None = None
     file_path: str
-    co_prod: Optional[str]
-    prod_by: Optional[str]
-    playlist_id: Optional[int]
+    co_prod: str | None = None
+    prod_by: str | None = None
+    playlist_id: int | None = None
     user_id: int
-    Track_pack_id: Optional[int]
+    Track_pack_id: int | None = None
 
 
-class SUpdateTrackResponse(BaseModel, DetailMixin):
-    detail: str = "Track updated"
+class SUpdateTrackResponse(BaseModel):
+    id: int
 
 
 class SDeleteTrackResponse(BaseModel, DetailMixin):

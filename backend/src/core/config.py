@@ -1,66 +1,48 @@
-import os
-
-from dotenv import load_dotenv
-from pydantic import BaseModel
+from pydantic import Field
 from pydantic_settings import BaseSettings
+from dotenv import load_dotenv
+
 
 load_dotenv()
 
 
-class YandexCloudSettings(BaseModel):
-    YANDEX_CLOUD_OAUTH_TOKEN: str = os.environ["YANDEX_CLOUD_OAUTH_TOKEN"]
-    YANDEX_CLOUD_ID: str = os.environ["YANDEX_CLOUD_ID"]
-    AWS_ACCESS_KEY_ID: str = os.environ["AWS_ACCESS_KEY_ID"]
-    AWS_SECRET_ACCESS_KEY: str = os.environ["AWS_SECRET_ACCESS_KEY"]
+class Settings(BaseSettings):
 
+    yandex_cloud_oauth_token: str = Field(alias='YANDEX_CLOUD_OAUTH_TOKEN')
+    yandex_cloud_id: str = Field(alias="YANDEX_CLOUD_ID")
+    aws_access_key_id: str = Field(alias="AWS_ACCESS_KEY_ID")
+    aws_secret_access_key: str = Field(alias="AWS_SECRET_ACCESS_KEY")
 
-class SpotifySettings(BaseModel):
-    CLIENT_SECRET: str = os.environ["SPOTIFY_CLIENT_SECRET"]
-    CLIENT_ID: str = os.environ["SPOTIFY_CLIENT_ID"]
-    # REDIRECT_URI: str = os.environ["REDIRECT_URI"]
+    spotify_client_id: str = Field(alias="SPOTIFY_CLIENT_ID")
+    spotify_client_secret: str = Field(alias="SPOTIFY_CLIENT_SECRET")
+    spotify_redirect_uri: str = Field(alias="SPOTIFY_REDIRECT_URI")
 
+    db_host: str = Field(alias="DB_HOST")
+    db_port: int = Field(alias="DB_PORT")
+    db_name: str = Field(alias="DB_NAME")
+    db_user: str = Field(alias="DB_USER")
+    db_pass: str = Field(alias="DB_PASS")
 
-class DbSettings(BaseModel):
-
-    DB_HOST: str = os.environ["DB_HOST"]
-    DB_PORT: int = int(os.environ["DB_PORT"])
-    DB_NAME: str = os.environ["DB_NAME"]
-    DB_USER: str = os.environ["DB_USER"]
-    DB_PASS: str = os.environ["DB_PASS"]
-
-    DB_HOST_TEST: str = os.environ["DB_HOST_TEST"]
-    DB_PORT_TEST: int = int(os.environ["DB_PORT_TEST"])
-    DB_NAME_TEST: str = os.environ["DB_NAME_TEST"]
-    DB_USER_TEST: str = os.environ["DB_USER_TEST"]
-    DB_PASS_TEST: str = os.environ["DB_PASS_TEST"]
-
-    @property
-    def url(self):
-        return f"postgresql+asyncpg://{self.DB_USER}:{self.DB_PASS}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
-
-    @property
-    def url_test(self):
-        return f"postgresql+asyncpg://{self.DB_USER_TEST}:{self.DB_PASS_TEST}@{self.DB_HOST_TEST}:{self.DB_PORT_TEST}/{self.DB_NAME_TEST}"
+    db_host_test: str = Field(alias="DB_HOST_TEST")
+    db_port_test: int = Field(alias="DB_PORT_TEST")
+    db_name_test: str = Field(alias="DB_NAME_TEST")
+    db_user_test: str = Field(alias="DB_USER_TEST")
+    db_pass_test: str = Field(alias="DB_PASS_TEST")
 
     echo: bool = True
 
+    jwt_secret_ket: str = Field("JWT_SECRET_KEY")
+    jwt_refresh_secret_key: str = Field("JWT_REFRESH_SECRET_KEY")
 
-class AuthSettings(BaseModel):
-    JWT_SECRET_KEY: str = os.environ["JWT_SECRET_KEY"]
-    JWT_REFRESH_SECRET_KEY: str = os.environ["JWT_REFRESH_SECRET_KEY"]
+    bucket_name: str = Field("BUCKET_NAME")
 
+    @property
+    def url(self) -> str:
+        return f"postgresql+asyncpg://{self.db_user}:{self.db_pass}@{self.db_host}:{self.db_port}/{self.db_name}"
 
-class S3Settings(BaseModel):
-    BUCKET_NAME: str = os.environ["BUCKET_NAME"]
-
-
-class Settings(BaseSettings):
-    root_url: str = os.environ["ROOT_URL"]
-    db: DbSettings = DbSettings()
-    auth: AuthSettings = AuthSettings()
-    spotify: SpotifySettings = SpotifySettings()
-    yandex_cloud: YandexCloudSettings = YandexCloudSettings()
-    s3: S3Settings = S3Settings()
+    @property
+    def url_test(self) -> str:
+        return f"postgresql+asyncpg://{self.db_user_test}:{self.db_pass_test}@{self.db_host_test}:{self.db_port_test}/{self.db_name_test}"
 
 
 settings = Settings()

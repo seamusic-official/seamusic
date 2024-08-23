@@ -1,52 +1,53 @@
-from typing import List, Optional
-
 from pydantic import BaseModel
 
-from src.models.beatpacks import Beatpack as _Beatpack
 from src.schemas.auth import User
-from src.schemas.base import FromDBModelMixin, DetailMixin
+from src.schemas.base import DetailMixin
 from src.schemas.beats import Beat
 
 
-class Beatpack(FromDBModelMixin):
+class Beatpack(BaseModel):
     title: str
     description: str
-    users: List[User]
-    beats: List[Beat]
+    user_id: int
+    users: list[User]
+    beats: list[Beat]
 
-    _model_type = _Beatpack
 
-
-class SBeatpackResponse(Beatpack):
-    pass
+class SBeatpackResponse(BaseModel):
+    title: str
+    description: str
+    user_id: int
+    users: list[User]
+    beats: list[Beat]
 
 
 class SBeatpacksResponse(BaseModel):
-    beatpacks: List[Beatpack]
+    beatpacks: list[Beatpack]
 
 
-class SMyBeatpacksResponse(SBeatpacksResponse):
-    pass
+class SMyBeatpacksResponse(BaseModel):
+    beatpacks: list[Beatpack]
 
 
 class SCreateBeatpackRequest(BaseModel):
     title: str
     description: str
-    beats: List[Beat]
 
 
-class SCreateBeatpackResponse(Beatpack):
-    pass
+class SCreateBeatpackResponse(BaseModel):
+    id: int
 
 
 class SEditBeatpackRequest(BaseModel):
-    title: Optional[str] = None
-    description: Optional[str] = None
+    id: int
+    title: str | None = None
+    description: str | None = None
+    beats: list[Beat]
 
 
-class SEditBeatpackResponse(BaseModel, DetailMixin):
-    detail: str = "Beatpack edited"
+class SEditBeatpackResponse(BaseModel):
+    id: int
 
 
 class SDeleteBeatpackResponse(BaseModel, DetailMixin):
-    detail: str = "Beat pack deleted"
+    detail: str = "Beatpack deleted"

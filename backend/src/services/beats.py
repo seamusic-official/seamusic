@@ -1,11 +1,10 @@
 from dataclasses import dataclass
+from datetime import datetime
 from io import BytesIO
 
-from src.dtos.database.auth import User
-from src.dtos.database.beats import BeatsResponseDTO, CreateBeatRequestDTO, UpdateBeatRequestDTO
+from src.dtos.database.beats import BeatsResponseDTO, CreateBeatRequestDTO, UpdateBeatRequestDTO, BeatResponseDTO
 from src.enums.type import Type
 from src.exceptions.services import NoRightsException
-from src.models.beats import Beat
 from src.repositories import DatabaseRepositories, Repositories
 from src.repositories.database.beats.base import BaseBeatsRepository
 from src.repositories.database.beats.postgres import init_postgres_repository
@@ -35,26 +34,30 @@ class BeatsService(BaseService):
     async def get_all_beats(self) -> BeatsResponseDTO:
         return await self.repositories.database.beats.all_beats()
 
-    async def get_one_beat(self, beat_id: int) -> Beat:
-        return await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
+    async def get_beat_by_id(self, beat_id: int) -> BeatResponseDTO | None:
+        return await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
 
-    async def add_beats(
+    async def add_beat(
         self,
-        file_info: str | None,
         file_stream: BytesIO,
-        user: User
+        user_id: int,
+        prod_by: str,
+        co_prod: str | None = None,
+        description: str = "Description",
+        file_info: str | None = None,
     ) -> int:
 
         file_url = await self.repositories.media.upload_file("AUDIOFILES", file_info, file_stream)
 
         beat = CreateBeatRequestDTO(
-            title="Unknown title",
-            description="",
-            picture_url=None,
+            title="Title",
+            description=description,
             file_url=file_url,
-            co_prod=user.username,
-            type=Type.beat,
-            user_id=user.id
+            prod_by=prod_by,
+            co_prod=co_prod,
+            user_id=user_id,
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
         )
 
         return await self.repositories.database.beats.create_beat(beat=beat)
@@ -67,7 +70,7 @@ class BeatsService(BaseService):
         file_stream: BytesIO
     ) -> int:
 
-        beat = await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
+        beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
 
         if beat.user_id != user_id:
             raise NoRightsException()
@@ -85,7 +88,7 @@ class BeatsService(BaseService):
         co_prod: str | None = None,
         prod_by: str | None = None
     ) -> int:
-        beat = await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
+        beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
 
         if beat.user_id != user_id:
             raise NoRightsException()
@@ -102,15 +105,15 @@ class BeatsService(BaseService):
         return await self.repositories.database.beats.update_beat(beat=beat)
 
     async def update_beat(
-            self,
-            beat_id: int,
-            user_id: int,
-            title: str | None = None,
-            description: str | None = None,
-            co_prod: str | None = None,
-            prod_by: str | None = None
+        self,
+        beat_id: int,
+        user_id: int,
+        title: str | None = None,
+        description: str | None = None,
+        co_prod: str | None = None,
+        prod_by: str | None = None
     ) -> int:
-        beat = await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
+        beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
 
         if beat.user_id != user_id:
             raise NoRightsException()
@@ -126,8 +129,8 @@ class BeatsService(BaseService):
 
         return await self.repositories.database.beats.update_beat(beat=beat)
 
-    async def delete_beats(self, beat_id: int, user_id: int) -> None:
-        beat = await self.repositories.database.beats.get_one_beat(beat_id=beat_id)
+    async def delete_beat(self, beat_id: int, user_id: int) -> None:
+        beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
 
         if beat.user_id != user_id:
             raise NoRightsException()

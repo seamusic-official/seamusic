@@ -13,6 +13,7 @@ class Beatpack(BaseDTO):
 class BeatpackResponseDTO(BaseResponseDTO):
     title: str
     description: str
+    user_id: int
     users: list[User]
     beats: list[Beat]
 
@@ -30,3 +31,4 @@ class CreateBeatpackRequestDTO(BaseRequestDTO):
 class UpdateBeatpackRequestDTO(BaseRequestDTO):
     title: str | None = None
     description: str | None = None
+    beats: list[Beat] = list()

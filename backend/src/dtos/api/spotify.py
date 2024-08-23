@@ -90,6 +90,7 @@ class SpotifyTrackResponseDTO(BaseResponseDTO):
     name: str
     popularity: int
     preview_url: str
+    image_url: str
     track_number: int
     type: str
     uri: str

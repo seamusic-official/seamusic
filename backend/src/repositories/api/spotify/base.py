@@ -25,27 +25,27 @@ class BaseSpotifyRepository(ABC):
         ...
 
     @abstractmethod
-    async def get_tracks(self, artist_id: int) -> SpotifyTracksResponseDTO:
+    async def get_tracks(self, artist_id: str) -> SpotifyTracksResponseDTO:
         ...
 
     @abstractmethod
-    async def get_album_tracks_count(self, album_id: int) -> int:
+    async def get_album_tracks_count(self, album_id: str) -> int:
         ...
 
     @abstractmethod
-    async def get_track(self, track_id: int) -> SpotifyTrackResponseDTO | None:
+    async def get_track(self, track_id: str) -> SpotifyTrackResponseDTO | None:
         ...
 
     @abstractmethod
-    async def get_albums(self, artist_id: int) -> SpotifyAlbumsResponseDTO:
+    async def get_albums(self, artist_id: str) -> SpotifyAlbumsResponseDTO:
         ...
 
     @abstractmethod
-    async def get_album(self, album_id: int) -> SpotifyAlbumResponseDTO | None:
+    async def get_album(self, album_id: str) -> SpotifyAlbumResponseDTO | None:
         ...
 
     @abstractmethod
-    async def get_artist(self, artist_id: int) -> SpotifyArtistResponseDTO | None:
+    async def get_artist(self, artist_id: str) -> SpotifyArtistResponseDTO | None:
         ...
 
     @abstractmethod

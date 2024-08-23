@@ -4,7 +4,7 @@ from src.enums.type import Type
 
 class Album(BaseDTO):
     name: str
-    picture_url: str
+    picture_url: str | None = None
     description: str
     co_prod: str | None = None
     type: Type

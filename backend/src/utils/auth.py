@@ -1,13 +1,15 @@
 from datetime import datetime, timedelta, UTC
 
-from fastapi import Depends, Request, HTTPException
+from fastapi import Depends, Request
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+from pydantic import EmailStr
 
 from src.core.config import settings
-from src.models.auth import User as _User
-from src.repositories.database.auth import UsersDAO
+from src.exceptions.api import UnauthorizedException
 from src.schemas.auth import User
+from src.dtos.database.auth import User as _User
+from src.services.auth import UsersService
 
 password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
@@ -44,38 +46,57 @@ def create_refresh_token(data: dict) -> str:
     return encoded_jwt
 
 
-async def authenticate_user(email: str, password: str) -> _User | None:
-    user = await UsersDAO.find_one_or_none(email=email)
+async def authenticate_user(
+    email: EmailStr,
+    password: str,
+    service: UsersService = Depends(),
+) -> _User | None:
 
-    if user:
-        if not verify_password(password, user.password):
-            return None
-        return user
-    return None
+    user = await service.get_user_by_email(email=email)
+
+    if user and verify_password(password, user.password):
+        return _User(
+            id=user.id,
+            username=user.username,
+            email=user.email,
+            password=user.password,
+            picture_url=user.picture_url,
+            birthday=user.birthday
+        )
 
 
 async def get_refresh_token(request: Request):
     token = request.cookies.get("refreshToken")
     if not token:
-        raise HTTPException(status_code=401)
+        raise UnauthorizedException()
     return token
 
 
-async def get_current_user(token: str = Depends(get_refresh_token)) -> User:
+async def get_current_user(
+    token: str = Depends(get_refresh_token),
+    service: UsersService = Depends(),
+) -> User:
     try:
         payload = jwt.decode(token, JWT_REFRESH_SECRET_KEY, algorithms=[ALGORITHM])
     except JWTError:
-        raise HTTPException(status_code=401)
+        raise UnauthorizedException()
 
     expire: str = payload.get("exp")
 
     if (not expire) or (int(expire) < datetime.now(UTC).timestamp()):
-        raise HTTPException(status_code=401)
+        raise UnauthorizedException()
     user_id: str = payload.get("sub")
     if not user_id:
-        raise HTTPException(status_code=401)
-    user = await UsersDAO.find_one_by_id(int(user_id))
+        raise UnauthorizedException()
+    user = await service.get_user_by_id(user_id=int(user_id))
     if not user:
-        raise HTTPException(status_code=401)
+        raise UnauthorizedException()
 
-    return user
+    return User(
+        id=user.id,
+        username=user.username,
+        email=user.email,
+        password=user.password,
+        picture_url=user.picture_url,
+        birthday=user.birthday
+    )
