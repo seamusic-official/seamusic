@@ -1,5 +1,4 @@
 import datetime
-from typing import List, Dict, Union
 
 from pydantic import BaseModel
 
@@ -16,11 +15,16 @@ class SpotifyTrack(BaseModel):
 
 
 class SSpotifyTracksResponse(BaseModel):
-    tracks: List[SpotifyTrack]
+    tracks: list[SpotifyTrack]
 
 
 class SSpotifyTrackResponse(BaseModel):
+    id: str
+    type: SpotifyType
+    name: str
     preview_url: str
+    image_url: str
+    spotify_url: str
 
 
 class SpotifyAlbum(BaseModel):
@@ -31,47 +35,57 @@ class SpotifyAlbum(BaseModel):
 
 
 class SSpotifyAlbumsResponse(BaseModel):
-    albums: List[SpotifyAlbum]
+    albums: list[SpotifyAlbum]
 
 
 class SpotifyArtist(BaseModel):
-    id: int
-    type: str
+    id: str
+    type: SpotifyType
     name: str
     image_url: str
     popularity: int
 
 
 class SSpotifyAlbumResponse(BaseModel):
-    id: int
+    id: str
     name: str
     image_url: str
     spotify_url: str
     release_date: datetime.date
-    artists: List[SpotifyArtist]
-    external_urls: Dict[str, str]
+    artists: list[SpotifyArtist]
+    external_urls: dict[str, str]
     uri: str
     album_type: SpotifyAlbumType
     total_tracks: int
 
 
 class SpotifyAlbumTrack(BaseModel):
-    id: int
+    id: str
     type: SpotifyType
     name: str
-    artists: List[SpotifyArtist]
+    artists: list[SpotifyArtist]
     preview_url: str
     spotify_url: str
     duration_ms: int
 
 
 class SSpotifyAlbumTracksResponse(BaseModel):
-    tracks: List[SpotifyAlbumTrack]
+    tracks: list[SpotifyAlbumTrack]
+
+
+class SSpotifyAlbumTracksCountResponse(BaseModel):
+    count: int
 
 
 class SSpotifyArtistResponse(BaseModel):
+    id: str
+    type: str
     name: str
+    image_url: str
+    popularity: int
 
 
 class SSpotifySearchResponse(BaseModel):
-    results: List[Union[SpotifyArtist, SpotifyTrack, SpotifyAlbum]]
+    tracks: list[SpotifyTrack] = None
+    artists: list[SpotifyTrack] = None
+    albums: list[SpotifyAlbum] = None

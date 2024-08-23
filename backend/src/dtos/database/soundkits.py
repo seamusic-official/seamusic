@@ -43,13 +43,21 @@ class CreateSoundkitRequestDTO(BaseRequestDTO):
     beat_pack_id: int | None
 
 
+class CreateSoundkitResponseDTO(BaseResponseDTO):
+    id: int
+
+
 class UpdateSoundkitRequestDTO(BaseRequestDTO):
     title: str
-    picture_url: str | None
-    description: str | None
-    file_path: str
-    co_prod: str | None
-    prod_by: str | None
-    playlist_id: int | None
+    picture_url: str | None = None
+    description: str | None = None
+    file_path: str | None = None
+    co_prod: str | None = None
+    prod_by: str | None = None
+    playlist_id: int | None = None
     user_id: int
-    beat_pack_id: int | None
+    beat_pack_id: int | None = None
+
+
+class UpdateSoundkitResponseDTO(BaseResponseDTO):
+    id: int

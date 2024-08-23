@@ -12,7 +12,7 @@ class SAddTagRequest(BaseModel):
 
 
 class SAddTagResponse(BaseModel):
-    tags: List[Tag]
+    id: int
 
 
 class SMyListenerTagsResponse(BaseModel):

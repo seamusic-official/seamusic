@@ -1,16 +1,15 @@
 from fastapi import APIRouter, Depends, status
-from src.repositories.tags import ListenerTagsDAO, ProducerTagsDAO, ArtistTagsDAO, TagsDAO
 
-from src.dtos.database.tags import (
+from src.schemas.auth import User
+from src.schemas.tags import (
+    SAddTagResponse,
     SAddTagRequest,
     SMyListenerTagsResponse,
     SMyProducerTagsResponse,
-    SMyArtistTagsResponse,
-    SAddTagResponse,
+    Tag,
+    SMyArtistTagsResponse
 )
-from src.exceptions.api import NotFoundException, UnauthorizedException
-from src.repositories.database.auth import ProducerDAO, ArtistDAO
-from src.schemas.auth import User
+from src.services.tags import TagsService, get_tags_service
 from src.utils.auth import get_current_user
 
 tags = APIRouter(prefix="/tags", tags=["All tags"])
@@ -23,60 +22,60 @@ tags = APIRouter(prefix="/tags", tags=["All tags"])
     responses={status.HTTP_200_OK: {"model": SAddTagResponse}},
 )
 async def add_tag(
-    tag: SAddTagRequest, user: User = Depends(get_current_user)
+    tag: SAddTagRequest,
+    service: TagsService = Depends(get_tags_service),
 ) -> SAddTagResponse:
 
-    if user:
-        listener_tags = await TagsDAO.add_one(tag.model_dump())
-        return SAddTagResponse(tags=listener_tags)
-    raise UnauthorizedException()
+    tag_id = await service.add_tag(name=tag.name)
+    return SAddTagResponse(id=tag_id)
 
 
 @tags.get(
-    path="/my_listener_tags",
+    path="/listener/my",
     summary="Get my listener tags",
     response_model=SMyListenerTagsResponse,
     responses={status.HTTP_200_OK: {"model": SMyListenerTagsResponse}},
 )
 async def get_my_listener_tags(
     user: User = Depends(get_current_user),
+    service: TagsService = Depends(get_tags_service),
 ) -> SMyListenerTagsResponse:
-    # ???
-    listener_tags = ListenerTagsDAO.find_all(listener_profile=user)
-    return SMyListenerTagsResponse(tags=listener_tags)
+
+    tags_ = await service.get_listener_tags(user_id=user.id)
+
+    return SMyListenerTagsResponse(tags=list(map(
+        lambda tag: Tag(name=tag.name),
+        tags_.tags
+    )))
 
 
 @tags.get(
-    path="/my_producer_tags",
+    path="/producer/my",
     summary="Get my producer tags",
     response_model=SMyProducerTagsResponse,
     responses={status.HTTP_200_OK: {"model": SMyProducerTagsResponse}},
 )
 async def get_my_producer_tags(
     user: User = Depends(get_current_user),
+    service: TagsService = Depends(get_tags_service)
 ) -> SMyProducerTagsResponse:
-    # ???
-    producer_profile = await ProducerDAO.find_one_or_none(producer_profile=user)
-    if not producer_profile:
-        raise NotFoundException("You don't have a producer profile")
 
-    producer_tags = ProducerTagsDAO.find_all(producer_profile=producer_profile)
-    return SMyProducerTagsResponse(tags=producer_tags)
+    tags_ = await service.get_producer_tags(user_id=user.id)
+
+    return SMyProducerTagsResponse(tags=list(map(lambda tag: Tag(name=tag.name), tags_)))
 
 
 @tags.get(
-    path="/my_artist_tags",
+    path="/artist/my",
     summary="Get my artist tags",
     response_model=SMyArtistTagsResponse,
     responses={status.HTTP_200_OK: {"model": SMyArtistTagsResponse}},
 )
 async def get_my_artist_tags(
     user: User = Depends(get_current_user),
+    service: TagsService = Depends(get_tags_service)
 ) -> SMyArtistTagsResponse:
-    # ???
-    artist_profile = await ArtistDAO.find_one_or_none(artist_profile=user)
-    if not artist_profile:
-        raise NotFoundException("You don't have a artist profile")
 
-    artist_tags = ArtistTagsDAO.find_all(user=user)
-    return SMyArtistTagsResponse(tags=artist_tags)
+    tags_ = await service.get_artist_tags(user_id=user.id)
+
+    return SMyArtistTagsResponse(tags=list(map(lambda tag: Tag(name=tag.name), tags_)))

@@ -1,40 +1,81 @@
-from typing import List
-
 from fastapi import UploadFile, File, APIRouter, Depends, status
 
-from src.exceptions.api import NoRightsException
-from src.repositories.media.s3 import S3Repository
+from src.dtos.database.soundkits import UpdateSoundkitRequestDTO
 from src.schemas.auth import User
-from src.schemas.soundkits import SSoundkitResponse, SSoundkitUpdate, SSoundkitDeleteResponse
+from src.schemas.soundkits import (
+    Soundkit,
+    SSoundkitResponse,
+    SUpdateSoundkitRequest,
+    SSoundkitDeleteResponse,
+    SSoundkitsResponse, SCreateSoundkitResponse, SUpdateSoundkitResponse,
+)
+from src.services.soundkits import SoundkitsService, get_soundkits_service
 from src.utils.auth import get_current_user
-from src.utils.files import unique_filename
+from src.utils.files import unique_filename, get_file_stream
 
-soundkits = APIRouter(prefix="/soundkits", tags=["Sound-kits"])
+
+soundkits = APIRouter(prefix="/soundkits", tags=["Soundkits"])
 
 
 @soundkits.get(
     path="/my",
     summary="soundkits by current user",
-    response_model=List[SSoundkitResponse],
-    responses={status.HTTP_200_OK: {"model": List[SSoundkitResponse]}},
+    status_code=status.HTTP_200_OK,
+    response_model=SSoundkitsResponse,
 )
 async def get_user_soundkits(
     user: User = Depends(get_current_user),
-) -> List[SSoundkitResponse]:
-    response = await SoundkitRepository.find_all(user=user)
+    service: SoundkitsService = Depends(get_soundkits_service),
+) -> SSoundkitsResponse:
 
-    return [SSoundkitResponse.from_db_model(model=soundkit) for soundkit in response]
+    response = await service.get_user_soundkits(user_id=user.id)
+
+    soundkits_ = list(map(
+        lambda soundkit: Soundkit(
+            id=soundkit.id,
+            title=soundkit.title,
+            picture=soundkit.picture,
+            description=soundkit.description,
+            file_path=soundkit.file_path,
+            co_prod=soundkit.co_prod,
+            prod_by=soundkit.prod_by,
+            playlist_id=soundkit.playlist_id,
+            user_id=soundkit.user_id,
+            beat_pack_id=soundkit.beat_pack_id,
+        ),
+        response.soundkits
+    ))
+
+    return SSoundkitsResponse(soundkits=soundkits_)
 
 
 @soundkits.get(
     path="/",
     summary="Get all soundkits",
-    response_model=List[SSoundkitResponse],
-    responses={status.HTTP_200_OK: {"model": List[SSoundkitResponse]}},
+    status_code=status.HTTP_200_OK,
+    response_model=SSoundkitsResponse,
 )
-async def all_soundkits() -> List[SSoundkitResponse]:
-    response = await SoundkitRepository.find_all()
-    return [SSoundkitResponse.from_db_model(model=soundkit) for soundkit in response]
+async def all_soundkits(service: SoundkitsService = Depends(get_soundkits_service)) -> SSoundkitsResponse:
+
+    response = await service.get_all_soundkits()
+
+    soundkits_ = list(map(
+        lambda soundkit: Soundkit(
+            id=soundkit.id,
+            title=soundkit.title,
+            picture=soundkit.picture,
+            description=soundkit.description,
+            file_path=soundkit.file_path,
+            co_prod=soundkit.co_prod,
+            prod_by=soundkit.prod_by,
+            playlist_id=soundkit.playlist_id,
+            user_id=soundkit.user_id,
+            beat_pack_id=soundkit.beat_pack_id,
+        ),
+        response.soundkits
+    ))
+
+    return SSoundkitsResponse(soundkits=soundkits_)
 
 
 @soundkits.get(
@@ -43,118 +84,126 @@ async def all_soundkits() -> List[SSoundkitResponse]:
     response_model=SSoundkitResponse,
     responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
 )
-async def get_one_soundkit(soundkit_id: int) -> SSoundkitResponse:
-    response = await SoundkitRepository.find_one_by_id(soundkit_id)
-    return SSoundkitResponse.from_db_model(model=response)
+async def get_one_soundkit(
+    soundkit_id: int,
+    service: SoundkitsService = Depends(get_soundkits_service),
+) -> SSoundkitResponse:
+
+    soundkit = await service.get_soundkit_by_id(soundkit_id=soundkit_id)
+
+    return SSoundkitResponse(
+        id=soundkit.id,
+        title=soundkit.title,
+        picture=soundkit.picture,
+        description=soundkit.description,
+        file_path=soundkit.file_path,
+        co_prod=soundkit.co_prod,
+        prod_by=soundkit.prod_by,
+        playlist_id=soundkit.playlist_id,
+        user_id=soundkit.user_id,
+        beat_pack_id=soundkit.beat_pack_id,
+    )
 
 
 @soundkits.post(
     path="/",
     summary="Init a soundkit with file",
-    response_model=SSoundkitResponse,
-    responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
+    response_model=SCreateSoundkitResponse,
+    responses={status.HTTP_200_OK: {"model": SCreateSoundkitResponse}},
 )
 async def add_soundkits(
-    file: UploadFile = File(...), user: User = Depends(get_current_user)
-) -> SSoundkitResponse:
-    file_info = await unique_filename(file) if file else None
-    file_url = await S3Repository.upload_file("AUDIOFILES", file_info, file)
+    file: UploadFile = File(...),
+    user: User = Depends(get_current_user),
+    service: SoundkitsService = Depends(get_soundkits_service),
+) -> SCreateSoundkitResponse:
 
-    data = {
-        "title": "Unknown title",
-        "file_url": file_url,
-        "prod_by": user.username,
-        "user_id": user.id,
-    }
+    soundkit_id = await service.add_soundkit(
+        user_id=user.id,
+        prod_by=user.username,
+        file_info=unique_filename(file),
+        file_stream=await get_file_stream(file),
+    )
 
-    response = await SoundkitRepository.add_one(data)
-    return SSoundkitResponse.from_db_model(model=response)
+    return SCreateSoundkitResponse(id=soundkit_id)
 
 
 @soundkits.post(
-    path="/picture/{soundkits_id}",
+    path="/{soundkits_id}/picture",
     summary="Update a picture for one soundkit by id",
-    response_model=SSoundkitResponse,
-    responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
+    response_model=SUpdateSoundkitResponse,
+    responses={status.HTTP_200_OK: {"model": SUpdateSoundkitResponse}},
 )
 async def update_pic_soundkits(
     soundkit_id: int,
     file: UploadFile = File(...),
     user: User = Depends(get_current_user),
-) -> SSoundkitResponse:
-    soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
+    service: SoundkitsService = Depends(get_soundkits_service),
+) -> SUpdateSoundkitResponse:
 
-    if soundkit.user_id != user.id:
-        raise NoRightsException()
+    soundkit_id = await service.update_soundkit_picture(
+        soundkit_id=soundkit_id,
+        file_stream=await get_file_stream(file),
+        file_info=unique_filename(file),
+        user_id=user.id,
+    )
 
-    file_info = await unique_filename(file) if file else None
-    file_url = await S3Repository.upload_file("PICTURES", file_info, file)
-
-    data = {"picture_url": file_url}
-
-    response = await SoundkitRepository.edit_one(soundkit_id, data)
-    return SSoundkitResponse.from_db_model(model=response)
+    return SUpdateSoundkitResponse(id=soundkit_id)
 
 
 @soundkits.post(
-    path="/release/{soundkit_id}",
+    path="/{soundkit_id}/release",
     summary="Release one soundkit by id",
-    response_model=SSoundkitResponse,
-    responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
+    response_model=SUpdateSoundkitResponse,
+    responses={status.HTTP_200_OK: {"model": SUpdateSoundkitResponse}},
 )
 async def release_soundkits(
-    soundkit_id: int, data: SSoundkitUpdate, user: User = Depends(get_current_user)
-) -> SSoundkitResponse:
-    soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
+    soundkit_id: int,
+    data: SUpdateSoundkitRequest,
+    user: User = Depends(get_current_user),
+    service: SoundkitsService = Depends(get_soundkits_service),
+) -> SUpdateSoundkitResponse:
 
-    if soundkit.user_id != user.id:
-        raise NoRightsException()
+    soundkit_id = await service.update_soundkit(
+        soundkit_id=soundkit_id,
+        user_id=user.id,
+        data=UpdateSoundkitRequestDTO(
+            title=data.title,
+            description=data.description,
+            co_prod=data.co_prod,
+            prod_by=data.prod_by,
+            user_id=user.id,
+        ),
+    )
 
-    update_data = {}
-
-    if data.title:
-        update_data["name"] = data.title
-    if data.description:
-        update_data["description"] = data.description
-    if data.co_prod:
-        update_data["co_prod"] = data.co_prod
-    if data.prod_by:
-        update_data["prod_by"] = data.prod_by
-
-    response = await SoundkitRepository.edit_one(soundkit_id, update_data)
-
-    return SSoundkitResponse.from_db_model(model=response)
+    return SUpdateSoundkitResponse(id=soundkit_id)
 
 
 @soundkits.put(
     path="/{soundkit_id}",
     summary="Edit soundkit",
-    response_model=SSoundkitResponse,
-    responses={status.HTTP_200_OK: {"model": SSoundkitResponse}},
+    response_model=SUpdateSoundkitResponse,
+    responses={status.HTTP_200_OK: {"model": SUpdateSoundkitResponse}},
 )
 async def update_soundkits(
-    soundkit_id: int, data: SSoundkitUpdate, user: User = Depends(get_current_user)
-) -> SSoundkitResponse:
-    soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
+    soundkit_id: int,
+    data: SUpdateSoundkitRequest,
+    user: User = Depends(get_current_user),
+    service: SoundkitsService = Depends(get_soundkits_service),
+) -> SUpdateSoundkitResponse:
 
-    if soundkit.user_id != user.id:
-        raise NoRightsException()
+    soundkit_id = await service.update_soundkit(
+        soundkit_id=soundkit_id,
+        user_id=user.id,
+        data=UpdateSoundkitRequestDTO(
+            title=data.title,
+            description=data.description,
+            co_prod=data.co_prod,
+            prod_by=data.prod_by,
+            user_id=user.id,
+        ),
+    )
 
-    update_data = {}
-
-    if data.title:
-        update_data["title"] = data.title
-    if data.description:
-        update_data["description"] = data.description
-    if data.picture_url:
-        update_data["picture_url"] = data.picture_url
-    if data.co_prod:
-        update_data["co_prod"] = data.co_prod
-    if data.prod_by:
-        update_data["prod_by"] = data.prod_by
-
-    response = await SoundkitRepository.edit_one(soundkit_id, update_data)
-    return SSoundkitResponse.from_db_model(model=response)
+    return SUpdateSoundkitResponse(id=soundkit_id)
 
 
 @soundkits.delete(
@@ -164,12 +213,10 @@ async def update_soundkits(
     responses={status.HTTP_200_OK: {"model": SSoundkitDeleteResponse}},
 )
 async def delete_soundkits(
-    soundkit_id: int, user: User = Depends(get_current_user)
+    soundkit_id: int,
+    user: User = Depends(get_current_user),
+    service: SoundkitsService = Depends(get_soundkits_service)
 ) -> SSoundkitDeleteResponse:
-    soundkit = await SoundkitRepository.find_one_by_id(id_=soundkit_id)
 
-    if soundkit.user_id != user.id:
-        raise NoRightsException()
-
-    await SoundkitRepository.delete(id_=soundkit_id)
+    await service.delete_soundkits(soundkit_id=soundkit_id, user_id=user.id)
     return SSoundkitDeleteResponse()

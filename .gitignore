@@ -29,6 +29,7 @@ coverage.xml
 .python-version
 
 # poetry
+pyproject.toml
 poetry.lock
 
 # Environments
@@ -74,3 +75,6 @@ next-env.d.ts
 # IDE/editor settings
 .idea/
 .vscode/
+
+# Qodana
+qodana.yaml

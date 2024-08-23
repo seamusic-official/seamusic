@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from datetime import datetime
 
 from src.dtos.database.licenses import (
     LicensesResponseDTO,
@@ -7,15 +8,19 @@ from src.dtos.database.licenses import (
     LicenseResponseDTO
 )
 from src.exceptions.api import NoRightsException
+from src.exceptions.services import NotFoundException
 from src.repositories import Repositories, DatabaseRepositories, BaseMediaRepository
+from src.repositories.database.auth.base import BaseUsersRepository
+from src.repositories.database.auth.postgres import init_users_postgres_repository
 from src.repositories.database.licenses.base import BaseLicensesRepository
-from src.repositories.database.licenses.postgres import init_postgres_repository
+from src.repositories.database.licenses.postgres import init_postgres_repository as init_licenses_postgres_repository
 from src.repositories.media.s3 import init_s3_repository
 
 
 @dataclass
 class LicensesDatabaseRepositories(DatabaseRepositories):
     licenses: BaseLicensesRepository
+    users: BaseUsersRepository
 
 
 @dataclass
@@ -28,28 +33,36 @@ class LicensesRepositories(Repositories):
 class LicensesService:
     repositories: LicensesRepositories
 
-    async def get_user_licenses(self, user_id: int) -> list[LicensesResponseDTO]:
+    async def get_user_licenses(self, user_id: int) -> LicensesResponseDTO:
         return await self.repositories.database.licenses.get_user_licenses(user_id=user_id)
 
     async def get_all_licenses(self) -> LicensesResponseDTO:
         return await self.repositories.database.licenses.get_all_licenses()
 
-    async def get_one(self, license_id: int) -> LicenseResponseDTO | None:
-        return await self.repositories.database.licenses.get_license_by_id(license_id=license_id)
+    async def get_one(self, license_id: int) -> LicenseResponseDTO:
+        license_: LicenseResponseDTO | None = await self.repositories.database.licenses.get_license_by_id(license_id=license_id)
+
+        if not license_:
+            raise NotFoundException
+
+        return license_
 
     async def add_license(
         self,
         title: str,
-        description: str,
         price: str,
-        user: dict
+        user_id: int,
+        description: str | None = None,
     ) -> int:
 
         license_ = CreateLicenseRequestDTO(
             title=title,
             description=description,
             price=price,
-            user=user
+            user_id=user_id,
+            user=await self.repositories.database.users.get_user_by_id(user_id=user_id),
+            created_at=datetime.now(),
+            updated_at=datetime.now(),
         )
 
         return await self.repositories.database.licenses.add_license(license_=license_)
@@ -76,11 +89,7 @@ class LicensesService:
 
         await self.repositories.database.licenses.update_license(license_=license_)
 
-    async def delete_licenses(
-        self,
-        license_id: int,
-        user_id: int
-    ) -> None:
+    async def delete_license(self, license_id: int, user_id: int) -> None:
 
         license_ = await self.repositories.database.licenses.get_license_by_id(license_id=license_id)
 
@@ -92,6 +101,9 @@ class LicensesService:
 
 def get_licenses_service() -> LicensesService:
     return LicensesService(repositories=LicensesRepositories(
-        database=LicensesDatabaseRepositories(licenses=init_postgres_repository()),
+        database=LicensesDatabaseRepositories(
+            licenses=init_licenses_postgres_repository(),
+            users=init_users_postgres_repository(),
+        ),
         media=init_s3_repository()
     ))
