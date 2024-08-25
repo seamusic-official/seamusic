@@ -10,10 +10,11 @@ from src.dtos.api.spotify import (
     SpotifyTracksResponseDTO
 )
 from src.enums.spotify import SpotifyType
+from src.repositories import BaseAPIRepository
 
 
 @dataclass
-class BaseSpotifyRepository(ABC):
+class BaseSpotifyRepository(ABC, BaseAPIRepository):
     base_url = 'https://api.spotify.com/v1'
 
     @abstractmethod

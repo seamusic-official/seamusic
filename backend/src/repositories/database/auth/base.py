@@ -47,7 +47,7 @@ class BaseUsersRepository(ABC):
 @dataclass
 class BaseArtistsRepository(ABC):
     @abstractmethod
-    async def get_artist_id_by_user_id(self, user_id) -> int:
+    async def get_artist_id_by_user_id(self, user_id: int) -> int:
         ...
 
     @abstractmethod
@@ -66,7 +66,7 @@ class BaseArtistsRepository(ABC):
 @dataclass
 class BaseProducersRepository(ABC):
     @abstractmethod
-    async def get_producer_id_by_user_id(self, user_id) -> int | None:
+    async def get_producer_id_by_user_id(self, user_id: int) -> int | None:
         ...
 
     @abstractmethod

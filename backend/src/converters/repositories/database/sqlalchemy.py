@@ -10,6 +10,6 @@ def models_to_dto(models: list[Base], dto: type[BaseDTO]) -> list[BaseDTO]:
     return list(map(lambda model: dto(**model.__dict__), models))
 
 
-def request_dto_to_model(request_dto: BaseRequestDTO, model: type[Base]):
-    request_dto = dict(filter(lambda item: item is not None, request_dto.model_dump().items()))
-    return model(**request_dto)
+def request_dto_to_model(request_dto: BaseRequestDTO, model: type[Base]) -> Base:
+    request_dto_dict = {key: item if item is not None else None for key, item in request_dto.model_dump()}  # type: ignore
+    return model(**request_dto_dict)

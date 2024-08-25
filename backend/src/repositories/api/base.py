@@ -22,4 +22,4 @@ class AiohttpRepositpry(BaseAPIRepository):
     @property
     async def session(self) -> aiohttp.ClientSession:
         async with aiohttp.ClientSession() as session_:
-            yield session_
+            return session_

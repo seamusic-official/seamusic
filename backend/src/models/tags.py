@@ -1,9 +1,8 @@
-from typing import List
-
 from sqlalchemy import Column, Table, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.database import Base
+
 
 producer_tags_association = Table(
     "producer_tags_association",
@@ -31,12 +30,12 @@ class Tag(Base):
     __tablename__ = "tags"
 
     name: Mapped[str] = mapped_column(nullable=False)
-    artist_profiles: Mapped[List["ArtistProfile"]] = relationship(  # noqa: F821
+    artist_profiles: Mapped[list["ArtistProfile"]] = relationship(  # noqa: F821
         secondary=artist_tags_association, back_populates="tags"
     )
-    producer_profiles: Mapped[List["ProducerProfile"]] = relationship(  # noqa: F821
+    producer_profiles: Mapped[list["ProducerProfile"]] = relationship(  # noqa: F821
         secondary=producer_tags_association, back_populates="tags"
     )
-    listener_profiles: Mapped[List["User"]] = relationship(  # noqa: F821
+    listener_profiles: Mapped[list["User"]] = relationship(  # noqa: F821
         secondary=listener_tags_association, back_populates="tags"
     )

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -37,7 +36,7 @@ class User(Base):
     producer_profile: Mapped["ProducerProfile"] = relationship(back_populates="user")
     roles: Mapped[Role] = mapped_column(nullable=False)
     access_level: Mapped[AccessLevel] = mapped_column(nullable=False, default=AccessLevel.user)
-    tags: Mapped[List["Tag"]] = relationship(secondary=listener_tags_association, back_populates="listener_profiles")
+    tags: Mapped[list["Tag"]] = relationship(secondary=listener_tags_association, back_populates="listener_profiles")
     squads: Mapped["Squad"] = relationship("Squad", overlaps="user")
 
 
@@ -46,19 +45,19 @@ class ArtistProfile(Base):
 
     description: Mapped[str] = mapped_column()
 
-    tracks: Mapped[List["Track"]] = relationship(
+    tracks: Mapped[list["Track"]] = relationship(
         secondary=artist_profile_track_association,
         back_populates="artist_profiles"
     )
-    albums: Mapped[List["Album"]] = relationship(
+    albums: Mapped[list["Album"]] = relationship(
         secondary=artist_profile_album_association,
         back_populates="artist_profiles"
     )
-    squads: Mapped[List["Squad"]] = relationship(
+    squads: Mapped[list["Squad"]] = relationship(
         secondary=squad_artist_profile_association,
         back_populates="artist_profiles"
     )
-    tags: Mapped[List["Tag"]] = relationship(
+    tags: Mapped[list["Tag"]] = relationship(
         secondary=artist_tags_association,
         back_populates="artist_profiles"
     )
@@ -71,11 +70,11 @@ class ProducerProfile(Base):
     description: Mapped[str] = mapped_column()
 
     user: Mapped["User"] = relationship("User")
-    tags: Mapped[List["Tag"]] = relationship(
+    tags: Mapped[list["Tag"]] = relationship(
         secondary=producer_tags_association,
         back_populates="producer_profiles"
     )
-    squads: Mapped[List["Squad"]] = relationship(
+    squads: Mapped[list["Squad"]] = relationship(
         secondary=squad_producer_profile_association,
         back_populates="producer_profiles"
     )

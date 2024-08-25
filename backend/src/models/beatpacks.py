@@ -1,11 +1,10 @@
-from typing import List
-
 from sqlalchemy import Integer, String, Table, ForeignKey, Column
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from src.core.database import Base
 from src.models.auth import User
 from src.models.beats import Beat
+
 
 beats_to_beatpacks_association_table = Table(
     "beats_to_beatpacks_association_table",
@@ -29,5 +28,5 @@ class Beatpack(Base):
     description: Mapped[str] = mapped_column(String, nullable=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    users: Mapped[List["User"]] = relationship("User", secondary=user_to_beatpacks_association_table)
-    beats: Mapped[List["Beat"]] = relationship("Beat", secondary=beats_to_beatpacks_association_table)
+    users: Mapped[list["User"]] = relationship("User", secondary=user_to_beatpacks_association_table)
+    beats: Mapped[list["Beat"]] = relationship("Beat", secondary=beats_to_beatpacks_association_table)

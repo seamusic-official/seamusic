@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel
 
 
@@ -16,12 +14,12 @@ class SAddTagResponse(BaseModel):
 
 
 class SMyListenerTagsResponse(BaseModel):
-    tags: List[Tag]
+    tags: list[Tag]
 
 
 class SMyProducerTagsResponse(BaseModel):
-    tags: List[Tag]
+    tags: list[Tag]
 
 
 class SMyArtistTagsResponse(BaseModel):
-    tags: List[Tag]
+    tags: list[Tag]

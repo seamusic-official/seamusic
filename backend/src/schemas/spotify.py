@@ -86,6 +86,6 @@ class SSpotifyArtistResponse(BaseModel):
 
 
 class SSpotifySearchResponse(BaseModel):
-    tracks: list[SpotifyTrack] = None
-    artists: list[SpotifyTrack] = None
-    albums: list[SpotifyAlbum] = None
+    tracks: list[SpotifyTrack] | None = None
+    artists: list[SpotifyTrack] | None = None
+    albums: list[SpotifyAlbum] | None = None

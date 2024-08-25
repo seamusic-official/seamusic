@@ -1,5 +1,4 @@
 import datetime
-from typing import List
 
 from pydantic import BaseModel
 
@@ -20,11 +19,11 @@ class Album(BaseModel):
 
 
 class SMyAlbumsResponse(BaseModel):
-    albums: List[Album]
+    albums: list[Album]
 
 
 class SAllAlbumsResponse(BaseModel):
-    albums: List[Album]
+    albums: list[Album]
 
 
 class SAlbumResponse(BaseModel):
