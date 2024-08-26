@@ -8,7 +8,7 @@ from src.dtos.database.tracks import (
     UpdateTrackRequestDTO,
     TrackResponseDTO,
     TracksResponseDTO,
-    CreateTrackRequestDTO
+    CreateTrackRequestDTO,
 )
 from src.models.tracks import Track
 from src.repositories.database.base import SQLAlchemyRepository
