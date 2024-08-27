@@ -1,8 +1,11 @@
 version: '3.8'
 
 services:
-  db:
-    container_name: my_db
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile.test
+    container_name: tests
     image: postgres:16.2
     environment:
       - POSTGRES_DB=${DB_NAME_TEST}
@@ -11,8 +14,14 @@ services:
     ports:
       - ${DB_PORT_TEST}:5432
     restart: always
+    networks:
+      - tests
     healthcheck:
       test: ['CMD-SHELL', 'pg_isready -U ${DB_USER}']
       interval: 10s
       timeout: 5s
       retries: 5
+
+networks:
+  tests:
+    driver: "bridge"

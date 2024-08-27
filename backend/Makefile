@@ -14,6 +14,9 @@ start:
 up:
 	poetry run docker-compose -f docker-compose.$(for).yml up --force-recreate --remove-orphans -d
 
+test:
+	poetry run docker-compose -f docker-compose.test.yml up --force-recreate --remove-orphans --build
+
 stop:
 	poetry run docker-compose -f docker-compose.$(for).yml stop
 
@@ -32,10 +35,7 @@ downgrade:
 
 test:
 	poetry run docker-compose -f docker-compose.test.yml up --force-recreate --remove-orphans -d
-	poetry run alembic upgrade head
-	poetry run pytest
-	poetry run docker-compose stop
-
+	
 lint:
 	poetry run flake8
 	poetry run mypy -p src --ignore-missing-imports
