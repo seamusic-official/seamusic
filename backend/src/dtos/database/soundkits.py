@@ -20,6 +20,8 @@ class SoundkitResponseDTO(BaseResponseDTO):
     name: str
     description: str
     picture_url: str
+    co_prod: str
+    prod_by: str
     file_url: str
     user_id: int
     is_available: bool

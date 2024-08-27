@@ -97,12 +97,13 @@ class SUpdateTrackRequest(BaseModel):
     title: str
     picture: str | None = None
     description: str | None = None
+    picture_url: str | None = None
+    track_pack_id: int | None = None
     file_path: str
     co_prod: str | None = None
     prod_by: str | None = None
     playlist_id: int | None = None
     user_id: int
-    Track_pack_id: int | None = None
 
 
 class SUpdateTrackResponse(BaseModel):

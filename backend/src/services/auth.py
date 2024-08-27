@@ -270,7 +270,7 @@ class ProducersService(BaseService):
         if not producer:
             raise NotFoundException()
 
-        updated_producer = UpdateProducerRequestDTO(descriprion=None, is_available=False)
+        updated_producer = UpdateProducerRequestDTO(description=None, is_available=False)
         await self.repositories.database.producers.update_producer(producer=updated_producer)
 
 
@@ -297,14 +297,15 @@ class AuthService(BaseService):
 
         return access_token, refresh_token_
 
-    async def spotify_callback(self, code) -> tuple[str, str]:
+    async def spotify_callback(self, code) -> tuple[str, str]: # type: ignore[no-untyped-def]
+        #old functional
         access_token = await self.repositories.api.login(code=code)
 
         if access_token:
 
             user_data = await self.repositories.api.get_me(access_token=access_token)
 
-            user = await self.repositories.database.users.get_user_by_email(email=user_data.get("email"))
+            user = await self.repositories.database.users.get_user_by_email(email=user_data.get("email")) # type: ignore[arg-type]
             if not user:
                 user = CreateUserRequestDTO(
                     username=user_data.get("username"),
@@ -314,8 +315,8 @@ class AuthService(BaseService):
                     birthday=datetime.today(),
                     tags=[],
                     access_level=AccessLevel.user
-                )
-                user_id: int = await self.repositories.database.users.create_user(user=user)
+                ) # type: ignore[assignment]
+                user_id: int = await self.repositories.database.users.create_user(user=user) # type: ignore[arg-type]
                 access_token = create_access_token({"sub": str(user_id)})
                 refresh_token_ = create_refresh_token({"sub": str(user_id)})
 

@@ -93,15 +93,13 @@ async def get_one_soundkit(
 
     return SSoundkitResponse(
         id=soundkit.id,
-        title=soundkit.title,
-        picture=soundkit.picture,
+        name=soundkit.name,
+        picture_url=soundkit.picture_url,
         description=soundkit.description,
-        file_path=soundkit.file_path,
+        file_path=soundkit.file_url,
         co_prod=soundkit.co_prod,
         prod_by=soundkit.prod_by,
-        playlist_id=soundkit.playlist_id,
         user_id=soundkit.user_id,
-        beat_pack_id=soundkit.beat_pack_id,
     )
 
 

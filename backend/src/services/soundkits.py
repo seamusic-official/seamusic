@@ -51,17 +51,24 @@ class SoundkitsService(BaseService):
         user_id: int,
         prod_by: str,
         file_stream: BytesIO,
+        picture_stream: BytesIO,
         file_info: str,
+        picture_info: str,
+        co_prod: str,
     ) -> CreateSoundkitResponseDTO:
 
         file_url = await self.repositories.media.upload_file("AUDIOFILES", file_info, file_stream)
+        picture_url = await self.repositories.media.upload_file("PICTURES", picture_info, picture_stream)
 
         data = CreateSoundkitRequestDTO(
             title="Title",
             description="Description",
+            picture_url=picture_url,
             file_path=file_url,
             prod_by=prod_by,
             user_id=user_id,
+            co_prod=co_prod,
+            
         )
 
         soundkit_id = await self.repositories.database.soundkits.add_soundkit(soundkit=data)

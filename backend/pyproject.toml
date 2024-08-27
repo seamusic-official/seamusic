@@ -66,6 +66,9 @@ max-line-length = 200
 ignore = [
     "E731",
     "F821",
+    "F401",
+    "E501",
+    "F821"
 ]
 exclude =[
     ".git/",

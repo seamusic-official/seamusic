@@ -42,7 +42,7 @@ class Settings(BaseSettings):
 
     echo: bool = True
 
-    jwt_secret_ket: str = Field(default='', alias='JWT_SECRET_KEY')
+    jwt_secret_key: str = Field(default='', alias='JWT_SECRET_KEY')
     jwt_refresh_secret_key: str = Field(default='', alias='JWT_REFRESH_SECRET_KEY')
 
     bucket_name: str = Field(default='', alias='BUCKET_NAME')

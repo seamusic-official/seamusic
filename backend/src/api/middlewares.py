@@ -1,5 +1,6 @@
 import pydantic
 from fastapi import Request, Depends
+from starlette.responses import Response
 from sqlalchemy.sql.functions import current_user
 
 from src.exceptions import services, api
@@ -7,7 +8,7 @@ from src.schemas.auth import User
 
 
 class V1ExceptionsMiddleware:
-    async def __call__(self, request: Request, call_next, user: User | None = Depends(current_user)):
+    async def __call__(self, request: Request, call_next, user: User | None = Depends(current_user)) -> Response:
         if not user:
             raise api.UnauthorizedException()
 
@@ -27,7 +28,7 @@ class V1ExceptionsMiddleware:
 
 
 class V1AuthExceptionsMiddleware:
-    async def __call__(self, request: Request, call_next):
+    async def __call__(self, request: Request, call_next) -> Response:
         try:
             response = await call_next(request)
         except services.InvalidRequestException or pydantic.ValidationError:

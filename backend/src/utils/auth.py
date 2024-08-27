@@ -16,8 +16,8 @@ password_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_MINUTES = 60 * 24 * 14  # 14 days
 ALGORITHM = "HS256"
-JWT_SECRET_KEY = settings.auth.JWT_SECRET_KEY
-JWT_REFRESH_SECRET_KEY = settings.auth.JWT_REFRESH_SECRET_KEY
+JWT_SECRET_KEY = settings.jwt_secret_key
+JWT_REFRESH_SECRET_KEY = settings.jwt_refresh_secret_key
 
 
 def get_hashed_password(password: str) -> str:
@@ -61,7 +61,8 @@ async def authenticate_user(
             email=user.email,
             password=user.password,
             picture_url=user.picture_url,
-            birthday=user.birthday
+            birthday=user.birthday,
+            roles=user.roles
         )
 
 

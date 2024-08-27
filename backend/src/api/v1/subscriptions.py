@@ -43,7 +43,7 @@ async def get_telegram_account(
         telegram_id=telegram_account.telegram_id,
         subscribe=telegram_account.subscribe,
         only_telegram_subscribe_year=OnlyTelegramSubscribeYear(**only_telegram_subscribe_year.model_dump()) if only_telegram_subscribe_year else None,
-        only_telegram_subscribe_month=OnlyTelegramSubscribeMonth(**only_telegram_subscribe_month.model_dump()) if only_telegram_subscribe_year else None,
+        only_telegram_subscribe_month=OnlyTelegramSubscribeMonth(**only_telegram_subscribe_month.model_dump()) if only_telegram_subscribe_month else None,
     )
 
 
@@ -59,4 +59,4 @@ async def get_telegram_accounts_ids(
 
     telegram_ids = await service.get_telegram_accounts_ids()
 
-    return STelegramAccountsIDResponse(ids=telegram_ids)
+    return STelegramAccountsIDResponse(ids=list(telegram_ids))
