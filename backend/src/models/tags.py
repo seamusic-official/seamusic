@@ -30,12 +30,12 @@ class Tag(Base):
     __tablename__ = "tags"
 
     name: Mapped[str] = mapped_column(nullable=False)
-    artist_profiles: Mapped[list["ArtistProfile"]] = relationship(  # noqa: F821
+    artist_profiles: Mapped[list["ArtistProfile"]] = relationship(  # type: ignore[name-defined]
         secondary=artist_tags_association, back_populates="tags"
     )
-    producer_profiles: Mapped[list["ProducerProfile"]] = relationship(  # noqa: F821
+    producer_profiles: Mapped[list["ProducerProfile"]] = relationship(  # type: ignore[name-defined]
         secondary=producer_tags_association, back_populates="tags"
     )
-    listener_profiles: Mapped[list["User"]] = relationship(  # noqa: F821
+    listener_profiles: Mapped[list["User"]] = relationship(  # type: ignore[name-defined]
         secondary=listener_tags_association, back_populates="tags"
     )

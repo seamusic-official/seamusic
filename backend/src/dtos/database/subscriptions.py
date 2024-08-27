@@ -31,10 +31,10 @@ class OnlyTelegramSubscribeYearResponseDTO(BaseResponseDTO):
 
 
 class TelegramAccountResponseDTO(BaseResponseDTO):
-    telegram_id: int | None = None
+    telegram_id: int
     subscribe: bool | None = None
-    only_telegram_subscribe_year: OnlyTelegramSubscribeYear
-    only_telegram_subscribe_month: OnlyTelegramSubscribeMonth
+    only_telegram_subscribe_year: OnlyTelegramSubscribeYear | None = None
+    only_telegram_subscribe_month: OnlyTelegramSubscribeMonth | None = None
 
 
 class TelegramAccountsIDSResponseDTO(BaseResponseDTO):

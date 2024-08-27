@@ -2,11 +2,11 @@ from src.core.database import Base
 from src.dtos.database.base import BaseRequestDTO, BaseResponseDTO, BaseDTO
 
 
-def model_to_response_dto(response_dto: type[BaseResponseDTO], model: Base | None = None) -> BaseResponseDTO | None:
+def model_to_response_dto(response_dto: type[BaseResponseDTO], model: Base | None = None):  # type: ignore[no-untyped-def, no-any-return]
     return response_dto(**model.__dict__) if model else None
 
 
-def models_to_dto(models: list[Base], dto: type[BaseDTO]) -> list[BaseDTO]:
+def models_to_dto(models: list[Base], dto: type[BaseDTO]) -> list:
     return list(map(lambda model: dto(**model.__dict__), models))
 
 

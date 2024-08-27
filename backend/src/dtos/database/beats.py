@@ -37,6 +37,7 @@ class CreateBeatRequestDTO(BaseRequestDTO):
     title: str
     description: str
     file_url: str
+    prod_by: str
     co_prod: str | None = None
     type: Type = Type.beat
     user_id: int

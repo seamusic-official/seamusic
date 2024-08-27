@@ -10,7 +10,7 @@ class BaseComment(Base):
     comment: Mapped[str] = mapped_column(String, nullable=False)
 
     comment_creator_id: Mapped[int] = mapped_column(Integer, ForeignKey("users.id"))
-    comment_author: Mapped["User"] = relationship("User")  # noqa: F821
+    comment_author: Mapped["User"] = relationship("User")  # type: ignore[name-defined]
 
     beat_id: Mapped[int] = mapped_column(Integer, ForeignKey("beats.id"))
     beat_pack_id: Mapped[int] = mapped_column(Integer, ForeignKey("beatpacks.id"))

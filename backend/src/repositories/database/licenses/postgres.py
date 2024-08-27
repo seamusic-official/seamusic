@@ -34,14 +34,14 @@ class LicensesRepository(SQLAlchemyRepository, BaseLicensesRepository):
         )
 
     async def add_license(self, license_: CreateLicenseRequestDTO) -> int:
-        license_ = request_dto_to_model(model=License, request_dto=license_)
-        await self.add(license_)
-        return license_.id
+        model = request_dto_to_model(model=License, request_dto=license_)
+        await self.add(model)
+        return model.id
 
     async def update_license(self, license_: UpdateLicenseRequestDTO) -> int:
-        license_ = request_dto_to_model(model=License, request_dto=license_)
-        await self.merge(license_)
-        return license_.id
+        model = request_dto_to_model(model=License, request_dto=license_)
+        await self.merge(model)
+        return model.id
 
     async def delete_license(self, license_id: int, user_id: int) -> None:
         query = delete(License).filter_by(id=license_id, user_id=user_id)

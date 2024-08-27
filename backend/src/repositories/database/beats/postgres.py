@@ -31,14 +31,14 @@ class BeatsRepository(BaseBeatsRepository, SQLAlchemyRepository):
         )
 
     async def create_beat(self, beat: CreateBeatRequestDTO) -> int:
-        beat = request_dto_to_model(model=Beat, request_dto=beat)
-        await self.add(beat)
-        return beat.id
+        model = request_dto_to_model(model=Beat, request_dto=beat)
+        await self.add(model)
+        return model.id
 
     async def update_beat(self, beat: UpdateBeatRequestDTO) -> int:
-        beat = request_dto_to_model(model=Beat, request_dto=beat)
-        await self.merge(beat)
-        return beat.id
+        model = request_dto_to_model(model=Beat, request_dto=beat)
+        await self.merge(model)
+        return model.id
 
     async def delete_beat(self, beat_id: int, user_id: int) -> None:
         query = delete(Beat).filter_by(id=beat_id, user_id=user_id)

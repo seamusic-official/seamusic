@@ -208,7 +208,7 @@ async def update_track(
         description=data.description,
         prod_by=data.prod_by,
         picture_url=data.picture_url,
-        file_path=data.file_path,
+        file_url=data.file_path,
         co_prod=data.co_prod,
         playlist_id=data.playlist_id,
         track_pack_id=data.track_pack_id,

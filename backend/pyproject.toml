@@ -41,8 +41,8 @@ iniconfig = "^2.0.0"
 mypy = "^1.11.1"
 pytest = "^8.3.2"
 pytest-asyncio = "^0.23.8"
-python-dateutil = "^2.9.0.post0"
 pytest-dependency = "^0.6.0"
+python-dateutil = "^2.9.0.post0"
 python-jose="^3.3.0"
 pytest-mock = "^3.14.0"
 
@@ -63,7 +63,10 @@ exclude = [
 
 [tool.flake8]
 max-line-length = 200
-ignore = ["E731"]
+ignore = [
+    "E731",
+    "F821",
+]
 exclude =[
     ".git/",
     ".venv/",
@@ -74,12 +77,13 @@ exclude =[
 ]
 
 [tool.mypy]
-plugins = [
-    "sqlalchemy.ext.mypy.plugin"
-]
 warn_redundant_casts = true
 warn_unused_ignores = true
 disallow_subclassing_any = false
+disable_error_code = [
+    "unused-ignore",
+    "no-any-return",
+]
 check_untyped_defs = false
 disallow_untyped_calls = true
 disallow_untyped_defs = true

@@ -20,4 +20,4 @@ class License(Base):
     picture_url: Mapped[str] = mapped_column(nullable=True)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    user: Mapped["User"] = relationship("User", secondary=user_to_licenses_association)  # noqa: F821
+    user: Mapped["User"] = relationship("User", secondary=user_to_licenses_association)  # type: ignore[name-defined]

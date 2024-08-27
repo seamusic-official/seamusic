@@ -28,11 +28,11 @@ class Album(Base):
 
     type: Mapped[str] = mapped_column(nullable=True)
 
-    artist_profiles: Mapped["ArtistProfile"] = relationship(  # noqa: F821
+    artist_profiles: Mapped["ArtistProfile"] = relationship(  # type: ignore[name-defined]
         secondary=artist_profile_album_association, back_populates="albums"
     )
-    tracks: Mapped["Track"] = relationship(  # noqa: F821
+    tracks: Mapped["Track"] = relationship(  # type: ignore[name-defined]
         secondary=album_track_association, back_populates="albums"
     )
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"))
-    user: Mapped["User"] = relationship("User")  # noqa: F821
+    user: Mapped["User"] = relationship("User")  # type: ignore[name-defined]

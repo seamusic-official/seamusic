@@ -22,8 +22,7 @@ class SQLAlchemyRepository(BaseDatabaseRepository):
     @staticmethod
     async def merge(obj: Base) -> None:
         async with sessionmaker() as session:
-            session.merge(obj)
-            await session.commit()
+            await session.merge(obj)
 
     @staticmethod
     async def execute(statement: Executable) -> None:
@@ -31,7 +30,7 @@ class SQLAlchemyRepository(BaseDatabaseRepository):
             await session.execute(statement)
 
     @staticmethod
-    async def get(table: type[Base], primary_key: Any) -> Base:
+    async def get(table: type[Base], primary_key: Any) -> Base | None:
         async with sessionmaker() as session:
             return await session.get(table, primary_key)
 

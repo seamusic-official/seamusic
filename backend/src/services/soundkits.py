@@ -51,7 +51,7 @@ class SoundkitsService(BaseService):
         user_id: int,
         prod_by: str,
         file_stream: BytesIO,
-        file_info: str | None = None,
+        file_info: str,
     ) -> CreateSoundkitResponseDTO:
 
         file_url = await self.repositories.media.upload_file("AUDIOFILES", file_info, file_stream)
@@ -71,7 +71,7 @@ class SoundkitsService(BaseService):
         self,
         soundkit_id: int,
         user_id: int,
-        file_info: str | None,
+        file_info: str,
         file_stream: BytesIO,
     ) -> UpdateSoundkitResponseDTO:
 

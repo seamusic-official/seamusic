@@ -41,14 +41,14 @@ class UsersRepository(BaseUsersRepository, SQLAlchemyRepository):
         return UsersResponseDTO(users=models_to_dto(models=users, dto=_User))
 
     async def create_user(self, user: CreateUserRequestDTO) -> int:
-        user = request_dto_to_model(request_dto=user, model=User)
-        await self.add(user)
-        return user.id
+        model = request_dto_to_model(request_dto=user, model=User)
+        await self.add(model)
+        return model.id
 
     async def update_user(self, user: UpdateUserRequestDTO) -> int:
-        user = request_dto_to_model(request_dto=user, model=User)
-        await self.merge(user)
-        return user.id
+        model = request_dto_to_model(request_dto=user, model=User)
+        await self.merge(model)
+        return model.id
 
     async def delete_user(self, user_id: int) -> None:
         query = delete(User).filter_by(id=user_id)
@@ -57,44 +57,44 @@ class UsersRepository(BaseUsersRepository, SQLAlchemyRepository):
 
 @dataclass
 class ArtistsRepository(BaseArtistsRepository, SQLAlchemyRepository):
-    async def get_artist_id_by_user_id(self, user_id) -> int | None:
-        query = select(User).filter_by(id=user_id).column(column='artist_profile')
+    async def get_artist_id_by_user_id(self, user_id: int) -> int | None:
+        query = select(User.artist_profile).filter_by(id=user_id)
         return await self.scalar(query)
 
     async def get_artist_by_id(self, artist_id: int) -> ArtistResponseDTO | None:
-        artist_id = await self.get(ArtistProfile, artist_id)
-        return model_to_response_dto(model=artist_id, response_dto=ArtistResponseDTO)
+        artist = await self.get(ArtistProfile, artist_id)
+        return model_to_response_dto(model=artist, response_dto=ArtistResponseDTO)
 
     async def get_artists(self) -> ArtistsResponseDTO:
         query = select(ArtistProfile)
         artists = list(await self.scalars(query))
-        return ArtistsResponseDTO(users=models_to_dto(models=artists, dto=Artist))
+        return ArtistsResponseDTO(artists=models_to_dto(models=artists, dto=Artist))
 
     async def update_artist(self, artist: UpdateArtistRequestDTO) -> int:
-        artist = request_dto_to_model(request_dto=artist, model=ArtistProfile)
-        await self.merge(artist)
-        return artist.id
+        model = request_dto_to_model(request_dto=artist, model=ArtistProfile)
+        await self.merge(model)
+        return model.id
 
 
 @dataclass
 class ProducersRepository(BaseProducersRepository, SQLAlchemyRepository):
-    async def get_producer_id_by_user_id(self, user_id) -> int | None:
-        query = select(User).filter_by(id=user_id).column(column='producer_profile')
+    async def get_producer_id_by_user_id(self, user_id: int) -> int | None:
+        query = select(User.producer_profile).filter_by(id=user_id)
         return await self.scalar(query)
 
     async def get_producer_by_id(self, producer_id: int) -> ProducerResponseDTO | None:
-        producer_id = await self.get(ProducerProfile, producer_id)
-        return model_to_response_dto(model=producer_id, response_dto=ProducerResponseDTO)
+        producer = await self.get(ProducerProfile, producer_id)
+        return model_to_response_dto(model=producer, response_dto=ProducerResponseDTO)
 
     async def get_producers(self) -> ProducersResponseDTO:
         query = select(ProducerProfile)
         producers = list(await self.scalars(query))
-        return ProducersResponseDTO(users=models_to_dto(models=producers, dto=Producer))
+        return ProducersResponseDTO(producers=models_to_dto(models=producers, dto=Producer))
 
     async def update_producer(self, producer: UpdateProducerRequestDTO) -> int:
-        producer = request_dto_to_model(request_dto=producer, model=ProducerProfile)
-        await self.merge(producer)
-        return producer.id
+        model = request_dto_to_model(request_dto=producer, model=ProducerProfile)
+        await self.merge(model)
+        return model.id
 
 
 def init_users_postgres_repository() -> UsersRepository:

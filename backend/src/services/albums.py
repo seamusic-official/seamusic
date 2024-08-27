@@ -40,7 +40,7 @@ class AlbumService(BaseService):
         return await self.repositories.database.albums.get_all_albums()
 
     async def get_one_album(self, album_id: int) -> AlbumResponseDTO:
-        album: AlbumResponseDTO = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
+        album = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
 
         if album is None:
             raise NotFoundException(f"Album {album_id=} doesn't exist")
@@ -54,7 +54,7 @@ class AlbumService(BaseService):
         prod_by: str,
         user_id: int,
         title: str = "Unknown title",
-        description="Description",
+        description: str = "Description",
         co_prod: str | None = None,
     ) -> int:
 
@@ -79,12 +79,12 @@ class AlbumService(BaseService):
     async def update_album_picture(
         self,
         album_id: int,
-        file_info: str | None,
+        file_info: str,
         file_stream: BytesIO,
         user_id: int
     ) -> Album:
 
-        album: AlbumResponseDTO = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
+        album = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
 
         if not album:
             raise NotFoundException()
@@ -108,7 +108,7 @@ class AlbumService(BaseService):
         user_id: int,
     ) -> int:
 
-        album: AlbumResponseDTO = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
+        album = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
 
         if not album:
             raise NotFoundException()
@@ -136,7 +136,7 @@ class AlbumService(BaseService):
         description: str | None = None,
     ) -> int:
 
-        album: AlbumResponseDTO = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
+        album = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
 
         if not album:
             raise NotFoundException()
@@ -156,7 +156,7 @@ class AlbumService(BaseService):
         return await self.repositories.database.albums.edit_album(album=updated_album)
 
     async def delete_album(self, album_id: int, user_id: int) -> None:
-        album: AlbumResponseDTO = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
+        album = await self.repositories.database.albums.get_album_by_id(album_id=album_id)
 
         if not album:
             raise NotFoundException()

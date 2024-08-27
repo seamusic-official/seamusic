@@ -8,7 +8,7 @@ from src.dtos.database.albums import CreateAlbumRequestDTO, AlbumResponseDTO, Al
 class BaseAlbumRepository(ABC):
 
     @abstractmethod
-    async def get_album_by_id(self, album_id: int) -> AlbumResponseDTO:
+    async def get_album_by_id(self, album_id: int) -> AlbumResponseDTO | None:
         ...
 
     @abstractmethod

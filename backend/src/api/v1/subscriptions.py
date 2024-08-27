@@ -1,7 +1,7 @@
-from fastapi import APIRouter, status
-from fastapi.params import Depends
+from fastapi import APIRouter, Depends, status
 
-from src.schemas.subscriptions import STelegramAccountResponse, STelegramAccountsIDResponse
+from src.schemas.subscriptions import STelegramAccountResponse, STelegramAccountsIDResponse, OnlyTelegramSubscribeYear, \
+    OnlyTelegramSubscribeMonth
 from src.services.subscriptions import SubscriptionsService, get_subscriptions_service
 
 subscription = APIRouter(prefix="/subscription", tags=["Subscription"])
@@ -20,7 +20,7 @@ async def create_telegram_account(
 
     telegram_id = await service.create_telegram_account(telegram_id=telegram_id)
 
-    return STelegramAccountResponse(id=telegram_id)
+    return STelegramAccountResponse(telegram_id=telegram_id)
 
 
 @subscription.get(
@@ -36,11 +36,14 @@ async def get_telegram_account(
 
     telegram_account = await service.get_telegram_account(telegram_id=telegram_id)
 
+    only_telegram_subscribe_year = telegram_account.only_telegram_subscribe_year
+    only_telegram_subscribe_month = telegram_account.only_telegram_subscribe_month
+
     return STelegramAccountResponse(
         telegram_id=telegram_account.telegram_id,
         subscribe=telegram_account.subscribe,
-        only_telegram_subscribe_year=telegram_account.only_telegram_subscribe_year,
-        only_telegram_subscribe_month=telegram_account.only_telegram_subscribe_month,
+        only_telegram_subscribe_year=OnlyTelegramSubscribeYear(**only_telegram_subscribe_year.model_dump()) if only_telegram_subscribe_year else None,
+        only_telegram_subscribe_month=OnlyTelegramSubscribeMonth(**only_telegram_subscribe_month.model_dump()) if only_telegram_subscribe_year else None,
     )
 
 
