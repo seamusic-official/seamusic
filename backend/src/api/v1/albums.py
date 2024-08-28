@@ -31,8 +31,10 @@ albums = APIRouter(prefix="/albums", tags=["Albums"])
 )
 async def get_my_albums(
     service: AlbumService = Depends(get_album_service),
-    user: User | None = Depends(get_current_user),
+    user: User = Depends(get_current_user),
 ) -> SMyAlbumsResponse:
+
+    response = await service.get_user_albums(user_id=user.id)
 
     albums_ = list(map(
         lambda album: Album(
@@ -46,7 +48,7 @@ async def get_my_albums(
             co_prod=album.co_prod,
             type=Type.album,
         ),
-        await service.get_user_albums(user_id=user.id)
+        response.albums
     ))
 
     return SMyAlbumsResponse(albums=albums_)
@@ -60,8 +62,21 @@ async def get_my_albums(
 )
 async def all_albums(service: AlbumService = Depends(get_album_service)) -> SAllAlbumsResponse:
 
-    albums_ = await service.get_all_albums()
-    albums_ = list(map(lambda album: Album.from_db_model(model=album), albums_))
+    response = await service.get_all_albums()
+    albums_ = list(map(
+        lambda album: Album(
+            id=album.id,
+            created_at=album.created_at,
+            updated_at=album.updated_at,
+            is_available=album.is_available,
+            title=album.title,
+            picture_url=album.picture_url,
+            description=album.description,
+            co_prod=album.co_prod,
+            type=album.type,
+        ),
+        response.albums
+    ))
 
     return SAllAlbumsResponse(albums=albums_)
 
@@ -78,7 +93,17 @@ async def get_one_album(
 ) -> SAlbumResponse:
 
     album = await service.get_one_album(album_id=album_id)
-    return SAlbumResponse.from_db_model(model=album)
+    return SAlbumResponse(
+        id=album.id,
+        created_at=album.created_at,
+        updated_at=album.updated_at,
+        is_available=album.is_available,
+        title=album.name,
+        picture_url=album.picture_url,
+        description=album.description,
+        co_prod=album.co_prod,
+        type=album.type,
+    )
 
 
 @albums.post(

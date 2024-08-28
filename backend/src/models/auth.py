@@ -61,6 +61,7 @@ class ArtistProfile(Base):
         secondary=artist_tags_association,
         back_populates="artist_profiles"
     )
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     user: Mapped["User"] = relationship("User")  # type: ignore[name-defined]
 
 
@@ -69,7 +70,9 @@ class ProducerProfile(Base):
 
     description: Mapped[str] = mapped_column()
 
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
     user: Mapped["User"] = relationship("User")  # type: ignore[name-defined]
+
     tags: Mapped[list["Tag"]] = relationship(  # type: ignore[name-defined]
         secondary=producer_tags_association,
         back_populates="producer_profiles"

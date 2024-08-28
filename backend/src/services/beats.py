@@ -34,8 +34,13 @@ class BeatsService(BaseService):
     async def get_all_beats(self) -> BeatsResponseDTO:
         return await self.repositories.database.beats.all_beats()
 
-    async def get_beat_by_id(self, beat_id: int) -> BeatResponseDTO | None:
-        return await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
+    async def get_beat_by_id(self, beat_id: int) -> BeatResponseDTO:
+        beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
+
+        if not beat:
+            raise NotFoundException("beat not found")
+
+        return beat
 
     async def add_beat(
         self,

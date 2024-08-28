@@ -12,9 +12,9 @@ class Album(BaseModel):
     updated_at: datetime.datetime
     is_available: bool
     title: str
-    picture_url: str
+    picture_url: str | None = None
     description: str
-    co_prod: str
+    co_prod: str | None = None
     type: Type = Type.album
 
 

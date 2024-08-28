@@ -59,4 +59,4 @@ async def get_telegram_accounts_ids(
 
     telegram_ids = await service.get_telegram_accounts_ids()
 
-    return STelegramAccountsIDResponse(ids=list(telegram_ids))
+    return STelegramAccountsIDResponse(ids=list(telegram_ids.ids))

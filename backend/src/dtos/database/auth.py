@@ -66,14 +66,15 @@ class ArtistsResponseDTO(BaseResponseDTO):
 
 
 class CreateArtistRequestDTO(BaseRequestDTO):
-    user: User
+    user_id: int
     description: str | None = Field(max_length=255)
+    is_available: bool = False
 
 
 class UpdateArtistRequestDTO(BaseRequestDTO):
     id: int
     description: str | None = Field(max_length=255)
-    is_available: bool | None = None
+    is_available: bool = False
 
 
 class Producer(BaseDTO):
@@ -93,11 +94,12 @@ class ProducersResponseDTO(BaseResponseDTO):
 
 
 class CreateProducerRequestDTO(BaseRequestDTO):
-    user: User
+    user_id: int
     description: str | None = Field(max_length=255)
+    is_available: bool = False
 
 
 class UpdateProducerRequestDTO(BaseRequestDTO):
     id: int
     description: str | None = Field(max_length=255)
-    is_available: bool | None = None
+    is_available: bool = False

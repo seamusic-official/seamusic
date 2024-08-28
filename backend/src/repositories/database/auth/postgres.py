@@ -17,7 +17,7 @@ from src.dtos.database.auth import (
     UpdateProducerRequestDTO,
     CreateUserRequestDTO,
     Artist,
-    Producer,
+    Producer, CreateProducerRequestDTO, CreateArtistRequestDTO,
 )
 from src.models.auth import User, ArtistProfile, ProducerProfile
 from src.repositories.database.auth.base import BaseUsersRepository, BaseArtistsRepository, BaseProducersRepository
@@ -70,6 +70,11 @@ class ArtistsRepository(BaseArtistsRepository, SQLAlchemyRepository):
         artists = list(await self.scalars(query))
         return ArtistsResponseDTO(artists=models_to_dto(models=artists, dto=Artist))
 
+    async def create_artist(self, artist: CreateArtistRequestDTO) -> int:
+        model = request_dto_to_model(request_dto=artist, model=ArtistProfile)
+        await self.add(model)
+        return model.id
+
     async def update_artist(self, artist: UpdateArtistRequestDTO) -> int:
         model = request_dto_to_model(request_dto=artist, model=ArtistProfile)
         await self.merge(model)
@@ -90,6 +95,11 @@ class ProducersRepository(BaseProducersRepository, SQLAlchemyRepository):
         query = select(ProducerProfile)
         producers = list(await self.scalars(query))
         return ProducersResponseDTO(producers=models_to_dto(models=producers, dto=Producer))
+
+    async def create_producer(self, producer: CreateProducerRequestDTO) -> int:
+        model = request_dto_to_model(request_dto=producer, model=ProducerProfile)
+        await self.add(model)
+        return model.id
 
     async def update_producer(self, producer: UpdateProducerRequestDTO) -> int:
         model = request_dto_to_model(request_dto=producer, model=ProducerProfile)

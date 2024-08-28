@@ -44,26 +44,11 @@ class STrackResponse(BaseModel):
 
 
 class SAddTracksResponse(BaseModel):
-    title: str
-    file_url: str
-    prod_by: str
-    user_id: int
-    type: str
+    id: int
 
 
 class SUpdateTrackPictureResponse(BaseModel):
     id: int
-    name: str
-    prod_by: str
-    description: str
-    co_prod: str
-    type: str
-    user_id: int
-    is_available: bool
-    file_url: str
-    picture_url: str
-    created_at: datetime
-    updated_at: datetime
 
 
 class SReleaseTrackRequest(BaseModel):
@@ -80,17 +65,6 @@ class SReleaseTrackRequest(BaseModel):
 
 class SReleaseTrackResponse(BaseModel):
     id: int
-    name: str
-    prod_by: str
-    description: str
-    co_prod: str
-    type: str
-    user_id: int
-    is_available: bool
-    file_url: str
-    picture_url: str
-    created_at: datetime
-    updated_at: datetime
 
 
 class SUpdateTrackRequest(BaseModel):

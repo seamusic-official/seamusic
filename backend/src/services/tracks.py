@@ -30,8 +30,13 @@ class TracksService:
     async def all_tracks(self) -> TracksResponseDTO:
         return await self.repositories.database.tracks.get_all_tracks()
 
-    async def get_one_track(self, track_id: int) -> TrackResponseDTO | None:
-        return await self.repositories.database.tracks.get_track_by_id(track_id=track_id)
+    async def get_one_track(self, track_id: int) -> TrackResponseDTO:
+        track = await self.repositories.database.tracks.get_track_by_id(track_id=track_id)
+
+        if not track:
+            raise NotFoundException('track not found')
+
+        return track
 
     async def add_track(
         self,
@@ -125,7 +130,7 @@ class TracksService:
         co_prod: str | None,
         playlist_id: int | None,
         track_pack_id: int | None,
-    ) -> None:
+    ) -> int:
 
         track = await self.repositories.database.tracks.get_track_by_id(track_id=track_id)
 
@@ -147,7 +152,7 @@ class TracksService:
             track_pack_id=track_pack_id
         )
 
-        await self.repositories.database.tracks.update_track(track=updated_track)
+        return await self.repositories.database.tracks.update_track(track=updated_track)
 
     async def delete_track(self, track_id: int, user_id: int) -> None:
         track = await self.repositories.database.tracks.get_track_by_id(track_id=track_id)

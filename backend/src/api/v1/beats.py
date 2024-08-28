@@ -33,6 +33,8 @@ async def get_user_beats(
     service: BeatsService = Depends(get_beats_service)
 ) -> SMyBeatsResponse:
 
+    response = await service.get_user_beats(user_id=user.id)
+
     beats_ = list(map(
         lambda beat: Beat(
             id=beat.id,
@@ -47,7 +49,7 @@ async def get_user_beats(
             created_at=beat.created_at,
             updated_at=beat.updated_at,
         ),
-        await service.get_user_beats(user_id=user.id)
+        response.beats
     ))
     return SMyBeatsResponse(beats=beats_)
 
@@ -60,6 +62,8 @@ async def get_user_beats(
 )
 async def all_beats(service: BeatsService = Depends(get_beats_service)) -> SBeatsResponse:
 
+    response = await service.get_all_beats()
+
     beats_ = list(map(
         lambda beat: Beat(
             id=beat.id,
@@ -74,7 +78,7 @@ async def all_beats(service: BeatsService = Depends(get_beats_service)) -> SBeat
             created_at=beat.created_at,
             updated_at=beat.updated_at,
         ),
-        await service.get_all_beats()
+        response.beats
     ))
 
     return SBeatsResponse(beats=beats_)

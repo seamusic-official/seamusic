@@ -1,6 +1,7 @@
 from datetime import date
 
 from src.dtos.database.base import BaseDTO, BaseResponseDTO
+from src.enums.spotify import SpotifyType, SpotifyAlbumType
 from src.schemas.auth import Artist
 
 
@@ -17,7 +18,8 @@ class SpotifyArtist(BaseDTO):
     href: str
     id: str
     name: str
-    type: str
+    type: SpotifyType
+    popularity: int
     uri: str
 
 
@@ -28,7 +30,8 @@ class SpotifyArtistResponseDTO(BaseResponseDTO):
     href: str
     id: str
     name: str
-    type: str
+    type: SpotifyType
+    popularity: int
     uri: str
 
 
@@ -72,9 +75,10 @@ class SpotifyTrack(BaseDTO):
     id: str
     name: str
     popularity: int
+    image_url: str
     preview_url: str
     track_number: int
-    type: str
+    type: SpotifyType
     uri: str
 
 
@@ -92,7 +96,7 @@ class SpotifyTrackResponseDTO(BaseResponseDTO):
     preview_url: str
     image_url: str
     track_number: int
-    type: str
+    type: SpotifyType
     uri: str
 
 
@@ -112,7 +116,7 @@ class SpotifyAlbumResponseDTO(BaseResponseDTO):
     artists: list[SpotifyArtist]
     name: str
     release_date: date
-    type: str
+    type: SpotifyAlbumType
     uri: str
 
 

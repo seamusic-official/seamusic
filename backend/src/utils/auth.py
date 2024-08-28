@@ -64,9 +64,10 @@ async def authenticate_user(
             birthday=user.birthday,
             roles=user.roles
         )
+    return None
 
 
-async def get_refresh_token(request: Request):
+async def get_refresh_token(request: Request) -> str:
     token = request.cookies.get("refreshToken")
     if not token:
         raise UnauthorizedException()

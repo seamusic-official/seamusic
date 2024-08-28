@@ -140,8 +140,8 @@ class SLoginRequest(BaseModel):
 
 
 class SLoginResponse(BaseModel):
-    accessToken: str
-    refreshToken: str
+    access_token: str
+    refresh_token: str
     user: User
 
 

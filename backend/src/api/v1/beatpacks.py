@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, status
 
+from src.enums.type import Type
 from src.schemas.auth import User
 from src.schemas.beatpacks import (
     SBeatpackResponse,
@@ -9,9 +10,11 @@ from src.schemas.beatpacks import (
     SMyBeatpacksResponse,
     SBeatpacksResponse,
     SCreateBeatpackResponse,
-    SEditBeatpackRequest, Beatpack,
+    SEditBeatpackRequest,
+    Beatpack,
 )
 from src.schemas.beats import Beat
+from src.dtos.database.beats import Beat as _Beat
 from src.services.beatpacks import BeatpackService, get_beatpack_service
 from src.utils.auth import get_current_user
 
@@ -29,10 +32,13 @@ async def get_my_beatpacks(
     service: BeatpackService = Depends(get_beatpack_service)
 ) -> SMyBeatpacksResponse:
 
+    response = await service.get_user_beatpacks(user_id=user.id)
+
     beatpacks_ = list(map(
         lambda beatpack: Beatpack(
             title=beatpack.title,
             description=beatpack.description,
+            user_id=beatpack.user_id,
             users=list(map(
                 lambda user_: User(
                     id=user_.id,
@@ -60,7 +66,7 @@ async def get_my_beatpacks(
                 beatpack.beats
             )),
         ),
-        await service.get_user_beatpacks(user_id=user.id)
+        response.beatpacks
     ))
 
     return SMyBeatpacksResponse(beatpacks=beatpacks_)
@@ -74,10 +80,13 @@ async def get_my_beatpacks(
 )
 async def all_beatpacks(service: BeatpackService = Depends(get_beatpack_service)) -> SBeatpacksResponse:
 
+    response = await service.get_all_beatpacks()
+
     beatpacks_ = list(map(
         lambda beatpack: Beatpack(
             title=beatpack.title,
             description=beatpack.description,
+            user_id=beatpack.user_id,
             users=list(map(
                 lambda user_: User(
                     id=user_.id,
@@ -105,7 +114,7 @@ async def all_beatpacks(service: BeatpackService = Depends(get_beatpack_service)
                 beatpack.beats
             )),
         ),
-        await service.get_all_beatpacks()
+        response.beatpacks
     ))
 
     return SBeatpacksResponse(beatpacks=beatpacks_)
@@ -120,12 +129,13 @@ async def all_beatpacks(service: BeatpackService = Depends(get_beatpack_service)
 async def get_one(
     beatpack_id: int,
     service: BeatpackService = Depends(get_beatpack_service)
-):
+) -> SBeatpackResponse:
     beatpack = await service.get_one_beatpack(beatpack_id=beatpack_id)
 
     return SBeatpackResponse(
         title=beatpack.title,
         description=beatpack.description,
+        user_id=beatpack.user_id,
         users=list(map(
             lambda user_: User(
                 id=user_.id,
@@ -190,7 +200,23 @@ async def update_beatpacks(
         title=data.title,
         description=data.description,
         beatpack_id=beatpack_id,
-        beats=data.beats,
+        beats=list(map(
+            lambda beat: _Beat(
+                id=beat.id,
+                title=beat.title,
+                description=beat.description,
+                picture_url=beat.picture_url,
+                file_url=beat.file_url,
+                co_prod=beat.co_prod,
+                prod_by=beat.prod_by,
+                user_id=beat.user_id,
+                is_available=beat.is_available,
+                created_at=beat.created_at,
+                updated_at=beat.updated_at,
+                type=Type.beat,
+            ),
+            data.beats
+        )),
         user_id=user.id,
     )
 
