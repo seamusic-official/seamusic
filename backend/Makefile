@@ -38,5 +38,5 @@ test:
 
 lint:
 	poetry run flake8
-	poetry run mypy -p src
-	poetry run mypy -p tests
+	poetry run mypy -p src --cache-dir=/dev/null
+	poetry run mypy -p tests --cache-dir=/dev/null
