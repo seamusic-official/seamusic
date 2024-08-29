@@ -4,13 +4,16 @@ from email.mime.text import MIMEText
 
 from pydantic import EmailStr
 
+from src.core.config import settings
+from src.core.loggers import utils as logger
 
-def send_email(message: str, to_whom: EmailStr) -> str:
-    sender = "seamusic.official@yandex.com"
-    password = "unsp777."
 
-    smtp_server = "smtp.yandex.com"
-    smtp_port = 587
+def send_email(message: str, to_whom: EmailStr) -> None:
+    sender = settings.email_address
+    password = settings.email_password
+
+    smtp_server = settings.smtp_host
+    smtp_port = settings.smtp_port
 
     try:
         server = smtplib.SMTP(smtp_server, smtp_port)
@@ -26,6 +29,5 @@ def send_email(message: str, to_whom: EmailStr) -> str:
         msg.attach(MIMEText(body, "plain"))
 
         server.sendmail(sender, to_whom, msg.as_string())
-        return "The message was sent successfully!"
     except Exception as ex:
-        return f"{ex} Check your login or password"
+        logger.error(f"{ex} Check your login or password")
