@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, EmailStr
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -46,6 +46,11 @@ class Settings(BaseSettings):
     jwt_refresh_secret_key: str = Field(default='', alias='JWT_REFRESH_SECRET_KEY')
 
     bucket_name: str = Field(default='', alias='BUCKET_NAME')
+
+    email_address: EmailStr = Field(default='', alias='EMAIL_ADDRESS')
+    email_password: str = Field(default='', alias='EMAIL_PASSWORD')
+    smtp_host: str = Field(default='', alias='SMTP_HOST')
+    smtp_port: str = Field(default='', alias='SMTP_PORT')
 
 
 settings = Settings()
