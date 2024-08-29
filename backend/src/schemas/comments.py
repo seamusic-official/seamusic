@@ -1,41 +1,8 @@
 from datetime import datetime
-from typing import Optional, List
 
-from pydantic import BaseModel, EmailStr, Field, ConfigDict
+from pydantic import BaseModel, EmailStr, ConfigDict
 
 from src.schemas.base import DetailMixin
-from src.schemas.beats import Beat
-
-
-class SBeatCreate(Beat):
-    pass
-
-
-class SBeat(Beat):
-    id: int
-    username: str
-    picture_url: str
-    email: EmailStr
-
-
-class SBeatPackBase(BaseModel):
-    title: str
-    description: str
-    owner_id: int
-    beats: List[SBeat] = Field(...)
-
-
-class SBeatPackCreate(SBeatPackBase):
-    pass
-
-
-class SBeatPack(SBeatPackBase):
-    id: int
-    liked: bool
-    is_available: bool
-    created_at: datetime
-
-    model_config = ConfigDict(from_attributes=True)
 
 
 class SCommentDeleteResponse(BaseModel, DetailMixin):
@@ -43,10 +10,6 @@ class SCommentDeleteResponse(BaseModel, DetailMixin):
 
 
 class CommentCreate(BaseModel):
-    """
-    Это схема нужна для того что бы создать коментарию
-    """
-
     comment: str
 
 
@@ -69,9 +32,9 @@ class CommentResponse(BaseModel):
     id: int
     comment: str
     comment_creator_id: int
-    beat_id: Optional[int] = None
-    beat_pack_id: Optional[int] = None
-    soundkit_id: Optional[int] = None
+    beat_id: int | None = None
+    beat_pack_id: int | None = None
+    soundkit_id: int | None = None
     created_at: datetime
     updated_at: datetime
     is_available: bool

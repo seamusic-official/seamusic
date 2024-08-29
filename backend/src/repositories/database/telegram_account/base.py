@@ -3,7 +3,7 @@ from dataclasses import dataclass
 
 from src.dtos.database.subscriptions import (
     TelegramAccountResponseDTO,
-    CreateTelegramAccountRequestDTO
+    CreateTelegramAccountRequestDTO, TelegramAccountsIDSResponseDTO
 )
 
 
@@ -18,5 +18,5 @@ class BaseTelegramAccountRepository(ABC):
         ...
 
     @abstractmethod
-    async def get_telegram_accounts_ids(self) -> list[int]:
+    async def get_telegram_accounts_ids(self) -> TelegramAccountsIDSResponseDTO:
         ...

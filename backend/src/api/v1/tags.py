@@ -60,9 +60,9 @@ async def get_my_producer_tags(
     service: TagsService = Depends(get_tags_service)
 ) -> SMyProducerTagsResponse:
 
-    tags_ = await service.get_producer_tags(user_id=user.id)
+    response = await service.get_producer_tags(user_id=user.id)
 
-    return SMyProducerTagsResponse(tags=list(map(lambda tag: Tag(name=tag.name), tags_)))
+    return SMyProducerTagsResponse(tags=list(map(lambda tag: Tag(name=tag.name), response.tags)))
 
 
 @tags.get(
@@ -76,6 +76,6 @@ async def get_my_artist_tags(
     service: TagsService = Depends(get_tags_service)
 ) -> SMyArtistTagsResponse:
 
-    tags_ = await service.get_artist_tags(user_id=user.id)
+    response = await service.get_artist_tags(user_id=user.id)
 
-    return SMyArtistTagsResponse(tags=list(map(lambda tag: Tag(name=tag.name), tags_)))
+    return SMyArtistTagsResponse(tags=list(map(lambda tag: Tag(name=tag.name), response.tags)))

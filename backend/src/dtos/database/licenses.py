@@ -1,7 +1,7 @@
 from datetime import datetime
 
 from src.dtos.database.base import BaseResponseDTO, BaseDTO, BaseRequestDTO
-from src.schemas.auth import User
+from src.dtos.database.auth import User
 
 
 class License(BaseDTO):
@@ -32,6 +32,7 @@ class LicenseResponseDTO(BaseResponseDTO):
     user_id: int
     beat_pack_id: int | None = None
     price: str
+    user: User
     created_at: datetime
     updated_at: datetime
 
@@ -43,6 +44,7 @@ class LicensesResponseDTO(BaseResponseDTO):
 class CreateLicenseRequestDTO(BaseRequestDTO):
     title: str
     price: str
+    description: str | None = None
     picture_url: str | None = None
     user_id: int
     user: User

@@ -1,3 +1,4 @@
+import jmespath
 from fastapi import APIRouter, status, Depends
 
 from src.enums.spotify import SpotifyType
@@ -11,6 +12,7 @@ from src.schemas.spotify import (
     SSpotifyAlbumTracksCountResponse,
     SSpotifyArtistResponse,
     SSpotifySearchResponse,
+    SpotifyArtist,
 )
 from src.services.spotify import SpotifyService, get_spotify_service
 
@@ -29,6 +31,8 @@ async def get_spotify_artist_tracks(
     service: SpotifyService = Depends(get_spotify_service),
 ) -> SSpotifyTracksResponse:
 
+    response = await service.get_spotify_tracks(artist_id=spotify_artist_id)
+
     tracks = list(map(
         lambda track: SpotifyTrack(
             id=track.id,
@@ -38,7 +42,7 @@ async def get_spotify_artist_tracks(
             image_url=track.image_url,
             spotify_url=track.href,
         ),
-        await service.get_spotify_tracks(artist_id=spotify_artist_id)
+        response.tracks
     ))
 
     return SSpotifyTracksResponse(tracks=tracks)
@@ -78,14 +82,16 @@ async def get_spotify_albums(
     service: SpotifyService = Depends(get_spotify_service),
 ) -> SSpotifyAlbumsResponse:
 
+    response = await service.get_spotify_albums(artist_id=artist_id)
+
     albums = list(map(
         lambda album: SpotifyAlbum(
             id=album.id,
             name=album.name,
-            image_url=album.image_url,
-            spotify_url=album.spotify_url,
+            image_url=jmespath.search(0, album.images),
+            spotify_url=album.href,
         ),
-        await service.get_spotify_albums(artist_id=artist_id)
+        response.items
     ))
 
     return SSpotifyAlbumsResponse(albums=albums)
@@ -107,13 +113,23 @@ async def get_spotify_album(
     return SSpotifyAlbumResponse(
         id=album.id,
         name=album.name,
-        image_url=album.image_url,
-        spotify_url=album.spotify_url,
+        image_url=jmespath.search(0, album.images),
+        spotify_url=album.href,
         release_date=album.release_date,
-        artists=album.artists,
+        artists=list(map(
+            lambda artist:
+                SpotifyArtist(
+                    id=artist.id,
+                    type=artist.type,
+                    name=artist.name,
+                    image_url=jmespath.search(0, artist.images),
+                    popularity=artist.popularity,
+                ),
+            album.artists
+        )),
         external_urls=album.external_urls,
         uri=album.uri,
-        album_type=album.album_type,
+        album_type=album.type,
         total_tracks=album.total_tracks,
     )
 
@@ -150,7 +166,7 @@ async def get_spotify_artist(
         external_urls=artist.external_urls,
         type=artist.type,
         name=artist.name,
-        image_url=artist.image_url,
+        image_url=jmespath.search(0, artist.images),
         popularity=artist.popularity,
     )
 
@@ -170,7 +186,34 @@ async def search(
     result = await service.get_spotify_search(query=query, type_=type_)
 
     return SSpotifySearchResponse(
-        tracks=result.tracks,
-        artists=result.artists,
-        albums=result.albums,
+        tracks=list(map(
+            lambda track: SpotifyTrack(
+                id=track.id,
+                type=track.type,
+                name=track.name,
+                preview_url=track.preview_url,
+                image_url=track.image_url,
+                spotify_url=track.href,
+            ),
+            result.tracks
+        )) if result.tracks else None,
+        artists=list(map(
+            lambda artist: SpotifyArtist(
+                id=artist.id,
+                type=artist.type,
+                name=artist.name,
+                image_url=artist.image_url,
+                popularity=artist.popularity,
+            ),
+            result.artists
+        )) if result.artists else None,
+        albums=list(map(
+            lambda album: SpotifyAlbum(
+                id=album.id,
+                name=album.name,
+                image_url=jmespath.search(0, album.images),
+                spotify_url=album.href,
+            ),
+            result.albums
+        )) if result.albums else None,
     )

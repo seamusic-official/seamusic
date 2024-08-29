@@ -29,7 +29,7 @@ class BeatpacksRepositories(Repositories):
 class BeatpackService:
     respositories: BeatpacksRepositories
 
-    async def get_user_beatpacks(self, user_id) -> BeatpacksResponseDTO:
+    async def get_user_beatpacks(self, user_id: int) -> BeatpacksResponseDTO:
         return await self.respositories.database.beatpacks.get_user_beatpacks(user_id=user_id)
 
     async def get_all_beatpacks(self) -> BeatpacksResponseDTO:
@@ -67,16 +67,16 @@ class BeatpackService:
             raise NotFoundException()
 
         if user_id in list(map(lambda user: user.id, beatpack.users)):
-            beatpack = UpdateBeatpackRequestDTO(
+            updated_beatpack = UpdateBeatpackRequestDTO(
                 title=title,
                 description=description,
                 beats=beats
             )
-            return await self.respositories.database.beatpacks.update_beatpack(beatpack=beatpack)
+            return await self.respositories.database.beatpacks.update_beatpack(beatpack=updated_beatpack)
 
         raise NoRightsException()
 
-    async def delete_beatpack(self, beatpack_id: int, user_id: int):
+    async def delete_beatpack(self, beatpack_id: int, user_id: int) -> None:
         beatpack = await self.respositories.database.beatpacks.get_one_beatpack(beatpack_id=beatpack_id)
 
         if not beatpack:

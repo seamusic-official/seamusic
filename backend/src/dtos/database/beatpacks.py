@@ -6,6 +6,7 @@ from src.dtos.database.beats import Beat
 class Beatpack(BaseDTO):
     title: str
     description: str
+    user_id: int
     users: list[User]
     beats: list[Beat]
 

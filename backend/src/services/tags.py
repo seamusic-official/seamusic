@@ -65,5 +65,5 @@ def get_tags_repositories() -> TagsRepositories:
     )
 
 
-def get_tags_service():
+def get_tags_service() -> TagsService:
     return TagsService(repositories=get_tags_repositories())

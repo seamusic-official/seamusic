@@ -10,7 +10,7 @@ from src.dtos.database.soundkits import (
     UpdateSoundkitRequestDTO
 )
 from src.exceptions.services import NotFoundException, NoRightsException
-from src.repositories import DatabaseRepositories, BaseMediaRepository
+from src.repositories import DatabaseRepositories, BaseMediaRepository, Repositories
 from src.repositories.database.soundkits.base import BaseSoundkitsRepository
 from src.repositories.database.soundkits.postgres import init_postgres_repository
 from src.repositories.media.s3 import init_s3_repository
@@ -23,7 +23,7 @@ class SoundkitsDatabaseRepositories(DatabaseRepositories):
 
 
 @dataclass
-class SoundkitsRepositories:
+class SoundkitsRepositories(Repositories):
     database: SoundkitsDatabaseRepositories
     media: BaseMediaRepository
 
@@ -32,7 +32,7 @@ class SoundkitsRepositories:
 class SoundkitsService(BaseService):
     repositories: SoundkitsRepositories
 
-    async def get_user_soundkits(self, user_id: int,) -> SoundkitsResponseDTO:
+    async def get_user_soundkits(self, user_id: int) -> SoundkitsResponseDTO:
         return await self.repositories.database.soundkits.get_user_soundkits(user_id=user_id)
 
     async def get_all_soundkits(self) -> SoundkitsResponseDTO:
@@ -51,40 +51,52 @@ class SoundkitsService(BaseService):
         user_id: int,
         prod_by: str,
         file_stream: BytesIO,
-        file_info: str | None = None,
-    ) -> CreateSoundkitResponseDTO:
+        file_info: str,
+        co_prod: str | None = None,
+        picture_info: str | None = None,
+        picture_stream: BytesIO | None = None,
+    ) -> int:
 
+        picture_url = None
         file_url = await self.repositories.media.upload_file("AUDIOFILES", file_info, file_stream)
+        if picture_stream and picture_info:
+            picture_url = await self.repositories.media.upload_file("PICTURES", picture_info, picture_stream)
 
         data = CreateSoundkitRequestDTO(
             title="Title",
             description="Description",
+            picture_url=picture_url,
             file_path=file_url,
             prod_by=prod_by,
             user_id=user_id,
+            co_prod=co_prod,
         )
 
-        soundkit_id = await self.repositories.database.soundkits.add_soundkit(soundkit=data)
-        return CreateSoundkitResponseDTO(id=soundkit_id)
+        return await self.repositories.database.soundkits.add_soundkit(soundkit=data)
 
     async def update_soundkit_picture(
         self,
         soundkit_id: int,
         user_id: int,
-        file_info: str | None,
+        file_info: str,
         file_stream: BytesIO,
-    ) -> UpdateSoundkitResponseDTO:
+    ) -> int:
 
         soundkit = await self.repositories.database.soundkits.get_soundkit_by_id(soundkit_id=soundkit_id)
+
+        if not soundkit:
+            raise NotFoundException("soundkit not found")
 
         if soundkit.user_id != user_id:
             raise NoRightsException()
 
         file_url = await self.repositories.media.upload_file("PICTURES", file_info, file_stream)
 
-        data = UpdateSoundkitRequestDTO(picture_url=file_url)
-        soundkit_id = await self.repositories.database.soundkits.update_soundkit(soundkit=data)
-        return UpdateSoundkitResponseDTO(id=soundkit_id)
+        data = UpdateSoundkitRequestDTO(
+            picture_url=file_url,
+            user_id=user_id,
+        )
+        return await self.repositories.database.soundkits.update_soundkit(soundkit=data)
 
     async def release_soundkit(
         self,
@@ -95,10 +107,13 @@ class SoundkitsService(BaseService):
 
         soundkit = await self.repositories.database.soundkits.get_soundkit_by_id(soundkit_id=soundkit_id)
 
+        if not soundkit:
+            raise NotFoundException("soundkit not found")
+
         if soundkit.user_id != user_id:
             raise NoRightsException()
 
-        soundkit_id = self.repositories.database.soundkits.update_soundkit(soundkit=data)
+        soundkit_id = await self.repositories.database.soundkits.update_soundkit(soundkit=data)
 
         return UpdateSoundkitResponseDTO(id=soundkit_id)
 
@@ -107,16 +122,17 @@ class SoundkitsService(BaseService):
         soundkit_id: int,
         user_id: int,
         data: UpdateSoundkitRequestDTO,
-    ) -> UpdateSoundkitResponseDTO:
+    ) -> int:
 
         soundkit = await self.repositories.database.soundkits.get_soundkit_by_id(soundkit_id=soundkit_id)
+
+        if not soundkit:
+            raise NotFoundException("soundkit not found")
 
         if soundkit.user_id != user_id:
             raise NoRightsException()
 
-        soundkit_id = self.repositories.database.soundkits.update_soundkit(soundkit=data)
-
-        return UpdateSoundkitResponseDTO(id=soundkit_id)
+        return await self.repositories.database.soundkits.update_soundkit(soundkit=data)
 
     async def delete_soundkits(
         self,
@@ -125,6 +141,9 @@ class SoundkitsService(BaseService):
     ) -> None:
 
         soundkit = await self.repositories.database.soundkits.get_soundkit_by_id(soundkit_id=soundkit_id)
+
+        if not soundkit:
+            raise NotFoundException("soundkit not found")
 
         if soundkit.user_id != user_id:
             raise NoRightsException()

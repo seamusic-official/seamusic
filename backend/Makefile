@@ -38,4 +38,5 @@ test:
 
 lint:
 	poetry run flake8
-	poetry run mypy -p src --ignore-missing-imports
+	poetry run mypy -p src
+	poetry run mypy -p tests

@@ -53,6 +53,8 @@ class SSoundkitCreateRequest(BaseModel):
 class SSoundkitResponse(BaseModel):
     id: int
     name: str
+    co_prod: str
+    prod_by: str
     description: str
     picture_url: str
     file_url: str

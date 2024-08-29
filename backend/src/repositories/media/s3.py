@@ -26,8 +26,8 @@ class S3Repository(BaseMediaRepository):
 
 def init_s3_client() -> client:
     session = Session(
-        aws_access_key_id=settings.yandex_cloud.AWS_ACCESS_KEY_ID,
-        aws_secret_access_key=settings.yandex_cloud.AWS_SECRET_ACCESS_KEY,
+        aws_access_key_id=settings.aws_access_key_id,
+        aws_secret_access_key=settings.aws_secret_access_key,
     )
     return session.client(service_name="s3", endpoint_url="https://storage.yandexcloud.net")
 
@@ -35,5 +35,5 @@ def init_s3_client() -> client:
 def init_s3_repository() -> S3Repository:
     return S3Repository(
         _client=init_s3_client(),
-        bucket_name=settings.s3.BUCKET_NAME
+        bucket_name=settings.bucket_name,
     )

@@ -2,8 +2,10 @@ import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 
+from pydantic import EmailStr
 
-def send_email(message, to_whom):
+
+def send_email(message: str, to_whom: EmailStr) -> str:
     sender = "seamusic.official@yandex.com"
     password = "unsp777."
 

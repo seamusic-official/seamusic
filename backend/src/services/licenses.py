@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 from datetime import datetime
 
+from src.dtos.database.auth import User
 from src.dtos.database.licenses import (
     LicensesResponseDTO,
     CreateLicenseRequestDTO,
@@ -55,12 +56,17 @@ class LicensesService:
         description: str | None = None,
     ) -> int:
 
+        user = await self.repositories.database.users.get_user_by_id(user_id=user_id)
+
+        if not user:
+            raise NotFoundException("User not found")
+
         license_ = CreateLicenseRequestDTO(
             title=title,
             description=description,
             price=price,
             user_id=user_id,
-            user=await self.repositories.database.users.get_user_by_id(user_id=user_id),
+            user=User(**user.model_dump()),
             created_at=datetime.now(),
             updated_at=datetime.now(),
         )
@@ -71,27 +77,33 @@ class LicensesService:
         self,
         license_id: int,
         user_id: int,
-        title: str,
-        description: str,
-        price: str,
-    ) -> None:
+        title: str | None = None,
+        description: str | None = None,
+        price: str | None = None,
+    ) -> int:
 
         license_ = await self.repositories.database.licenses.get_license_by_id(license_id=license_id)
 
-        if license_.user.id != user_id:
+        if not license_:
+            raise NotFoundException("license not found")
+
+        if license_.user_id != user_id:
             raise NoRightsException()
 
-        license_ = UpdateLicenseRequestDTO(
+        updated_license = UpdateLicenseRequestDTO(
             title=title,
             description=description,
             price=price
         )
 
-        await self.repositories.database.licenses.update_license(license_=license_)
+        return await self.repositories.database.licenses.update_license(license_=updated_license)
 
     async def delete_license(self, license_id: int, user_id: int) -> None:
 
         license_ = await self.repositories.database.licenses.get_license_by_id(license_id=license_id)
+
+        if not license_:
+            raise NotFoundException("license not found")
 
         if license_.user.id != user_id:
             raise NoRightsException()

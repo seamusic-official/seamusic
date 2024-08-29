@@ -5,13 +5,18 @@ from src.enums.type import Type
 
 
 class Beat(BaseDTO):
+    id: int
     title: str
-    description: str
-    picture_url: str
+    description: str | None = None
+    prod_by: str | None = None
+    picture_url: str | None = None
     file_url: str
-    co_prod: str
+    co_prod: str | None = None
     type: str
     user_id: int
+    is_available: bool
+    created_at: datetime
+    updated_at: datetime
 
 
 class BeatResponseDTO(BaseResponseDTO):
@@ -37,6 +42,7 @@ class CreateBeatRequestDTO(BaseRequestDTO):
     title: str
     description: str
     file_url: str
+    prod_by: str
     co_prod: str | None = None
     type: Type = Type.beat
     user_id: int

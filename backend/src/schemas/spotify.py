@@ -30,7 +30,7 @@ class SSpotifyTrackResponse(BaseModel):
 class SpotifyAlbum(BaseModel):
     id: str
     name: str
-    image_url: str
+    image_url: str | None = None
     spotify_url: str
 
 
@@ -83,9 +83,10 @@ class SSpotifyArtistResponse(BaseModel):
     name: str
     image_url: str
     popularity: int
+    external_urls: dict[str, str]
 
 
 class SSpotifySearchResponse(BaseModel):
-    tracks: list[SpotifyTrack] = None
-    artists: list[SpotifyTrack] = None
-    albums: list[SpotifyAlbum] = None
+    tracks: list[SpotifyTrack] | None = None
+    artists: list[SpotifyArtist] | None = None
+    albums: list[SpotifyAlbum] | None = None

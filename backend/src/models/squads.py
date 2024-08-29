@@ -1,5 +1,3 @@
-from typing import List
-
 from sqlalchemy import Column, Table, ForeignKey, Integer
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
@@ -29,12 +27,12 @@ class Squad(Base):
     file_path: Mapped[str] = mapped_column(nullable=False)
     co_prod: Mapped[str] = mapped_column(nullable=True)
     prod_by: Mapped[str] = mapped_column(nullable=True)
-    artist_profiles: Mapped[List["ArtistProfile"]] = relationship(  # noqa: F821
+    artist_profiles: Mapped[list["ArtistProfile"]] = relationship(  # type: ignore[name-defined]
         secondary=squad_artist_profile_association, back_populates="squads"
     )
-    producer_profiles: Mapped[List["ProducerProfile"]] = relationship(  # noqa: F821
+    producer_profiles: Mapped[list["ProducerProfile"]] = relationship(  # type: ignore[name-defined]
         secondary=squad_producer_profile_association, back_populates="squads"
     )
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
-    user: Mapped["User"] = relationship("User")  # noqa: F821
+    user: Mapped["User"] = relationship("User")  # type: ignore[name-defined]

@@ -1,5 +1,4 @@
 from datetime import datetime
-from typing import List
 
 from sqlalchemy import DateTime, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
@@ -33,12 +32,12 @@ class User(Base):
     artist_profile_id: Mapped[int] = mapped_column(ForeignKey("artist_profiles.id"), nullable=True)
     producer_profile_id: Mapped[int] = mapped_column(ForeignKey("producer_profiles.id"), nullable=True)
 
-    artist_profile: Mapped["ArtistProfile"] = relationship(back_populates="user")
-    producer_profile: Mapped["ProducerProfile"] = relationship(back_populates="user")
+    artist_profile: Mapped["ArtistProfile"] = relationship(back_populates="user")  # type: ignore[name-defined]
+    producer_profile: Mapped["ProducerProfile"] = relationship(back_populates="user")  # type: ignore[name-defined]
     roles: Mapped[Role] = mapped_column(nullable=False)
     access_level: Mapped[AccessLevel] = mapped_column(nullable=False, default=AccessLevel.user)
-    tags: Mapped[List["Tag"]] = relationship(secondary=listener_tags_association, back_populates="listener_profiles")
-    squads: Mapped["Squad"] = relationship("Squad", overlaps="user")
+    tags: Mapped[list["Tag"]] = relationship(secondary=listener_tags_association, back_populates="listener_profiles")  # type: ignore[name-defined]
+    squads: Mapped["Squad"] = relationship("Squad", overlaps="user")  # type: ignore[name-defined]
 
 
 class ArtistProfile(Base):
@@ -46,23 +45,24 @@ class ArtistProfile(Base):
 
     description: Mapped[str] = mapped_column()
 
-    tracks: Mapped[List["Track"]] = relationship(
+    tracks: Mapped[list["Track"]] = relationship(  # type: ignore[name-defined]
         secondary=artist_profile_track_association,
         back_populates="artist_profiles"
     )
-    albums: Mapped[List["Album"]] = relationship(
+    albums: Mapped[list["Album"]] = relationship(  # type: ignore[name-defined]
         secondary=artist_profile_album_association,
         back_populates="artist_profiles"
     )
-    squads: Mapped[List["Squad"]] = relationship(
+    squads: Mapped[list["Squad"]] = relationship(  # type: ignore[name-defined]
         secondary=squad_artist_profile_association,
         back_populates="artist_profiles"
     )
-    tags: Mapped[List["Tag"]] = relationship(
+    tags: Mapped[list["Tag"]] = relationship(  # type: ignore[name-defined]
         secondary=artist_tags_association,
         back_populates="artist_profiles"
     )
-    user: Mapped["User"] = relationship("User")
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user: Mapped["User"] = relationship("User")  # type: ignore[name-defined]
 
 
 class ProducerProfile(Base):
@@ -70,12 +70,14 @@ class ProducerProfile(Base):
 
     description: Mapped[str] = mapped_column()
 
-    user: Mapped["User"] = relationship("User")
-    tags: Mapped[List["Tag"]] = relationship(
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), nullable=False)
+    user: Mapped["User"] = relationship("User")  # type: ignore[name-defined]
+
+    tags: Mapped[list["Tag"]] = relationship(  # type: ignore[name-defined]
         secondary=producer_tags_association,
         back_populates="producer_profiles"
     )
-    squads: Mapped[List["Squad"]] = relationship(
+    squads: Mapped[list["Squad"]] = relationship(  # type: ignore[name-defined]
         secondary=squad_producer_profile_association,
         back_populates="producer_profiles"
     )

@@ -4,7 +4,7 @@ from io import BytesIO
 
 from src.dtos.database.beats import BeatsResponseDTO, CreateBeatRequestDTO, UpdateBeatRequestDTO, BeatResponseDTO
 from src.enums.type import Type
-from src.exceptions.services import NoRightsException
+from src.exceptions.services import NoRightsException, NotFoundException
 from src.repositories import DatabaseRepositories, Repositories
 from src.repositories.database.beats.base import BaseBeatsRepository
 from src.repositories.database.beats.postgres import init_postgres_repository
@@ -34,17 +34,22 @@ class BeatsService(BaseService):
     async def get_all_beats(self) -> BeatsResponseDTO:
         return await self.repositories.database.beats.all_beats()
 
-    async def get_beat_by_id(self, beat_id: int) -> BeatResponseDTO | None:
-        return await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
+    async def get_beat_by_id(self, beat_id: int) -> BeatResponseDTO:
+        beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
+
+        if not beat:
+            raise NotFoundException("beat not found")
+
+        return beat
 
     async def add_beat(
         self,
         file_stream: BytesIO,
         user_id: int,
         prod_by: str,
-        co_prod: str | None = None,
+        file_info: str,
         description: str = "Description",
-        file_info: str | None = None,
+        co_prod: str | None = None,
     ) -> int:
 
         file_url = await self.repositories.media.upload_file("AUDIOFILES", file_info, file_stream)
@@ -66,18 +71,21 @@ class BeatsService(BaseService):
         self,
         beat_id: int,
         user_id: int,
-        file_info: str | None,
+        file_info: str,
         file_stream: BytesIO
     ) -> int:
 
         beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
 
+        if not beat:
+            raise NotFoundException()
+
         if beat.user_id != user_id:
             raise NoRightsException()
 
         file_url = await self.repositories.media.upload_file("PICTURES", file_info, file_stream)
-        beat = UpdateBeatRequestDTO(picture_url=file_url)
-        return await self.repositories.database.beats.update_beat(beat=beat)
+        updated_beat = UpdateBeatRequestDTO(picture_url=file_url)
+        return await self.repositories.database.beats.update_beat(beat=updated_beat)
 
     async def release_beat(
         self,
@@ -90,10 +98,13 @@ class BeatsService(BaseService):
     ) -> int:
         beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
 
+        if not beat:
+            raise NotFoundException()
+
         if beat.user_id != user_id:
             raise NoRightsException()
 
-        beat = UpdateBeatRequestDTO(
+        updated_beat = UpdateBeatRequestDTO(
             title=title,
             description=description,
             co_prod=co_prod,
@@ -102,7 +113,7 @@ class BeatsService(BaseService):
             user_id=user_id
         )
 
-        return await self.repositories.database.beats.update_beat(beat=beat)
+        return await self.repositories.database.beats.update_beat(beat=updated_beat)
 
     async def update_beat(
         self,
@@ -115,10 +126,13 @@ class BeatsService(BaseService):
     ) -> int:
         beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
 
+        if not beat:
+            raise NotFoundException()
+
         if beat.user_id != user_id:
             raise NoRightsException()
 
-        beat = UpdateBeatRequestDTO(
+        updated_beat = UpdateBeatRequestDTO(
             title=title,
             description=description,
             co_prod=co_prod,
@@ -127,10 +141,13 @@ class BeatsService(BaseService):
             user_id=user_id
         )
 
-        return await self.repositories.database.beats.update_beat(beat=beat)
+        return await self.repositories.database.beats.update_beat(beat=updated_beat)
 
     async def delete_beat(self, beat_id: int, user_id: int) -> None:
         beat = await self.repositories.database.beats.get_beat_by_id(beat_id=beat_id)
+
+        if not beat:
+            raise NotFoundException()
 
         if beat.user_id != user_id:
             raise NoRightsException()

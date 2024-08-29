@@ -55,7 +55,7 @@ class SCreateLicenseResponse(BaseModel):
     id: int
 
 
-class SEditLicenseRequest(License):
+class SEditLicenseRequest(BaseModel):
     title: str | None = None
     description: str | None = None
     price: str | None = None

@@ -81,6 +81,7 @@ async def get_me(user: User = Depends(get_current_user)) -> SMeResponse:
     responses={status.HTTP_200_OK: {'model': SUsersResponse}},
 )
 async def get_users(service: UsersService = Depends(get_users_service)) -> SUsersResponse:
+    response = await service.get_all_users()
 
     users_: list[User] = list(map(
         lambda user: User(
@@ -90,7 +91,7 @@ async def get_users(service: UsersService = Depends(get_users_service)) -> SUser
             picture_url=user.picture_url,
             birthday=user.birthday,
         ),
-        await service.get_all_users()
+        response.users
     ))
 
     return SUsersResponse(users=users_)
@@ -191,8 +192,15 @@ async def get_me_as_artist(
     artist = await service.get_artist_by_id(artist_id=artist_id)
 
     return SMeAsArtistResponse(
+        id=artist_id,
         description=artist.description,
-        user=artist.user
+        user=User(
+            id=artist.user.id,
+            username=artist.user.username,
+            email=artist.user.email,
+            picture_url=artist.user.picture_url,
+            birthday=artist.user.birthday,
+        )
     )
 
 
@@ -204,13 +212,22 @@ async def get_me_as_artist(
     responses={status.HTTP_200_OK: {'model': SArtistsResponse}},
 )
 async def get_artists(service: ArtistsService = Depends(get_artists_service)) -> SArtistsResponse:
-    artists_: list[Artist] = list(map(
+
+    response = await service.get_all_artists()
+
+    artists_ = list(map(
         lambda artist: Artist(
             id=artist.id,
-            user=artist.user,
-            description=artist.user
+            user=User(
+                id=artist.user.id,
+                username=artist.user.username,
+                email=artist.user.email,
+                picture_url=artist.user.picture_url,
+                birthday=artist.user.birthday,
+            ),
+            description=artist.description
         ),
-        await service.get_all_artists()
+        response.artists
     ))
 
     return SArtistsResponse(artists=artists_)
@@ -232,7 +249,13 @@ async def get_one_artist(
     return SArtistResponse(
         id=artist.id,
         description=artist.description,
-        user=artist.user,
+        user=User(
+            id=artist.user.id,
+            username=artist.user.username,
+            email=artist.user.email,
+            picture_url=artist.user.picture_url,
+            birthday=artist.user.birthday,
+        ),
     )
 
 
@@ -290,8 +313,14 @@ async def get_me_as_producer(
 
     return SMeAsProducerResponse(
         id=producer.id,
-        user=producer.user,
-        description=producer.description
+        description=producer.description,
+        user=User(
+            id=producer.user.id,
+            username=producer.user.username,
+            email=producer.user.email,
+            picture_url=producer.user.picture_url,
+            birthday=producer.user.birthday,
+        ),
     )
 
 
@@ -304,13 +333,21 @@ async def get_me_as_producer(
 )
 async def get_all_producers(service: ProducersService = Depends(get_producers_service)) -> SProducersResponse:
 
+    response = await service.get_all_producers()
+
     producers_ = list(map(
         lambda producer: Producer(
             id=producer.id,
             description=producer.description,
-            user=producer.user
+            user=User(
+                id=producer.user.id,
+                username=producer.user.username,
+                email=producer.user.email,
+                picture_url=producer.user.picture_url,
+                birthday=producer.user.birthday,
+            ),
         ),
-        await service.get_all_producers()
+        response.producers
     ))
 
     return SProducersResponse(producers=producers_)
@@ -333,7 +370,13 @@ async def get_one_producer(
     return SProducerResponse(
         id=producer.id,
         description=producer.description,
-        user=producer.user
+        user=User(
+            id=producer.user.id,
+            username=producer.user.username,
+            email=producer.user.email,
+            picture_url=producer.user.picture_url,
+            birthday=producer.user.birthday,
+        ),
     )
 
 
@@ -457,7 +500,7 @@ async def refresh_token(
     responses={status.HTTP_200_OK: {'model': SSpotifyCallbackResponse}},
 )
 async def spotify_callback(
-    code,
+    code: str,
     user: User = Depends(get_current_user),
     service: AuthService = Depends(get_auth_service)
 ) -> SSpotifyCallbackResponse:

@@ -1,6 +1,5 @@
 from fastapi import APIRouter, Depends, status
 
-from src.exceptions.api import NoRightsException
 from src.models.auth import User
 from src.schemas.licenses import (
     License,
@@ -16,7 +15,6 @@ from src.schemas.licenses import (
 from src.services.licenses import LicensesService, get_licenses_service
 from src.utils.auth import get_current_user
 
-
 licenses = APIRouter(prefix="/licenses", tags=["Licenses"])
 
 
@@ -31,6 +29,8 @@ async def get_my_licenses(
     service: LicensesService = Depends(get_licenses_service),
 ) -> SMyLicensesResponse:
 
+    response = await service.get_user_licenses(user_id=user.id)
+
     licenses_ = list(map(
         lambda license_: License(
             id=license_.id,
@@ -47,7 +47,7 @@ async def get_my_licenses(
             created_at=license_.created_at,
             updated_at=license_.updated_at,
         ),
-        await service.get_user_licenses(user_id=user.id)
+        response.licenses
     ))
 
     return SMyLicensesResponse(licenses=licenses_)
@@ -61,6 +61,8 @@ async def get_my_licenses(
 )
 async def all_licenses(service: LicensesService = Depends(get_licenses_service)) -> SLicensesResponse:
 
+    response = await service.get_all_licenses()
+
     licenses_ = list(map(
         lambda license_: License(
             id=license_.id,
@@ -77,7 +79,7 @@ async def all_licenses(service: LicensesService = Depends(get_licenses_service))
             created_at=license_.created_at,
             updated_at=license_.updated_at,
         ),
-        await service.get_all_licenses()
+        response.licenses
     ))
     return SLicensesResponse(licenses=licenses_)
 
@@ -147,11 +149,6 @@ async def update_license(
     service: LicensesService = Depends(get_licenses_service),
 ) -> SEditLicensesResponse:
 
-    license_ = await service.get_one(license_id=license_id)
-
-    if license_.user_id != user.id:
-        raise NoRightsException()
-
     license_id = await service.update_license(
         license_id=license_id,
         user_id=user.id,
@@ -175,11 +172,5 @@ async def delete_licenses(
     service: LicensesService = Depends(get_licenses_service)
 ) -> SLicensesDeleteResponse:
 
-    license_ = await service.get_one(license_id=license_id)
-
-    if license_.user_id != user.id:
-        raise NoRightsException()
-
     await service.delete_license(license_id=license_id, user_id=user.id)
-
     return SLicensesDeleteResponse()

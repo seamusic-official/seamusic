@@ -8,7 +8,7 @@ from src.api.v1.comments import comments
 from src.api.v1.licenses import licenses
 from src.api.v1.messages import messages
 from src.api.v1.soundkits import soundkits
-from src.api.v1.spotify import music
+from src.api.v1.spotify import spotify
 from src.api.v1.squads import squads
 from src.api.v1.subscriptions import subscription
 from src.api.v1.tags import tags
@@ -27,7 +27,7 @@ router.include_router(tracks)
 router.include_router(albums)
 router.include_router(soundkits)
 router.include_router(messages)
-router.include_router(music)
+router.include_router(spotify)
 router.include_router(subscription)
 router.include_router(tags)
 router.include_router(squads)

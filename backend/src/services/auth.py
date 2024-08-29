@@ -5,18 +5,16 @@ from io import BytesIO
 from pydantic import EmailStr
 
 from src.dtos.database.auth import (
-    Artist,
     ArtistResponseDTO,
     ArtistsResponseDTO,
     CreateUserRequestDTO,
-    Producer,
     ProducerResponseDTO,
     ProducersResponseDTO,
     UserResponseDTO,
     UsersResponseDTO,
     UpdateArtistRequestDTO,
     UpdateProducerRequestDTO,
-    UpdateUserRequestDTO, User,
+    UpdateUserRequestDTO, User, CreateArtistRequestDTO, CreateProducerRequestDTO,
 )
 from src.dtos.database.tags import AddTagsRequestDTO, Tag
 from src.enums.auth import Role, AccessLevel
@@ -121,9 +119,17 @@ class UsersService(BaseService):
         user_id: int = await self.repositories.database.users.create_user(user=user)
         await self.repositories.database.tags.add_tags(tags=AddTagsRequestDTO(tags=list(map(lambda name: Tag(name=name), tags))))
 
-        artist_profile_id: int = await self.repositories.database.artists.update_artist(UpdateArtistRequestDTO(description="Hi, I'm an artist", is_available=False))
+        artist_profile_id: int = await self.repositories.database.artists.create_artist(CreateArtistRequestDTO(
+            user_id=user_id,
+            description="Hi, I'm an artist",
+            is_available=False,
+        ))
         await self.repositories.database.users.update_user(UpdateUserRequestDTO(artist_profile_id=artist_profile_id))
-        producer_profile_id: int = await self.repositories.database.producers.update_producer(UpdateProducerRequestDTO(description="Hi, I'm a producer", is_available=False))
+        producer_profile_id: int = await self.repositories.database.producers.create_producer(CreateProducerRequestDTO(
+            user_id=user_id,
+            description="Hi, I'm a producer",
+            is_available=False,
+        ))
         await self.repositories.database.users.update_user(UpdateUserRequestDTO(producer_profile_id=producer_profile_id))
         return user_id
 
@@ -168,7 +174,7 @@ class UsersService(BaseService):
         username: str | None,
         description: str | None,
         user_id: int
-    ) -> None:
+    ) -> int:
         user: UserResponseDTO | None = await self.repositories.database.users.get_user_by_id(user_id=user_id)
 
         if not user:
@@ -179,7 +185,7 @@ class UsersService(BaseService):
             description=description
         )
 
-        await self.repositories.database.users.update_user(user=update_data)
+        return await self.repositories.database.users.update_user(user=update_data)
 
     async def delete_user(self, user_id: int) -> None:
         user: UserResponseDTO | None = await self.repositories.database.users.get_user_by_id(user_id=user_id)
@@ -209,18 +215,24 @@ class ArtistsService(BaseService):
 
         return artist
 
-    async def get_all_artists(self) -> list[Artist]:
-        artists: ArtistsResponseDTO = await self.repositories.database.artists.get_artists()
-        return artists.artists
+    async def get_all_artists(self) -> ArtistsResponseDTO:
+        return await self.repositories.database.artists.get_artists()
 
-    async def update_artist(self, artist_id: int, description: str) -> None:
+    async def update_artist(
+        self,
+        artist_id: int,
+        description: str | None = None
+    ) -> int:
         artist: ArtistResponseDTO | None = await self.repositories.database.artists.get_artist_by_id(artist_id=artist_id)
 
         if not artist:
             raise NotFoundException()
 
-        updated_artist = UpdateArtistRequestDTO(description=description)
-        await self.repositories.database.artists.update_artist(artist=updated_artist)
+        updated_artist = UpdateArtistRequestDTO(
+            id=artist_id,
+            description=description,
+        )
+        return await self.repositories.database.artists.update_artist(artist=updated_artist)
 
     async def deactivate_artist(self, artist_id: int) -> None:
         artist: ArtistResponseDTO | None = await self.repositories.database.artists.get_artist_by_id(artist_id=artist_id)
@@ -228,7 +240,11 @@ class ArtistsService(BaseService):
         if not artist:
             raise NotFoundException()
 
-        updated_artist = UpdateArtistRequestDTO(description=None, is_available=False)
+        updated_artist = UpdateArtistRequestDTO(
+            id=artist_id,
+            description=None,
+            is_available=False,
+        )
         await self.repositories.database.artists.update_artist(artist=updated_artist)
 
 
@@ -251,18 +267,24 @@ class ProducersService(BaseService):
 
         return producer
 
-    async def get_all_producers(self) -> list[Producer]:
-        producers: ProducersResponseDTO = await self.repositories.database.producers.get_producers()
-        return producers.producers
+    async def get_all_producers(self) -> ProducersResponseDTO:
+        return await self.repositories.database.producers.get_producers()
 
-    async def update_producer(self, producer_id: int, description: str) -> None:
+    async def update_producer(
+        self,
+        producer_id: int,
+        description: str | None = None
+    ) -> int:
         producer: ProducerResponseDTO | None = await self.repositories.database.producers.get_producer_by_id(producer_id=producer_id)
 
         if not producer:
             raise NotFoundException()
 
-        updated_producer = UpdateProducerRequestDTO(description=description)
-        await self.repositories.database.producers.update_producer(producer=updated_producer)
+        updated_producer = UpdateProducerRequestDTO(
+            id=producer_id,
+            description=description
+        )
+        return await self.repositories.database.producers.update_producer(producer=updated_producer)
 
     async def deactivate_one_producer(self, producer_id: int) -> None:
         producer: ProducerResponseDTO | None = await self.repositories.database.producers.get_producer_by_id(producer_id=producer_id)
@@ -270,7 +292,11 @@ class ProducersService(BaseService):
         if not producer:
             raise NotFoundException()
 
-        updated_producer = UpdateProducerRequestDTO(descriprion=None, is_available=False)
+        updated_producer = UpdateProducerRequestDTO(
+            id=producer_id,
+            description=None,
+            is_available=False,
+        )
         await self.repositories.database.producers.update_producer(producer=updated_producer)
 
 
@@ -297,25 +323,26 @@ class AuthService(BaseService):
 
         return access_token, refresh_token_
 
-    async def spotify_callback(self, code) -> tuple[str, str]:
+    async def spotify_callback(self, code) -> tuple[str, str]:  # type: ignore[no-untyped-def]
+        # old functional
         access_token = await self.repositories.api.login(code=code)
 
         if access_token:
 
             user_data = await self.repositories.api.get_me(access_token=access_token)
 
-            user = await self.repositories.database.users.get_user_by_email(email=user_data.get("email"))
+            user = await self.repositories.database.users.get_user_by_email(email=user_data.get("email"))  # type: ignore[arg-type]
             if not user:
                 user = CreateUserRequestDTO(
-                    username=user_data.get("username"),
-                    email=user_data.get("email"),
+                    username=user_data["username"],
+                    email=user_data["email"],
                     password=None,
                     roles=[Role.artist, Role.artist, Role.producer],
                     birthday=datetime.today(),
                     tags=[],
                     access_level=AccessLevel.user
-                )
-                user_id: int = await self.repositories.database.users.create_user(user=user)
+                )  # type: ignore[assignment]
+                user_id: int = await self.repositories.database.users.create_user(user=user)  # type: ignore[arg-type]
                 access_token = create_access_token({"sub": str(user_id)})
                 refresh_token_ = create_refresh_token({"sub": str(user_id)})
 

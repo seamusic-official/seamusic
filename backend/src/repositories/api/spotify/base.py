@@ -1,4 +1,4 @@
-from abc import ABC, abstractmethod
+from abc import abstractmethod
 from dataclasses import dataclass
 
 from src.dtos.api.spotify import (
@@ -10,14 +10,15 @@ from src.dtos.api.spotify import (
     SpotifyTracksResponseDTO
 )
 from src.enums.spotify import SpotifyType
+from src.repositories import BaseAPIRepository
 
 
 @dataclass
-class BaseSpotifyRepository(ABC):
+class BaseSpotifyRepository(BaseAPIRepository):
     base_url = 'https://api.spotify.com/v1'
 
     @abstractmethod
-    async def login(self, code) -> str:
+    async def login(self, code: str) -> str:
         ...
 
     @abstractmethod

@@ -34,7 +34,7 @@ async def get_user_soundkits(
         lambda soundkit: Soundkit(
             id=soundkit.id,
             title=soundkit.title,
-            picture=soundkit.picture,
+            picture=soundkit.picture_url,
             description=soundkit.description,
             file_path=soundkit.file_path,
             co_prod=soundkit.co_prod,
@@ -63,7 +63,7 @@ async def all_soundkits(service: SoundkitsService = Depends(get_soundkits_servic
         lambda soundkit: Soundkit(
             id=soundkit.id,
             title=soundkit.title,
-            picture=soundkit.picture,
+            picture=soundkit.picture_url,
             description=soundkit.description,
             file_path=soundkit.file_path,
             co_prod=soundkit.co_prod,
@@ -93,15 +93,16 @@ async def get_one_soundkit(
 
     return SSoundkitResponse(
         id=soundkit.id,
-        title=soundkit.title,
-        picture=soundkit.picture,
+        name=soundkit.name,
+        picture_url=soundkit.picture_url,
         description=soundkit.description,
-        file_path=soundkit.file_path,
+        file_url=soundkit.file_url,
         co_prod=soundkit.co_prod,
         prod_by=soundkit.prod_by,
-        playlist_id=soundkit.playlist_id,
         user_id=soundkit.user_id,
-        beat_pack_id=soundkit.beat_pack_id,
+        is_available=soundkit.is_available,
+        created_at=soundkit.created_at,
+        updated_at=soundkit.updated_at,
     )
 
 
@@ -111,7 +112,7 @@ async def get_one_soundkit(
     response_model=SCreateSoundkitResponse,
     responses={status.HTTP_200_OK: {"model": SCreateSoundkitResponse}},
 )
-async def add_soundkits(
+async def add_soundkit(
     file: UploadFile = File(...),
     user: User = Depends(get_current_user),
     service: SoundkitsService = Depends(get_soundkits_service),

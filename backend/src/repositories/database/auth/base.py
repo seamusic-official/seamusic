@@ -13,7 +13,7 @@ from src.dtos.database.auth import (
     ProducerResponseDTO,
     ProducersResponseDTO,
     UpdateProducerRequestDTO,
-    CreateUserRequestDTO,
+    CreateUserRequestDTO, CreateArtistRequestDTO, CreateProducerRequestDTO,
 )
 
 
@@ -47,7 +47,7 @@ class BaseUsersRepository(ABC):
 @dataclass
 class BaseArtistsRepository(ABC):
     @abstractmethod
-    async def get_artist_id_by_user_id(self, user_id) -> int:
+    async def get_artist_id_by_user_id(self, user_id: int) -> int | None:
         ...
 
     @abstractmethod
@@ -59,6 +59,10 @@ class BaseArtistsRepository(ABC):
         ...
 
     @abstractmethod
+    async def create_artist(self, artist: CreateArtistRequestDTO) -> int:
+        ...
+
+    @abstractmethod
     async def update_artist(self, artist: UpdateArtistRequestDTO) -> int:
         ...
 
@@ -66,7 +70,7 @@ class BaseArtistsRepository(ABC):
 @dataclass
 class BaseProducersRepository(ABC):
     @abstractmethod
-    async def get_producer_id_by_user_id(self, user_id) -> int | None:
+    async def get_producer_id_by_user_id(self, user_id: int) -> int | None:
         ...
 
     @abstractmethod
@@ -75,6 +79,10 @@ class BaseProducersRepository(ABC):
 
     @abstractmethod
     async def get_producers(self) -> ProducersResponseDTO:
+        ...
+
+    @abstractmethod
+    async def create_producer(self, producer: CreateProducerRequestDTO) -> int:
         ...
 
     @abstractmethod
