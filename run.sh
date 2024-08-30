@@ -1,13 +1,13 @@
 apt install python3 make docker docker-compose
 
-if [ ! -d "backend/backend-repo" ]; then
-    git clone https://github.com/username/backend-repo.git backend/backend-repo
+if [ ! -d "backend/backend" ]; then
+    git clone https://github.com/usmskolyadin/seamusic-backend.git backend/backend
 else
     echo "Backend already was cloned"
 fi
 
-if [ ! -d "frontend/frontend-repo" ]; then
-    git clone https://github.com/username/frontend-repo.git frontend/frontend-repo
+if [ ! -d "frontend/frontend" ]; then
+    git clone https://github.com/usmskolyadin/seamusic-frontend.git frontend/frontend
 else
     echo "Frontend already was cloned"
 fi
