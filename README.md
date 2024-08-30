@@ -25,3 +25,9 @@ To run this application just follow instructions from backend & frontend READMEs
 ```bash
 ./run.sh
 ```
+
+### 🛠️ Running
+
+- **Backend**: [SeaMusic Backend](https://github.com/usmskolyadin/seamusic-backend)
+- **Frontend**: [SeaMusic Frontend](https://github.com/usmskolyadin/seamusic-frontend)
+
