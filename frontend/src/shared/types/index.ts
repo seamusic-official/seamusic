@@ -1,9 +1,0 @@
-export type { ArtistResponseType } from './artist-response';
-export type { AuthResponseType } from './auth-response';
-export type { PlaylistResponseType } from './playlist-response';
-export type { PlaylistType } from './playlist';
-export type { SongType } from './song';
-export type { SpotifyPlaylistType } from './spotify-playlist';
-export type { SpotifySongType } from './spotify-song';
-export type { TrackResponseType } from './track-response';
-export type { UserType } from './user';
