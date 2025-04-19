@@ -1,0 +1,25 @@
+services:
+  nginx:
+    image: nginx:stable-alpine
+    ports:
+      - "80:80"
+    volumes:
+      - "./nginx.conf:/etc/nginx/nginx.conf"
+    depends_on:
+      - backend
+      - frontend
+    networks:
+      - sm-prod
+      
+  backend:
+    context: ./backend
+    networks:
+      - sm-prod
+
+  frontend:
+    context: ./frontend
+    networks:
+      - sm-prod
+      
+networks:
+  sm-prod:
