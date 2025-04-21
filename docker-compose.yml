@@ -4,7 +4,7 @@ services:
     ports:
       - "8080:8080"
     volumes:
-      - "./nginx.conf:/etc/nginx/sites-enabled/seamusic.conf"
+      - "./nginx.conf:/etc/nginx/conf.d/seamusic.conf"
     depends_on:
       - backend
       - frontend
