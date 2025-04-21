@@ -14,7 +14,7 @@ services:
   backend:
     build:
       context: ./backend
-    enviroment:
+    environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
       DB_NAME: ${DB_NAME}
