@@ -12,12 +12,14 @@ services:
       - sm-prod
       
   backend:
-    context: ./backend
+    build:
+      context: ./backend
     networks:
       - sm-prod
 
   frontend:
-    context: ./frontend
+    build:
+      context: ./frontend
     networks:
       - sm-prod
       
