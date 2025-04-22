@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   nginx:
     image: nginx:stable-alpine
@@ -6,14 +8,18 @@ services:
     volumes:
       - "./nginx.conf:/etc/nginx/conf.d/seamusic.conf"
     depends_on:
-      - backend
       - frontend
+      - backend
     networks:
       - sm-prod
-      
+
+  frontend:
+    build: ./frontend
+    networks:
+      - sm-prod
+
   backend:
-    build:
-      context: ./backend
+    build: ./backend
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
@@ -23,11 +29,5 @@ services:
     networks:
       - sm-prod
 
-  frontend:
-    build:
-      context: ./frontend
-    networks:
-      - sm-prod
-      
 networks:
   sm-prod:
