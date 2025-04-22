@@ -15,11 +15,15 @@ services:
 
   frontend:
     build: ./frontend
+    ports:
+      - "3001:3000"
     networks:
       - sm-prod
 
   backend:
     build: ./backend
+    ports:
+      - "8001:8000"
     environment:
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
